@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About GuideTravel - Về Chúng Tôi</title>
+  <meta name="description" content="GuideTravel kết nối du khách với hướng dẫn viên địa phương để tạo ra những hành trình cá nhân hóa đáng nhớ tại Việt Nam.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .about-hero { background: linear-gradient(135deg, #0F172A 0%, #1E3A5F 60%, #0EA5E9 100%); padding: 100px 0 80px; text-align: center; }
+    .about-hero h1 { color: white; margin-bottom: 16px; }
+    .about-hero p { color: rgba(255,255,255,.75); max-width: 560px; margin: 0 auto; font-size: 1.1rem; }
+
+    .mission-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+    @media(max-width:768px){ .mission-grid { grid-template-columns: 1fr; gap: 32px; } }
+    .mission-img { border-radius: var(--radius-xl); overflow: hidden; height: 420px; box-shadow: var(--shadow-lg); }
+    .mission-img img { width: 100%; height: 100%; object-fit: cover; }
+
+    .value-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; transition: var(--t); }
+    .value-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+    .value-icon { width: 52px; height: 52px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 16px; }
+
+    .team-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; transition: var(--t); }
+    .team-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+    .team-card img { height: 220px; object-fit: cover; }
+    .team-info { padding: 20px; }
+    .team-name { font-weight: 700; color: var(--dark); font-size: 1rem; margin-bottom: 4px; }
+    .team-role { font-size: .82rem; color: var(--blue); font-weight: 600; margin-bottom: 8px; }
+    .team-bio { font-size: .83rem; color: var(--gray); line-height: 1.6; }
+
+    .timeline { position: relative; padding-left: 32px; }
+    .timeline::before { content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(to bottom, var(--blue), var(--orange)); border-radius: 99px; }
+    .tl-item { position: relative; padding-bottom: 36px; }
+    .tl-item:last-child { padding-bottom: 0; }
+    .tl-dot { position: absolute; left: -39px; top: 4px; width: 16px; height: 16px; border-radius: 50%; background: var(--blue); border: 3px solid white; box-shadow: 0 0 0 2px var(--blue); }
+    .tl-year { font-size: .78rem; font-weight: 700; color: var(--blue); margin-bottom: 4px; letter-spacing: .04em; }
+    .tl-title { font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+    .tl-desc { font-size: .88rem; color: var(--gray); }
+
+    .press-logo { height: 36px; filter: grayscale(1) opacity(.45); transition: var(--t); }
+    .press-logo:hover { filter: grayscale(0) opacity(1); }
+
+    .number-big { font-size: 2.8rem; font-weight: 800; line-height: 1; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-mark"><i class="fa-solid fa-compass"></i></div>
+        Guide<em>Travel</em>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" data-i18n="nav.home">Trang chủ</a>
+        <a href="guides.html" data-i18n="nav.find_guide">Tìm HDV</a>
+        <a href="blog.html" data-i18n="nav.blog">Blog</a>
+        <a href="request.html" data-i18n="nav.post_request">Đăng yêu cầu</a>
+        <a href="about.html" class="active" data-i18n="nav.about">Giới thiệu</a>
+      </div>
+      <div class="nav-right"></div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+
+<div class="mob-menu">
+  <div class="mob-panel">
+    <button class="mob-close"><i class="fa-solid fa-xmark"></i></button>
+    <a href="index.html"><i class="fa-solid fa-house"></i> <span data-i18n="nav.home">Trang chủ</span></a>
+    <a href="guides.html"><i class="fa-solid fa-users"></i> <span data-i18n="nav.find_guide">Tìm HDV</span></a>
+    <a href="blog.html"><i class="fa-solid fa-newspaper"></i> <span data-i18n="nav.blog">Blog</span></a>
+    <a href="request.html"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="nav.post_request">Đăng yêu cầu</span></a>
+    <a href="about.html" class="active"><i class="fa-solid fa-circle-info"></i> <span data-i18n="nav.about">Giới thiệu</span></a>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="about-hero">
+  <div class="container">
+    <span class="tag tag-blue" style="margin-bottom:20px" data-i18n="about.tag">Câu chuyện của chúng tôi</span>
+    <h1 data-i18n="about.hero_title">Du lịch Việt Nam nên được<br><span style="color:var(--blue)">trải nghiệm như người địa phương</span></h1>
+    <p style="margin-top:16px" data-i18n="about.hero_sub">GuideTravel sinh ra từ một câu hỏi đơn giản: Tại sao du khách nước ngoài phải chịu đựng những tour đại trà đắt tiền, trong khi những người dân địa phương am hiểu đang ở ngay bên cạnh?</p>
+  </div>
+</section>
+
+<!-- MISSION -->
+<section class="section">
+  <div class="container">
+    <div class="mission-grid">
+      <div class="mission-img">
+        <img src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=800&q=80" alt="Local guide in Vietnam">
+      </div>
+      <div>
+        <span class="tag tag-orange" data-i18n="about.mission_tag">Sứ mệnh</span>
+        <h2 style="margin:12px 0" data-i18n="about.mission_title">Kết nối con người, không chỉ điểm đến</h2>
+        <p style="margin-bottom:16px" data-i18n="about.mission_p1">Chúng tôi tin rằng du lịch thật sự bắt đầu khi bạn gặp được người địa phương — người biết con hẻm nào có bún bò ngon nhất, bãi biển nào chưa có khách du lịch, hay lễ hội nào chỉ diễn ra một lần trong năm.</p>
+        <p style="margin-bottom:28px" data-i18n="about.mission_p2">GuideTravel là nền tảng kết nối trực tiếp giữa du khách và hướng dẫn viên địa phương được xác minh — không qua trung gian, không lịch trình đại trà, 100% cá nhân hóa.</p>
+        <div style="display:flex;gap:32px;flex-wrap:wrap">
+          <div>
+            <div class="number-big" style="color:var(--blue)">1,200+</div>
+            <div style="font-size:.85rem;color:var(--gray);margin-top:4px" data-i18n="home.stat_happy">Khách hài lòng</div>
+          </div>
+          <div>
+            <div class="number-big" style="color:var(--orange)">50+</div>
+            <div style="font-size:.85rem;color:var(--gray);margin-top:4px" data-i18n="home.stat_guides">HDV được xác minh</div>
+          </div>
+          <div>
+            <div class="number-big" style="color:var(--green)">98%</div>
+            <div style="font-size:.85rem;color:var(--gray);margin-top:4px" data-i18n="home.stat_rate">Hài lòng</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VALUES -->
+<section class="section bg-light">
+  <div class="container">
+    <div class="sec-header center" style="margin-bottom:48px">
+      <span class="tag tag-blue" data-i18n="about.values_tag">Giá trị cốt lõi</span>
+      <h2 style="margin-top:10px" data-i18n="about.values_title">Những gì chúng tôi tin tưởng</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px">
+      <div class="value-card">
+        <div class="value-icon" style="background:#EFF6FF">🤝</div>
+        <h3 style="margin-bottom:8px" data-i18n="about.v1_t">Tin tưởng & Minh bạch</h3>
+        <p style="font-size:.88rem" data-i18n="about.v1_d">Mọi HDV đều được xác minh danh tính và chứng chỉ. Đánh giá 100% từ khách thật, không chỉnh sửa.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon" style="background:#FFF7ED">🎯</div>
+        <h3 style="margin-bottom:8px" data-i18n="about.v2_t">Cá nhân hóa tuyệt đối</h3>
+        <p style="font-size:.88rem" data-i18n="about.v2_d">Không có lịch trình copy-paste. Mỗi chuyến đi được thiết kế riêng dựa trên sở thích, ngân sách và thời gian của bạn.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon" style="background:#ECFDF5">🌱</div>
+        <h3 style="margin-bottom:8px" data-i18n="about.v3_t">Hỗ trợ cộng đồng địa phương</h3>
+        <p style="font-size:.88rem" data-i18n="about.v3_d">80% doanh thu đến tay HDV và cộng đồng địa phương. Du lịch có trách nhiệm với môi trường và văn hóa.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon" style="background:#FDF4FF">🔒</div>
+        <h3 style="margin-bottom:8px" data-i18n="about.v4_t">An toàn & Bảo mật</h3>
+        <p style="font-size:.88rem" data-i18n="about.v4_d">Thanh toán ký quỹ bảo vệ cả hai bên. Tiền chỉ giải ngân sau khi tour hoàn thành và khách xác nhận.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW WE WORK -->
+<section class="section">
+  <div class="container">
+    <div class="mission-grid" style="gap:80px">
+      <div>
+        <span class="tag tag-orange" data-i18n="about.how_tag">Cách chúng tôi hoạt động</span>
+        <h2 style="margin:12px 0" data-i18n="about.how_title">Mô hình marketplace<br>minh bạch</h2>
+        <p style="margin-bottom:24px" data-i18n="about.how_p">GuideTravel hoạt động như một sàn giao dịch: chúng tôi kết nối và xác thực, còn HDV tự quyết định giá dịch vụ. Nền tảng thu phí hoa hồng nhỏ để duy trì hệ thống — phần lớn còn lại thuộc về HDV.</p>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:flex-start;gap:14px">
+            <div style="width:36px;height:36px;background:var(--blue-light);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;color:var(--blue)">1</div>
+            <div><strong style="color:var(--dark)" data-i18n="about.how_s1t">HDV đăng ký & được xác minh</strong><br><span style="font-size:.85rem;color:var(--gray)" data-i18n="about.how_s1d">Kiểm tra CMND, chứng chỉ hướng dẫn viên, phỏng vấn trực tiếp</span></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:14px">
+            <div style="width:36px;height:36px;background:var(--orange-light);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;color:var(--orange)">2</div>
+            <div><strong style="color:var(--dark)" data-i18n="about.how_s2t">Khách gửi yêu cầu miễn phí</strong><br><span style="font-size:.85rem;color:var(--gray)" data-i18n="about.how_s2d">Mô tả chuyến đi, HDV phù hợp nhất phản hồi trong 24h</span></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:14px">
+            <div style="width:36px;height:36px;background:var(--green-light);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;color:var(--green)">3</div>
+            <div><strong style="color:var(--dark)" data-i18n="about.how_s3t">Thanh toán ký quỹ an toàn</strong><br><span style="font-size:.85rem;color:var(--gray)" data-i18n="about.how_s3d">Tiền giữ bởi nền tảng, giải ngân sau khi tour hoàn thành</span></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:14px">
+            <div style="width:36px;height:36px;background:#F5F3FF;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;color:#7C3AED">4</div>
+            <div><strong style="color:var(--dark)" data-i18n="about.how_s4t">Đánh giá thật, minh bạch</strong><br><span style="font-size:.85rem;color:var(--gray)" data-i18n="about.how_s4d">Chỉ khách đã hoàn thành tour mới được đánh giá HDV</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--bg);border-radius:var(--radius-xl);padding:36px">
+        <div style="font-size:.88rem;font-weight:700;color:var(--dark);margin-bottom:20px;display:flex;align-items:center;gap:8px">
+          <i class="fa-solid fa-chart-pie" style="color:var(--blue)"></i> <span data-i18n="about.revenue_title">Phân chia doanh thu</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-size:.85rem;font-weight:600;color:var(--dark)" data-i18n="about.rev_guide">HDV nhận được</span>
+              <span style="font-weight:800;color:var(--green)">70–85%</span>
+            </div>
+            <div style="height:10px;background:var(--border);border-radius:99px;overflow:hidden">
+              <div style="height:100%;width:80%;background:var(--green);border-radius:99px"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-size:.85rem;font-weight:600;color:var(--dark)" data-i18n="about.rev_platform">Nền tảng (vận hành, hỗ trợ)</span>
+              <span style="font-weight:800;color:var(--blue)">15–30%</span>
+            </div>
+            <div style="height:10px;background:var(--border);border-radius:99px;overflow:hidden">
+              <div style="height:100%;width:22%;background:var(--blue);border-radius:99px"></div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
+          <div style="font-size:.82rem;color:var(--gray);line-height:1.7" data-i18n="about.rev_note">
+            HDV có thể chọn mức hoa hồng 15–30% để xuất hiện cao hơn trong kết quả tìm kiếm. Không có phí ẩn, không phí đăng ký.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section class="section bg-light">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start">
+      <div>
+        <span class="tag tag-blue" data-i18n="about.story_tag">Lịch sử hình thành</span>
+        <h2 style="margin:12px 0 32px" data-i18n="about.story_title">Từ ý tưởng đến nền tảng</h2>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-year">2022</div>
+            <div class="tl-title" data-i18n="about.tl1_t">Ý tưởng nảy sinh</div>
+            <div class="tl-desc" data-i18n="about.tl1_d">Founder trải nghiệm tour đại trà tại Hội An và nhận ra sự khác biệt khi được một người dân địa phương dẫn đi.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="background:var(--orange);box-shadow:0 0 0 2px var(--orange)"></div>
+            <div class="tl-year">2023 Q1</div>
+            <div class="tl-title" data-i18n="about.tl2_t">Thử nghiệm đầu tiên</div>
+            <div class="tl-desc" data-i18n="about.tl2_d">Ra mắt beta với 5 HDV tại Nha Trang và Hội An. 50 booking đầu tiên trong 3 tháng.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="background:var(--green);box-shadow:0 0 0 2px var(--green)"></div>
+            <div class="tl-year">2023 Q4</div>
+            <div class="tl-title" data-i18n="about.tl3_t">Mở rộng toàn quốc</div>
+            <div class="tl-desc" data-i18n="about.tl3_d">Mở rộng ra 8 tỉnh thành, onboard 50+ HDV, đạt 500 booking tích lũy.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="background:#7C3AED;box-shadow:0 0 0 2px #7C3AED"></div>
+            <div class="tl-year">2024</div>
+            <div class="tl-title" data-i18n="about.tl4_t">Hướng đến khách quốc tế</div>
+            <div class="tl-desc" data-i18n="about.tl4_d">Ra mắt giao diện tiếng Anh, tích hợp thanh toán quốc tế Stripe, mục tiêu 1,000 booking/tháng.</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <span class="tag tag-orange" data-i18n="about.team_tag">Đội ngũ</span>
+        <h2 style="margin:12px 0 32px" data-i18n="about.team_title">Những người đứng sau GuideTravel</h2>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;gap:16px;align-items:center;background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80" alt="" style="width:56px;height:56px;border-radius:50%;object-fit:cover;flex-shrink:0">
+            <div>
+              <div style="font-weight:700;color:var(--dark)">Nguyễn Hoàng Nam</div>
+              <div style="font-size:.8rem;color:var(--blue);font-weight:600;margin-bottom:4px" data-i18n="about.role_ceo">Co-founder & CEO</div>
+              <div style="font-size:.82rem;color:var(--gray)" data-i18n="about.bio_ceo">10 năm ngành du lịch, cựu product manager tại Traveloka Vietnam.</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:center;background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px">
+            <img src="https://images.unsplash.com/photo-1494790108755-2616b332c2aa?w=100&q=80" alt="" style="width:56px;height:56px;border-radius:50%;object-fit:cover;flex-shrink:0">
+            <div>
+              <div style="font-weight:700;color:var(--dark)">Trần Minh Châu</div>
+              <div style="font-size:.8rem;color:var(--blue);font-weight:600;margin-bottom:4px" data-i18n="about.role_cto">Co-founder & CTO</div>
+              <div style="font-size:.82rem;color:var(--gray)" data-i18n="about.bio_cto">Full-stack engineer 8 năm, từng xây dựng hệ thống booking cho 50K+ người dùng.</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:center;background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px">
+            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80" alt="" style="width:56px;height:56px;border-radius:50%;object-fit:cover;flex-shrink:0">
+            <div>
+              <div style="font-weight:700;color:var(--dark)">Lê Thành Đạt</div>
+              <div style="font-size:.8rem;color:var(--blue);font-weight:600;margin-bottom:4px" data-i18n="about.role_ops">Head of Guide Operations</div>
+              <div style="font-size:.82rem;color:var(--gray)" data-i18n="about.bio_ops">Cựu HDV quốc tế 6 năm, phụ trách xét duyệt và đào tạo HDV.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section style="background:linear-gradient(135deg,#0F172A,#1E3A5F);padding:72px 0;text-align:center">
+  <div class="container">
+    <h2 style="color:white;margin-bottom:12px" data-i18n="about.cta_title">Muốn trải nghiệm khác biệt?</h2>
+    <p style="color:rgba(255,255,255,.7);max-width:400px;margin:0 auto 32px" data-i18n="about.cta_sub">Gửi yêu cầu miễn phí — HDV địa phương phản hồi trong 24 giờ</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+      <a href="request.html" class="btn btn-orange btn-lg">
+        <i class="fa-solid fa-paper-plane"></i> <span data-i18n="home.cta_btn">Gửi Yêu Cầu Miễn Phí</span>
+      </a>
+      <a href="guides.html" class="btn btn-lg" style="background:rgba(255,255,255,.1);color:white;border:1px solid rgba(255,255,255,.2)">
+        <i class="fa-solid fa-users"></i> <span data-i18n="home.cta_browse">Xem Tất Cả HDV</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo"><div class="logo-mark"><i class="fa-solid fa-compass"></i></div> Guide<em style="color:var(--blue)">Travel</em></a>
+        <p data-i18n="footer.brand_sub">Kết nối du khách với hướng dẫn viên địa phương để tạo ra những hành trình cá nhân hóa đáng nhớ.</p>
+        <div class="footer-social">
+          <a href="#" class="fsoc"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#" class="fsoc"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" class="fsoc"><i class="fa-brands fa-tiktok"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.explore">Khám Phá</h4>
+        <ul>
+          <li><a href="guides.html" data-i18n="footer.find_guides">Tìm HDV</a></li>
+          <li><a href="request.html" data-i18n="footer.post_request">Đăng yêu cầu</a></li>
+          <li><a href="about.html" data-i18n="nav.about">Giới thiệu</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.services">Dịch Vụ</h4>
+        <ul>
+          <li><a href="hdv-register.html" data-i18n="footer.become_guide">Đăng ký làm HDV</a></li>
+          <li><a href="chinh-sach.html" data-i18n="footer.refund">Chính sách hoàn tiền</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.contact">Liên Hệ</h4>
+        <div class="footer-contact">
+          <div class="fc-item"><i class="fa-solid fa-phone"></i><span>1900 123 456</span></div>
+          <div class="fc-item"><i class="fa-solid fa-envelope"></i><span>hello@guidetravel.vn</span></div>
+          <div class="fc-item"><i class="fa-brands fa-facebook-messenger"></i><span>m.me/GuideTravel</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p data-i18n="footer.copyright">© 2024 GuideTravel. Bảo lưu mọi quyền.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="lang.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

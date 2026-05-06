@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GuideTravel - Find Local Tour Guides in Vietnam</title>
+  <meta name="description" content="Connect with local Vietnamese tour guides for 100% personalized travel itineraries.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-mark"><i class="fa-solid fa-compass"></i></div>
+        Guide<em>Travel</em>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="active" data-i18n="nav.home">Trang chủ</a>
+        <a href="guides.html" data-i18n="nav.find_guide">Tìm HDV</a>
+        <a href="blog.html" data-i18n="nav.blog">Blog</a>
+        <a href="request.html" data-i18n="nav.post_request">Đăng yêu cầu</a>
+      </div>
+      <div class="nav-right"></div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mob-menu">
+  <div class="mob-panel">
+    <button class="mob-close"><i class="fa-solid fa-xmark"></i></button>
+    <a href="index.html"><i class="fa-solid fa-house"></i> <span data-i18n="nav.home">Trang chủ</span></a>
+    <a href="guides.html"><i class="fa-solid fa-users"></i> <span data-i18n="nav.find_guide">Tìm HDV</span></a>
+    <a href="request.html"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="nav.post_request">Đăng yêu cầu</span></a>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-tag">
+        <span class="tag tag-blue"><i class="fa-solid fa-shield-halved"></i> <span data-i18n="home.trust_badge">Nền tảng đáng tin cậy #1 Việt Nam</span></span>
+      </div>
+      <h1 data-i18n="home.hero_title">Lịch trình du lịch<br><span>cá nhân hóa</span> cho bạn</h1>
+      <p data-i18n="home.hero_sub">Muốn đi Nha Trang nhưng chưa biết lên kế hoạch? Tìm HDV địa phương — họ sẽ thiết kế hành trình phù hợp 100% với sở thích của bạn.</p>
+
+      <!-- Search -->
+      <form id="hero-search" class="search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" data-i18n="home.search_ph" data-i18n-attr="placeholder" placeholder="Bạn muốn đi đâu? Nha Trang, Đà Lạt, Sapa..." autocomplete="off">
+        <button type="submit" class="btn btn-primary btn-lg" data-i18n="home.search_btn">Tìm HDV</button>
+      </form>
+
+      <!-- Destination pills -->
+      <div class="dest-pills">
+        <div class="dest-pill" data-region="nha-trang"><span>🏖️</span> Nha Trang</div>
+        <div class="dest-pill" data-region="hoi-an"><span>🏮</span> Hội An</div>
+        <div class="dest-pill" data-region="sapa"><span>🏔️</span> Sapa</div>
+        <div class="dest-pill" data-region="da-lat"><span>🌸</span> Đà Lạt</div>
+        <div class="dest-pill" data-region="ha-long"><span>⛵</span> Hạ Long</div>
+        <div class="dest-pill" data-region="phu-quoc"><span>🌴</span> Phú Quốc</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section bg-light">
+  <div class="container">
+    <div class="sec-header center">
+      <span class="tag tag-blue" data-i18n="home.how_tag">Cách hoạt động</span>
+      <h2 style="margin-top:8px" data-i18n="home.how_title">Đơn giản chỉ 3 bước</h2>
+      <p data-i18n="home.how_sub">Không cần mày mò tìm kiếm, không lo bị "chặt chém" — HDV địa phương lo mọi thứ cho bạn</p>
+    </div>
+    <div class="steps">
+      <div class="step-item">
+        <div class="step-num">🔍</div>
+        <h3 data-i18n="home.step1_t">Tìm HDV</h3>
+        <p data-i18n="home.step1_d">Tìm hướng dẫn viên theo điểm đến, ngân sách và đánh giá từ khách đã đi.</p>
+      </div>
+      <div class="step-item">
+        <div class="step-num">💬</div>
+        <h3 data-i18n="home.step2_t">Gửi yêu cầu</h3>
+        <p data-i18n="home.step2_d">Chia sẻ sở thích, ngân sách, ngày đi — HDV sẽ lên lịch trình riêng cho bạn trong 24h.</p>
+      </div>
+      <div class="step-item">
+        <div class="step-num">✈️</div>
+        <h3 data-i18n="home.step3_t">Tận hưởng</h3>
+        <p data-i18n="home.step3_d">Xác nhận lịch trình, đặt cọc an toàn qua nền tảng và chuẩn bị cho chuyến đi tuyệt vời.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED GUIDES -->
+<section class="section">
+  <div class="container">
+    <div class="sec-header-row sec-header">
+      <div>
+        <span class="tag tag-orange" data-i18n="home.feat_tag">HDV nổi bật</span>
+        <h2 style="margin-top:8px" data-i18n="home.feat_title">Hướng Dẫn Viên Được Yêu Thích</h2>
+        <p data-i18n="home.feat_sub">Những HDV địa phương được đánh giá cao nhất bởi hàng trăm khách du lịch</p>
+      </div>
+      <a href="guides.html" class="btn btn-outline"><span data-i18n="home.see_all">Xem tất cả</span> <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div id="featured-guides" class="guides-grid"></div>
+  </div>
+</section>
+
+<!-- DESTINATIONS -->
+<section class="section bg-light">
+  <div class="container">
+    <div class="sec-header center">
+      <span class="tag tag-blue" data-i18n="home.dest_tag">Điểm đến</span>
+      <h2 style="margin-top:8px" data-i18n="home.dest_title">Khám Phá Việt Nam</h2>
+      <p data-i18n="home.dest_sub">HDV địa phương am hiểu tại mỗi điểm đến — từ bãi biển phía Nam đến núi rừng Tây Bắc</p>
+    </div>
+    <div class="dest-grid">
+      <div class="dest-card" data-region="nha-trang" style="height:416px">
+        <img src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&q=80" alt="Nha Trang">
+        <div class="dest-overlay"></div>
+        <div class="dest-info"><strong>Nha Trang</strong><span>1 <span data-i18n="guides.count_suffix">hướng dẫn viên</span> · <span data-i18n="dest.beach">Biển đảo</span></span></div>
+      </div>
+      <div class="dest-card" data-region="hoi-an">
+        <img src="https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=600&q=80" alt="Hội An">
+        <div class="dest-overlay"></div>
+        <div class="dest-info"><strong>Hội An</strong><span>1 <span data-i18n="guides.count_suffix">hướng dẫn viên</span> · <span data-i18n="dest.culture">Văn hóa</span></span></div>
+      </div>
+      <div class="dest-card" data-region="sapa">
+        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80" alt="Sapa">
+        <div class="dest-overlay"></div>
+        <div class="dest-info"><strong>Sapa</strong><span>1 <span data-i18n="guides.count_suffix">hướng dẫn viên</span> · <span data-i18n="dest.trekking">Trekking</span></span></div>
+      </div>
+      <div class="dest-card" data-region="ha-long">
+        <img src="https://images.unsplash.com/photo-1528127269322-539801943592?w=600&q=80" alt="Hạ Long">
+        <div class="dest-overlay"></div>
+        <div class="dest-info"><strong>Hạ Long</strong><span>1 <span data-i18n="guides.count_suffix">hướng dẫn viên</span> · <span data-i18n="dest.beach">Biển đảo</span></span></div>
+      </div>
+      <div class="dest-card" data-region="da-lat">
+        <img src="https://images.unsplash.com/photo-1549880181-56a44cf4a9a5?w=600&q=80" alt="Đà Lạt">
+        <div class="dest-overlay"></div>
+        <div class="dest-info"><strong>Đà Lạt</strong><span>1 <span data-i18n="guides.count_suffix">hướng dẫn viên</span> · <span data-i18n="dest.nature">Thiên nhiên</span></span></div>
+      </div>
+      <div class="dest-card" data-region="phu-quoc">
+        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80" alt="Phú Quốc">
+        <div class="dest-overlay"></div>
+        <div class="dest-info"><strong>Phú Quốc</strong><span>1 <span data-i18n="guides.count_suffix">hướng dẫn viên</span> · <span data-i18n="dest.island">Đảo ngọc</span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="section-sm">
+  <div class="container">
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="num" data-count="1200">1,200+</div>
+        <div class="lbl" data-i18n="home.stat_happy">Khách hài lòng</div>
+      </div>
+      <div class="stat-box">
+        <div class="num" data-count="50">50+</div>
+        <div class="lbl" data-i18n="home.stat_guides">HDV được xác minh</div>
+      </div>
+      <div class="stat-box">
+        <div class="num" data-count="30">30+</div>
+        <div class="lbl" data-i18n="home.stat_dest">Điểm đến</div>
+      </div>
+      <div class="stat-box">
+        <div class="num" data-count="98">98%</div>
+        <div class="lbl" data-i18n="home.stat_rate">Hài lòng</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY US -->
+<section class="section bg-light">
+  <div class="container">
+    <div class="sec-header center">
+      <span class="tag tag-orange" data-i18n="home.why_tag">Tại sao chọn chúng tôi</span>
+      <h2 style="margin-top:8px" data-i18n="home.why_title">Trải Nghiệm Khác Biệt</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:24px">
+      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;text-align:center">
+        <div style="font-size:2rem;margin-bottom:14px">🎯</div>
+        <h3 style="color:var(--dark);margin-bottom:8px" data-i18n="home.w1_t">100% cá nhân hóa</h3>
+        <p style="font-size:.88rem" data-i18n="home.w1_d">Lịch trình thiết kế riêng theo sở thích, ngân sách và thời gian của bạn.</p>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;text-align:center">
+        <div style="font-size:2rem;margin-bottom:14px">🏡</div>
+        <h3 style="color:var(--dark);margin-bottom:8px" data-i18n="home.w2_t">HDV địa phương thật</h3>
+        <p style="font-size:.88rem" data-i18n="home.w2_d">Người dân địa phương, biết những điểm ăn ngon, góc đẹp mà tour thường không đến.</p>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;text-align:center">
+        <div style="font-size:2rem;margin-bottom:14px">🔒</div>
+        <h3 style="color:var(--dark);margin-bottom:8px" data-i18n="home.w3_t">Thanh toán an toàn</h3>
+        <p style="font-size:.88rem" data-i18n="home.w3_d">Tiền được giữ bởi nền tảng, chỉ chuyển cho HDV sau khi bạn hoàn thành chuyến đi.</p>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;text-align:center">
+        <div style="font-size:2rem;margin-bottom:14px">⭐</div>
+        <h3 style="color:var(--dark);margin-bottom:8px" data-i18n="home.w4_t">HDV đã xác minh</h3>
+        <p style="font-size:.88rem" data-i18n="home.w4_d">Tất cả HDV được kiểm tra chứng chỉ, đánh giá thật từ khách đã đi.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section style="background:linear-gradient(135deg,rgba(12,35,64,.9),rgba(3,105,161,.85)),url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=80') center/cover;padding:72px 0;text-align:center">
+  <div class="container">
+    <h2 style="color:white;margin-bottom:12px" data-i18n="home.cta_title">Chuyến đi trong mơ bắt đầu từ đây</h2>
+    <p style="color:rgba(255,255,255,.7);max-width:420px;margin:0 auto 32px;font-size:1.05rem" data-i18n="home.cta_sub">Gửi yêu cầu miễn phí — HDV phản hồi trong 24 giờ</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+      <a href="request.html" class="btn btn-orange btn-lg">
+        <i class="fa-solid fa-paper-plane"></i> <span data-i18n="home.cta_btn">Gửi Yêu Cầu Miễn Phí</span>
+      </a>
+      <a href="guides.html" class="btn btn-lg" style="background:rgba(255,255,255,.1);color:white;border:1px solid rgba(255,255,255,.2)">
+        <i class="fa-solid fa-users"></i> <span data-i18n="home.cta_browse">Xem Tất Cả HDV</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo"><div class="logo-mark"><i class="fa-solid fa-compass"></i></div> Guide<em style="color:var(--blue)">Travel</em></a>
+        <p data-i18n="footer.brand_sub">Kết nối du khách với hướng dẫn viên địa phương để tạo ra những hành trình cá nhân hóa đáng nhớ.</p>
+        <div class="footer-social">
+          <a href="#" class="fsoc"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#" class="fsoc"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" class="fsoc"><i class="fa-brands fa-tiktok"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.explore">Khám Phá</h4>
+        <ul>
+          <li><a href="guides.html" data-i18n="footer.find_guides">Tìm HDV</a></li>
+          <li><a href="guides.html?region=nha-trang">HDV Nha Trang</a></li>
+          <li><a href="guides.html?region=hoi-an">HDV Hội An</a></li>
+          <li><a href="guides.html?region=sapa">HDV Sapa</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.services">Dịch Vụ</h4>
+        <ul>
+          <li><a href="request.html" data-i18n="footer.post_request">Đăng yêu cầu tour</a></li>
+          <li><a href="guides.html" data-i18n="footer.all_dest">Tất cả điểm đến</a></li>
+          <li><a href="hdv-register.html" data-i18n="footer.become_guide">Đăng ký làm HDV</a></li>
+          <li><a href="chinh-sach.html" data-i18n="footer.refund">Chính sách hoàn tiền</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.contact">Liên Hệ</h4>
+        <div class="footer-contact">
+          <div class="fc-item"><i class="fa-solid fa-phone"></i><span>1900 123 456</span></div>
+          <div class="fc-item"><i class="fa-solid fa-envelope"></i><span>hello@guidetravel.vn</span></div>
+          <div class="fc-item"><i class="fa-brands fa-facebook-messenger"></i><span>m.me/GuideTravel</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p data-i18n="footer.copyright">© 2024 GuideTravel. Bảo lưu mọi quyền.</p>
+      <p data-i18n="footer.brand_tagline">Nền tảng kết nối du lịch cá nhân hóa</p>
+    </div>
+  </div>
+</footer>
+
+<script src="lang.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

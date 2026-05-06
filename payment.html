@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment - GuideTravel</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .pay-wrap { display:grid; grid-template-columns:1fr 380px; gap:28px; padding:36px 0 60px; }
+    @media(max-width:900px){ .pay-wrap { grid-template-columns:1fr; } }
+    .pay-card { background:white; border:1px solid var(--border); border-radius:var(--radius-lg); padding:28px; margin-bottom:20px; }
+    .pay-card h3 { font-size:1rem; font-weight:700; color:var(--dark); margin-bottom:20px; display:flex; align-items:center; gap:8px; }
+    .method-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    @media(max-width:500px){ .method-grid { grid-template-columns:1fr; } }
+    .method-opt { border:2px solid var(--border); border-radius:var(--radius); padding:14px; cursor:pointer; display:flex; align-items:center; gap:12px; transition:.2s; }
+    .method-opt:hover { border-color:var(--blue-light); }
+    .method-opt.sel { border-color:var(--blue); background:#EFF6FF; }
+    .method-icon { width:40px; height:40px; border-radius:8px; object-fit:contain; background:#F8FAFC; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
+    .method-name { font-weight:600; font-size:.88rem; color:var(--dark); }
+    .method-fee { font-size:.74rem; color:var(--gray-2); }
+    .method-tabs { display:flex; border-bottom:2px solid var(--border); margin-bottom:20px; }
+    .method-tab { padding:10px 20px; font-size:.85rem; font-weight:600; cursor:pointer; color:var(--gray-2); border-bottom:3px solid transparent; margin-bottom:-2px; transition:.2s; }
+    .method-tab.active { color:var(--blue); border-bottom-color:var(--blue); }
+    .order-guide { display:flex; align-items:center; gap:14px; padding-bottom:18px; border-bottom:1px solid var(--border); margin-bottom:18px; }
+    .order-guide img { width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid var(--border); }
+    .order-guide-name { font-weight:700; font-size:.95rem; color:var(--dark); }
+    .order-guide-loc { font-size:.8rem; color:var(--gray-2); }
+    .order-row { display:flex; justify-content:space-between; font-size:.87rem; padding:7px 0; color:var(--gray); }
+    .order-row strong { color:var(--dark); }
+    .order-total { display:flex; justify-content:space-between; font-size:1rem; font-weight:800; color:var(--dark); padding:14px 0 0; border-top:2px solid var(--border); margin-top:8px; }
+    .order-total span { color:var(--blue); }
+    .trust-row { display:flex; align-items:flex-start; gap:10px; font-size:.82rem; color:var(--gray); margin-bottom:10px; }
+    .trust-row i { color:#16A34A; margin-top:2px; flex-shrink:0; }
+    .step-indicator { display:flex; align-items:center; gap:0; margin-bottom:32px; }
+    .step-dot { width:32px; height:32px; border-radius:50%; border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:.78rem; font-weight:700; color:var(--gray-2); background:white; flex-shrink:0; }
+    .step-dot.done { background:var(--blue); border-color:var(--blue); color:white; }
+    .step-dot.active { border-color:var(--blue); color:var(--blue); }
+    .step-line { flex:1; height:2px; background:var(--border); }
+    .step-line.done { background:var(--blue); }
+    .step-label { font-size:.72rem; color:var(--gray-2); text-align:center; margin-top:4px; }
+    .pay-success { text-align:center; padding:60px 20px; }
+    .pay-success .check-circle { width:80px; height:80px; border-radius:50%; background:#F0FDF4; border:3px solid #BBF7D0; display:flex; align-items:center; justify-content:center; font-size:2rem; color:#16A34A; margin:0 auto 20px; }
+    .pay-success h2 { font-size:1.4rem; font-weight:800; color:var(--dark); margin-bottom:8px; }
+    .pay-success p { color:var(--gray); max-width:360px; margin:0 auto 24px; }
+    .order-code { background:#F0F9FF; border:1px solid #BAE6FD; border-radius:var(--radius); padding:12px 20px; display:inline-block; font-family:monospace; font-size:1.1rem; font-weight:700; color:var(--blue); margin-bottom:24px; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-mark"><i class="fa-solid fa-compass"></i></div>
+        Guide<em>Travel</em>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" data-i18n="nav.home">Trang chủ</a>
+        <a href="guides.html" data-i18n="nav.find_guide">Tìm HDV</a>
+        <a href="blog.html" data-i18n="nav.blog">Blog</a>
+        <a href="request.html" data-i18n="nav.post_request">Đăng yêu cầu</a>
+      </div>
+      <div class="nav-right"></div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+
+<div class="page-hd" style="padding:24px 0">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="index.html" data-i18n="nav.home">Trang chủ</a><span>/</span>
+      <a href="guides.html" data-i18n="nav.find_guide">HDV</a><span>/</span>
+      <span style="color:white" data-i18n="pay.step3">Thanh toán</span>
+    </div>
+    <h1 style="margin-top:10px" data-i18n="pay.page_title">Xác nhận & Thanh toán</h1>
+  </div>
+</div>
+
+<div class="container">
+  <!-- Step indicator -->
+  <div style="max-width:480px;margin:28px auto 0">
+    <div class="step-indicator">
+      <div>
+        <div class="step-dot done"><i class="fa-solid fa-check" style="font-size:.7rem"></i></div>
+        <div class="step-label" data-i18n="pay.step1">Chọn HDV</div>
+      </div>
+      <div class="step-line done"></div>
+      <div>
+        <div class="step-dot done"><i class="fa-solid fa-check" style="font-size:.7rem"></i></div>
+        <div class="step-label" data-i18n="pay.step2">Điền thông tin</div>
+      </div>
+      <div class="step-line done"></div>
+      <div>
+        <div class="step-dot active">3</div>
+        <div class="step-label" data-i18n="pay.step3">Thanh toán</div>
+      </div>
+      <div class="step-line"></div>
+      <div>
+        <div class="step-dot">4</div>
+        <div class="step-label" data-i18n="pay.step4">Xác nhận</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment content -->
+  <div class="pay-wrap" id="pay-content">
+
+    <!-- LEFT: payment form -->
+    <div>
+      <!-- Contact info -->
+      <div class="pay-card">
+        <h3><i class="fa-solid fa-user" style="color:var(--blue)"></i> <span data-i18n="pay.contact">Thông tin liên hệ</span></h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div class="fg">
+            <label><span data-i18n="pay.name">Họ và tên</span> *</label>
+            <input type="text" id="p-name" data-i18n="login.name_ph" data-i18n-attr="placeholder" placeholder="Nguyễn Văn A">
+          </div>
+          <div class="fg">
+            <label><span data-i18n="pay.phone">Số điện thoại</span> *</label>
+            <input type="tel" id="p-phone" data-i18n="login.phone_ph" data-i18n-attr="placeholder" placeholder="0912 345 678">
+          </div>
+          <div class="fg" style="grid-column:1/-1">
+            <label><span data-i18n="pay.email">Email</span> *</label>
+            <input type="email" id="p-email" placeholder="email@example.com">
+          </div>
+          <div class="fg" style="grid-column:1/-1">
+            <label data-i18n="pay.notes">Ghi chú thêm</label>
+            <textarea id="p-notes" rows="2" data-i18n="pay.notes_ph" data-i18n-attr="placeholder" placeholder="Yêu cầu đặc biệt, sở thích..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment method -->
+      <div class="pay-card">
+        <h3><i class="fa-solid fa-credit-card" style="color:var(--blue)"></i> <span data-i18n="pay.method">Phương thức thanh toán</span></h3>
+        <div class="method-tabs">
+          <div class="method-tab active" id="tab-vn" onclick="switchPayTab('vn')" data-i18n="pay.domestic">🇻🇳 Trong nước</div>
+          <div class="method-tab" id="tab-intl" onclick="switchPayTab('intl')" data-i18n="pay.intl">🌍 Quốc tế</div>
+        </div>
+
+        <!-- Vietnam methods -->
+        <div id="methods-vn" class="method-grid">
+          <div class="method-opt sel" onclick="selectMethod(this,'vnpay')">
+            <div class="method-icon">💳</div>
+            <div><div class="method-name">VNPay</div><div class="method-fee">0%</div></div>
+          </div>
+          <div class="method-opt" onclick="selectMethod(this,'momo')">
+            <div class="method-icon" style="background:#FFE4F5">🟣</div>
+            <div><div class="method-name">MoMo</div><div class="method-fee">0%</div></div>
+          </div>
+          <div class="method-opt" onclick="selectMethod(this,'zalopay')">
+            <div class="method-icon" style="background:#E0F2FE">🔵</div>
+            <div><div class="method-name">ZaloPay</div><div class="method-fee">0%</div></div>
+          </div>
+          <div class="method-opt" onclick="selectMethod(this,'bank')">
+            <div class="method-icon">🏦</div>
+            <div><div class="method-name" data-i18n="pay.bank_transfer">Chuyển khoản</div><div class="method-fee">0%</div></div>
+          </div>
+        </div>
+
+        <!-- International methods -->
+        <div id="methods-intl" class="method-grid" style="display:none">
+          <div class="method-opt" onclick="selectMethod(this,'stripe')">
+            <div class="method-icon">💳</div>
+            <div><div class="method-name">Visa / Mastercard</div><div class="method-fee">2.9% + 30¢</div></div>
+          </div>
+          <div class="method-opt" onclick="selectMethod(this,'paypal')">
+            <div class="method-icon" style="background:#EFF6FF">🅿️</div>
+            <div><div class="method-name">PayPal</div><div class="method-fee">3.49%</div></div>
+          </div>
+          <div class="method-opt" onclick="selectMethod(this,'wise')">
+            <div class="method-icon" style="background:#ECFDF5">💚</div>
+            <div><div class="method-name">Wise</div><div class="method-fee" data-i18n="pay.wise_fee">Phí thấp nhất</div></div>
+          </div>
+          <div class="method-opt" onclick="selectMethod(this,'crypto')">
+            <div class="method-icon">₿</div>
+            <div><div class="method-name">Crypto</div><div class="method-fee">USDT / BTC</div></div>
+          </div>
+        </div>
+
+        <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:var(--radius);padding:12px 14px;margin-top:16px;font-size:.82rem;color:#92400E" data-i18n="pay.escrow">
+          <i class="fa-solid fa-shield-halved" style="margin-right:6px"></i>
+          <strong>Thanh toán ký quỹ an toàn:</strong> Tiền của bạn được giữ bởi GuideTravel và chỉ chuyển cho HDV sau khi tour hoàn thành.
+        </div>
+      </div>
+
+      <button class="btn btn-orange btn-block btn-lg" onclick="doPayment()" data-i18n="pay.confirm_btn">
+        <i class="fa-solid fa-lock"></i> Xác nhận & Thanh toán an toàn
+      </button>
+      <p style="text-align:center;font-size:.78rem;color:var(--gray-2);margin-top:10px" data-i18n="pay.ssl_note">
+        <i class="fa-solid fa-shield-halved"></i> Thanh toán được mã hóa SSL. Bạn có thể hủy miễn phí trước 7 ngày.
+      </p>
+    </div>
+
+    <!-- RIGHT: order summary -->
+    <div>
+      <div class="pay-card" style="position:sticky;top:84px">
+        <h3><i class="fa-solid fa-receipt" style="color:var(--blue)"></i> <span data-i18n="pay.summary">Tóm tắt đặt tour</span></h3>
+        <div class="order-guide">
+          <img id="ord-avatar" src="" alt="">
+          <div>
+            <div class="order-guide-name" id="ord-name">—</div>
+            <div class="order-guide-loc" id="ord-loc">—</div>
+            <div style="margin-top:4px"><span class="tag tag-green" style="font-size:.72rem"><i class="fa-solid fa-circle-check"></i> <span data-i18n="card.verified">Đã xác minh</span></span></div>
+          </div>
+        </div>
+        <div class="order-row"><span data-i18n="pay.start_date">Ngày bắt đầu</span><strong id="ord-date">—</strong></div>
+        <div class="order-row"><span data-i18n="pay.days">Số ngày</span><strong id="ord-days">—</strong></div>
+        <div class="order-row"><span data-i18n="pay.people">Số người</span><strong id="ord-people">—</strong></div>
+        <div class="order-row"><span data-i18n="pay.unit_price">Đơn giá</span><strong id="ord-price">—</strong></div>
+        <div class="order-row"><span data-i18n="pay.service_fee">Phí dịch vụ</span><strong style="color:#16A34A" data-i18n="pay.free">Miễn phí</strong></div>
+        <div class="order-total"><span data-i18n="pay.total">Tổng cộng</span><span id="ord-total">—</span></div>
+
+        <div style="margin-top:20px">
+          <div class="trust-row"><i class="fa-solid fa-circle-check"></i><span data-i18n="pay.trust1">Hoàn tiền 100% nếu hủy trước 7 ngày</span></div>
+          <div class="trust-row"><i class="fa-solid fa-circle-check"></i><span data-i18n="pay.trust2">HDV xác nhận trong 24h</span></div>
+          <div class="trust-row"><i class="fa-solid fa-circle-check"></i><span data-i18n="pay.trust3">Thanh toán được bảo vệ</span></div>
+          <div class="trust-row"><i class="fa-solid fa-circle-check"></i><span data-i18n="pay.trust4">Hỗ trợ 24/7 trong suốt chuyến đi</span></div>
+        </div>
+
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);text-align:center">
+          <a href="chinh-sach.html" style="font-size:.8rem;color:var(--blue)"><i class="fa-solid fa-file-contract"></i> <span data-i18n="pay.view_policy">Xem chính sách hoàn tiền</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS STATE -->
+  <div id="pay-success" style="display:none">
+    <div class="pay-card pay-success">
+      <div class="check-circle"><i class="fa-solid fa-check"></i></div>
+      <h2 data-i18n="pay.success_title">Đặt tour thành công!</h2>
+      <p data-i18n="pay.success_sub">Yêu cầu của bạn đã được gửi đến HDV. Họ sẽ liên hệ lại trong vòng 24 giờ để xác nhận lịch trình.</p>
+      <div class="order-code" id="success-code">GT00000000</div>
+      <p style="font-size:.82rem;color:var(--gray-2);margin-bottom:20px" data-i18n="pay.save_code">Lưu mã này để theo dõi yêu cầu của bạn</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a href="index.html" class="btn btn-outline">
+          <i class="fa-solid fa-house"></i> <span data-i18n="pay.back_home">Về trang chủ</span>
+        </a>
+        <a href="guides.html" class="btn btn-orange">
+          <i class="fa-solid fa-users"></i> <span data-i18n="pay.find_more">Tìm HDV khác</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo"><div class="logo-mark"><i class="fa-solid fa-compass"></i></div> Guide<em style="color:var(--blue)">Travel</em></a>
+        <p data-i18n="footer.brand_sub">Kết nối du khách với hướng dẫn viên địa phương.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.explore">Khám Phá</h4>
+        <ul>
+          <li><a href="guides.html" data-i18n="footer.find_guides">Tìm HDV</a></li>
+          <li><a href="request.html" data-i18n="footer.post_request">Đăng yêu cầu</a></li>
+          <li><a href="chinh-sach.html" data-i18n="footer.refund">Chính sách hoàn tiền</a></li>
+        </ul>
+      </div>
+      <div class="footer-col"></div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.contact">Liên Hệ</h4>
+        <div class="footer-contact">
+          <div class="fc-item"><i class="fa-solid fa-phone"></i><span>1900 123 456</span></div>
+          <div class="fc-item"><i class="fa-solid fa-envelope"></i><span>hello@guidetravel.vn</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom"><p data-i18n="footer.copyright">© 2024 GuideTravel. Bảo lưu mọi quyền.</p></div>
+  </div>
+</footer>
+
+<script src="lang.js"></script>
+<script src="app.js"></script>
+<script>
+let selectedMethod = 'vnpay';
+let orderData = {};
+
+function switchPayTab(tab) {
+  document.getElementById('methods-vn').style.display = tab === 'vn' ? 'grid' : 'none';
+  document.getElementById('methods-intl').style.display = tab === 'intl' ? 'grid' : 'none';
+  document.getElementById('tab-vn').classList.toggle('active', tab === 'vn');
+  document.getElementById('tab-intl').classList.toggle('active', tab === 'intl');
+  document.querySelectorAll('.method-opt').forEach(o => o.classList.remove('sel'));
+  selectedMethod = tab === 'vn' ? 'vnpay' : 'stripe';
+}
+
+function selectMethod(el, method) {
+  document.querySelectorAll('.method-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedMethod = method;
+}
+
+function doPayment() {
+  const name = document.getElementById('p-name').value.trim();
+  const phone = document.getElementById('p-phone').value.trim();
+  const email = document.getElementById('p-email').value.trim();
+  if (!name || !phone || !email) { toast('Vui lòng điền đầy đủ thông tin liên hệ!', 'err'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast('Email không hợp lệ!', 'err'); return; }
+
+  const req = {
+    id: 'GT' + Date.now().toString().slice(-8),
+    guideId: orderData.guideId,
+    guideName: orderData.guideName,
+    name, phone, email,
+    destination: orderData.destination || '',
+    date: orderData.date,
+    days: orderData.days,
+    people: orderData.people,
+    notes: document.getElementById('p-notes').value,
+    payMethod: selectedMethod,
+    totalAmount: orderData.total,
+    status: 'pending',
+    createdAt: new Date().toISOString()
+  };
+  const reqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
+  reqs.unshift(req);
+  localStorage.setItem('gt_requests', JSON.stringify(reqs));
+
+  document.getElementById('pay-content').style.display = 'none';
+  document.getElementById('pay-success').style.display = 'block';
+  document.getElementById('success-code').textContent = req.id;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function initPayment() {
+  const params = new URLSearchParams(location.search);
+  const guideId = parseInt(params.get('guideId'));
+  const guide = GUIDES.find(g => g.id === guideId);
+
+  if (!guide) { location.href = 'guides.html'; return; }
+
+  const date = params.get('date') || '—';
+  const days = parseInt(params.get('days') || 1);
+  const people = parseInt(params.get('people') || 1);
+  const total = guide.pricePerDay * days;
+
+  orderData = { guideId: guide.id, guideName: guide.name, destination: guide.location, date, days, people, total };
+
+  document.getElementById('ord-avatar').src = guide.avatar;
+  document.getElementById('ord-name').textContent = guide.name;
+  document.getElementById('ord-loc').textContent = guide.location;
+  document.getElementById('ord-date').textContent = date;
+  document.getElementById('ord-days').textContent = days;
+  document.getElementById('ord-people').textContent = people;
+  document.getElementById('ord-price').textContent = fmtPrice(guide.pricePerDay);
+  document.getElementById('ord-total').textContent = fmtPrice(total);
+
+  const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
+  if (session) {
+    document.getElementById('p-name').value = session.name || '';
+    document.getElementById('p-email').value = session.email || '';
+    document.getElementById('p-phone').value = session.phone || '';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', initPayment);
+window.addEventListener('langchange', initPayment);
+</script>
+</body>
+</html>

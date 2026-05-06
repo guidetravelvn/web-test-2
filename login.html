@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - GuideTravel</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .auth-wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#F0F9FF 0%,#EFF6FF 100%); padding:80px 16px 40px; }
+    .auth-box { background:white; border-radius:var(--radius-lg); box-shadow:0 8px 40px rgba(15,23,42,.1); width:100%; max-width:460px; overflow:hidden; }
+    .auth-head { background:linear-gradient(135deg,#0F172A,#1E3A5F); padding:32px; text-align:center; }
+    .auth-head .logo { color:white; font-size:1.4rem; font-weight:700; }
+    .auth-head .logo em { color:var(--blue); }
+    .auth-head p { color:rgba(255,255,255,.65); font-size:.88rem; margin-top:6px; }
+    .auth-tabs { display:flex; border-bottom:2px solid var(--border); }
+    .auth-tab { flex:1; padding:14px; text-align:center; font-weight:600; font-size:.9rem; cursor:pointer; color:var(--gray-2); border-bottom:3px solid transparent; margin-bottom:-2px; transition:.2s; }
+    .auth-tab.active { color:var(--blue); border-bottom-color:var(--blue); }
+    .auth-body { padding:28px; }
+    .user-type-row { display:flex; gap:10px; margin-bottom:20px; }
+    .type-btn { flex:1; border:2px solid var(--border); border-radius:var(--radius); padding:12px 8px; text-align:center; cursor:pointer; transition:.2s; }
+    .type-btn i { display:block; font-size:1.3rem; margin-bottom:6px; color:var(--gray-2); }
+    .type-btn span { font-size:.82rem; font-weight:600; color:var(--gray); }
+    .type-btn.sel { border-color:var(--blue); background:#EFF6FF; }
+    .type-btn.sel i, .type-btn.sel span { color:var(--blue); }
+    .auth-divider { text-align:center; position:relative; margin:18px 0; color:var(--gray-2); font-size:.82rem; }
+    .auth-divider::before { content:''; position:absolute; left:0; top:50%; width:42%; height:1px; background:var(--border); }
+    .auth-divider::after { content:''; position:absolute; right:0; top:50%; width:42%; height:1px; background:var(--border); }
+    .auth-footer { text-align:center; font-size:.85rem; color:var(--gray); margin-top:16px; }
+    .auth-footer a { color:var(--blue); font-weight:600; }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-mark"><i class="fa-solid fa-compass"></i></div>
+        Guide<em>Travel</em>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" data-i18n="nav.home">Trang chủ</a>
+        <a href="guides.html" data-i18n="nav.find_guide">Tìm HDV</a>
+        <a href="blog.html" data-i18n="nav.blog">Blog</a>
+        <a href="request.html" data-i18n="nav.post_request">Đăng yêu cầu</a>
+      </div>
+      <div class="nav-right"></div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+
+<div class="auth-wrap">
+  <div class="auth-box">
+    <div class="auth-head">
+      <div class="logo"><i class="fa-solid fa-compass"></i> Guide<em>Travel</em></div>
+      <p data-i18n="login.platform_sub">Nền tảng kết nối du khách & hướng dẫn viên</p>
+    </div>
+
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tab-login" onclick="switchTab('login')" data-i18n="login.tab_login">Đăng nhập</div>
+      <div class="auth-tab" id="tab-register" onclick="switchTab('register')" data-i18n="login.tab_register">Đăng ký</div>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div class="auth-body" id="form-login">
+      <div class="user-type-row">
+        <div class="type-btn sel" id="lt-tourist" onclick="setLoginType('tourist')">
+          <i class="fa-solid fa-user"></i>
+          <span data-i18n="login.tourist">Du khách</span>
+        </div>
+        <div class="type-btn" id="lt-guide" onclick="setLoginType('guide')">
+          <i class="fa-solid fa-id-card"></i>
+          <span data-i18n="login.guide">Hướng dẫn viên</span>
+        </div>
+      </div>
+      <div class="fg">
+        <label data-i18n="req.email">Email</label>
+        <input type="email" id="l-email" data-i18n="login.email_ph" data-i18n-attr="placeholder" placeholder="email@example.com">
+      </div>
+      <div class="fg">
+        <label data-i18n="login.pass_lbl">Mật khẩu</label>
+        <input type="password" id="l-pass" data-i18n="login.pass_ph" data-i18n-attr="placeholder" placeholder="••••••••">
+      </div>
+      <button class="btn btn-orange btn-block btn-lg" style="margin-top:8px" onclick="doLogin()" data-i18n="login.login_btn">
+        <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập
+      </button>
+      <div class="auth-footer">
+        <span data-i18n="login.no_account">Chưa có tài khoản?</span>
+        <a onclick="switchTab('register')" style="cursor:pointer" data-i18n="login.register_now">Đăng ký ngay</a>
+      </div>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div class="auth-body" id="form-register" style="display:none">
+      <div class="user-type-row">
+        <div class="type-btn sel" id="rt-tourist" onclick="setRegType('tourist')">
+          <i class="fa-solid fa-user"></i>
+          <span data-i18n="login.tourist">Du khách</span>
+        </div>
+        <div class="type-btn" id="rt-guide" onclick="setRegType('guide')">
+          <i class="fa-solid fa-id-card"></i>
+          <span data-i18n="login.guide">Hướng dẫn viên</span>
+        </div>
+      </div>
+      <div class="fg">
+        <label data-i18n="login.name_lbl">Họ và tên</label>
+        <input type="text" id="r-name" data-i18n="login.name_ph" data-i18n-attr="placeholder" placeholder="Nguyễn Văn A">
+      </div>
+      <div class="fg">
+        <label data-i18n="req.email">Email</label>
+        <input type="email" id="r-email" placeholder="email@example.com">
+      </div>
+      <div class="fg">
+        <label data-i18n="login.pass_lbl">Mật khẩu</label>
+        <input type="password" id="r-pass" data-i18n="login.pass_ph2" data-i18n-attr="placeholder" placeholder="Tối thiểu 6 ký tự">
+      </div>
+      <div class="fg" id="r-phone-wrap">
+        <label data-i18n="login.phone_lbl">Số điện thoại</label>
+        <input type="tel" id="r-phone" data-i18n="login.phone_ph" data-i18n-attr="placeholder" placeholder="0912 345 678">
+      </div>
+      <button class="btn btn-orange btn-block btn-lg" style="margin-top:8px" onclick="doRegister()" data-i18n="login.create_btn">
+        <i class="fa-solid fa-user-plus"></i> Tạo tài khoản
+      </button>
+      <div class="auth-footer">
+        <span data-i18n="login.have_account">Đã có tài khoản?</span>
+        <a onclick="switchTab('login')" style="cursor:pointer" data-i18n="login.login_link">Đăng nhập</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="lang.js"></script>
+<script src="app.js"></script>
+<script>
+let loginType = 'tourist';
+let regType = 'tourist';
+
+function switchTab(tab) {
+  document.getElementById('form-login').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+}
+
+function setLoginType(t) {
+  loginType = t;
+  document.getElementById('lt-tourist').classList.toggle('sel', t === 'tourist');
+  document.getElementById('lt-guide').classList.toggle('sel', t === 'guide');
+}
+
+function setRegType(t) {
+  regType = t;
+  document.getElementById('rt-tourist').classList.toggle('sel', t === 'tourist');
+  document.getElementById('rt-guide').classList.toggle('sel', t === 'guide');
+}
+
+function doLogin() {
+  const email = document.getElementById('l-email').value.trim();
+  const pass = document.getElementById('l-pass').value;
+  if (!email || !pass) { toast('Vui lòng nhập đầy đủ thông tin!', 'err'); return; }
+  const users = JSON.parse(localStorage.getItem('gt_users') || '[]');
+  const user = users.find(u => u.email === email && u.pass === pass && u.type === loginType);
+  if (!user) { toast('Email hoặc mật khẩu không đúng!', 'err'); return; }
+  localStorage.setItem('gt_session', JSON.stringify(user));
+  toast('Đăng nhập thành công!', 'ok');
+  const rd = new URLSearchParams(location.search).get('redirect');
+  setTimeout(() => { location.href = rd || (loginType === 'guide' ? 'hdv-dashboard.html' : 'index.html'); }, 800);
+}
+
+function doRegister() {
+  const name = document.getElementById('r-name').value.trim();
+  const email = document.getElementById('r-email').value.trim();
+  const pass = document.getElementById('r-pass').value;
+  const phone = document.getElementById('r-phone').value.trim();
+  if (!name || !email || !pass) { toast('Vui lòng điền đầy đủ thông tin!', 'err'); return; }
+  if (pass.length < 6) { toast('Mật khẩu tối thiểu 6 ký tự!', 'err'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast('Email không hợp lệ!', 'err'); return; }
+  const users = JSON.parse(localStorage.getItem('gt_users') || '[]');
+  if (users.find(u => u.email === email)) { toast('Email đã được sử dụng!', 'err'); return; }
+  const user = { id: 'U' + Date.now(), type: regType, name, email, pass, phone, createdAt: new Date().toISOString() };
+  users.push(user);
+  localStorage.setItem('gt_users', JSON.stringify(users));
+  localStorage.setItem('gt_session', JSON.stringify(user));
+  toast('Đăng ký thành công!', 'ok');
+  setTimeout(() => {
+    location.href = regType === 'guide' ? 'hdv-register.html' : 'index.html';
+  }, 800);
+}
+
+// Auto-switch tab from URL
+const urlTab = new URLSearchParams(location.search).get('tab');
+if (urlTab) switchTab(urlTab);
+</script>
+</body>
+</html>

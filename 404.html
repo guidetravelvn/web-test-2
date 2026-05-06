@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 - Trang không tìm thấy | GuideTravel</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .err-wrap {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 100px 20px 60px;
+      background: radial-gradient(ellipse at 60% 30%, #EFF6FF 0%, #F8FAFC 60%);
+    }
+    .err-box { text-align: center; max-width: 560px; }
+    .err-number {
+      font-size: clamp(6rem, 20vw, 10rem);
+      font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--blue) 0%, #7C3AED 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+      letter-spacing: -.04em;
+    }
+    .err-compass {
+      font-size: 3.5rem;
+      margin-bottom: 20px;
+      display: block;
+      animation: spin 8s linear infinite;
+    }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .err-title { font-size: 1.6rem; font-weight: 800; color: var(--dark); margin-bottom: 12px; }
+    .err-sub { color: var(--gray); max-width: 380px; margin: 0 auto 36px; font-size: 1rem; line-height: 1.7; }
+    .err-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 48px; }
+    .quick-links { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .quick-link {
+      display: flex; align-items: center; gap: 8px;
+      background: white; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 10px 16px; font-size: .85rem; font-weight: 600; color: var(--gray);
+      transition: var(--t);
+    }
+    .quick-link:hover { border-color: var(--blue); color: var(--blue); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+    .quick-link i { color: var(--blue); }
+    .search-wrap { max-width: 380px; margin: 0 auto 36px; }
+    .search-wrap form { display: flex; gap: 0; border: 2px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; transition: var(--t); }
+    .search-wrap form:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(14,165,233,.1); }
+    .search-wrap input { flex: 1; border: none; padding: 12px 16px; font-size: .9rem; outline: none; background: white; }
+    .search-wrap button { background: var(--blue); color: white; border: none; padding: 12px 18px; cursor: pointer; transition: var(--t); }
+    .search-wrap button:hover { background: var(--blue-dark); }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-mark"><i class="fa-solid fa-compass"></i></div>
+        Guide<em>Travel</em>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" data-i18n="nav.home">Trang chủ</a>
+        <a href="guides.html" data-i18n="nav.find_guide">Tìm HDV</a>
+        <a href="blog.html" data-i18n="nav.blog">Blog</a>
+        <a href="request.html" data-i18n="nav.post_request">Đăng yêu cầu</a>
+      </div>
+      <div class="nav-right"></div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+
+<div class="mob-menu">
+  <div class="mob-panel">
+    <button class="mob-close"><i class="fa-solid fa-xmark"></i></button>
+    <a href="index.html"><i class="fa-solid fa-house"></i> <span data-i18n="nav.home">Trang chủ</span></a>
+    <a href="guides.html"><i class="fa-solid fa-users"></i> <span data-i18n="nav.find_guide">Tìm HDV</span></a>
+    <a href="blog.html"><i class="fa-solid fa-newspaper"></i> <span data-i18n="nav.blog">Blog</span></a>
+    <a href="request.html"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="nav.post_request">Đăng yêu cầu</span></a>
+  </div>
+</div>
+
+<div class="err-wrap">
+  <div class="err-box">
+    <i class="fa-solid fa-compass err-compass"></i>
+    <div class="err-number">404</div>
+    <h1 class="err-title" data-i18n="err.title">Trang này chưa được khám phá</h1>
+    <p class="err-sub" data-i18n="err.sub">Có vẻ như bạn đã đi lạc vào một điểm đến chưa có trên bản đồ. Để chúng tôi đưa bạn trở về đúng đường.</p>
+
+    <!-- Search -->
+    <div class="search-wrap">
+      <form onsubmit="doSearch(event)">
+        <input type="text" id="err-search" data-i18n="home.search_ph" data-i18n-attr="placeholder" placeholder="Tìm HDV theo điểm đến...">
+        <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+      </form>
+    </div>
+
+    <div class="err-actions">
+      <a href="index.html" class="btn btn-primary btn-lg">
+        <i class="fa-solid fa-house"></i> <span data-i18n="err.go_home">Về trang chủ</span>
+      </a>
+      <a href="guides.html" class="btn btn-outline btn-lg">
+        <i class="fa-solid fa-users"></i> <span data-i18n="err.browse_guides">Tìm HDV</span>
+      </a>
+    </div>
+
+    <!-- Quick links -->
+    <div style="font-size:.82rem;color:var(--gray-2);margin-bottom:14px" data-i18n="err.popular">Hoặc xem các trang phổ biến:</div>
+    <div class="quick-links">
+      <a href="guides.html?region=nha-trang" class="quick-link"><i class="fa-solid fa-umbrella-beach"></i> Nha Trang</a>
+      <a href="guides.html?region=hoi-an" class="quick-link"><i class="fa-solid fa-lantern"></i> Hội An</a>
+      <a href="guides.html?region=sapa" class="quick-link"><i class="fa-solid fa-mountain"></i> Sapa</a>
+      <a href="guides.html?region=da-lat" class="quick-link"><i class="fa-solid fa-leaf"></i> Đà Lạt</a>
+      <a href="faq.html" class="quick-link"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+      <a href="about.html" class="quick-link"><i class="fa-solid fa-circle-info"></i> <span data-i18n="nav.about">Giới thiệu</span></a>
+    </div>
+  </div>
+</div>
+
+<script src="lang.js"></script>
+<script src="app.js"></script>
+<script>
+function doSearch(e) {
+  e.preventDefault();
+  const q = document.getElementById('err-search').value.trim();
+  if (q) location.href = 'guides.html?q=' + encodeURIComponent(q);
+}
+</script>
+</body>
+</html>

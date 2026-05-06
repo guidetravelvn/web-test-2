@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find Tour Guides - GuideTravel</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-mark"><i class="fa-solid fa-compass"></i></div>
+        Guide<em>Travel</em>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" data-i18n="nav.home">Trang chủ</a>
+        <a href="guides.html" class="active" data-i18n="nav.find_guide">Tìm HDV</a>
+        <a href="blog.html" data-i18n="nav.blog">Blog</a>
+        <a href="request.html" data-i18n="nav.post_request">Đăng yêu cầu</a>
+      </div>
+      <div class="nav-right"></div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+
+<div class="mob-menu">
+  <div class="mob-panel">
+    <button class="mob-close"><i class="fa-solid fa-xmark"></i></button>
+    <a href="index.html"><i class="fa-solid fa-house"></i> <span data-i18n="nav.home">Trang chủ</span></a>
+    <a href="guides.html" class="active"><i class="fa-solid fa-users"></i> <span data-i18n="nav.find_guide">Tìm HDV</span></a>
+    <a href="request.html"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="nav.post_request">Đăng yêu cầu</span></a>
+  </div>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-hd">
+  <div class="container">
+    <div class="breadcrumb"><a href="index.html" data-i18n="nav.home">Trang chủ</a><span>/</span><span style="color:white" data-i18n="guides.breadcrumb">Tìm HDV</span></div>
+    <h1 data-i18n="guides.title">Tìm Hướng Dẫn Viên</h1>
+    <p data-i18n="guides.sub">Hơn 50 HDV địa phương được xác minh — tìm người phù hợp với chuyến đi của bạn</p>
+  </div>
+</div>
+
+<!-- MOBILE FILTER BAR -->
+<div style="background:white;border-bottom:1px solid var(--border);padding:12px 0;display:none" id="mobile-filter-bar">
+  <div class="container" style="display:flex;gap:10px;overflow-x:auto;scrollbar-width:none">
+    <select class="filter-select" id="filter-region" style="min-width:160px">
+      <option value="">📍 <span data-i18n="guides.dest_all">Tất cả điểm đến</span></option>
+      <option value="nha-trang">Nha Trang</option>
+      <option value="hoi-an">Hội An</option>
+      <option value="da-nang">Đà Nẵng</option>
+      <option value="sapa">Sapa</option>
+      <option value="ha-long">Hạ Long</option>
+      <option value="da-lat">Đà Lạt</option>
+      <option value="phu-quoc">Phú Quốc</option>
+      <option value="ha-giang">Hà Giang</option>
+    </select>
+    <select class="filter-select sort-sel" id="sort-guides" style="min-width:160px">
+      <option value="popular" data-i18n="guides.popular">Phổ biến nhất</option>
+      <option value="rating" data-i18n="guides.top_rated">Đánh giá cao nhất</option>
+      <option value="price-asc" data-i18n="guides.price_asc">Giá thấp nhất</option>
+      <option value="price-desc" data-i18n="guides.price_desc">Giá cao nhất</option>
+    </select>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="container">
+  <div class="guides-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="filter-panel">
+      <div class="filter-block">
+        <h4><i class="fa-solid fa-sliders" style="color:var(--blue)"></i> <span data-i18n="guides.filter_h">Bộ lọc</span></h4>
+
+        <div style="margin-bottom:18px">
+          <label style="font-size:.82rem;font-weight:600;color:var(--dark);display:block;margin-bottom:8px" data-i18n="guides.search_lbl">Tìm theo tên</label>
+          <input type="search" id="filter-search" class="filter-select" style="width:100%" data-i18n-attr="placeholder" data-i18n="guides.search_ph" placeholder="Tên hướng dẫn viên...">
+        </div>
+
+        <div style="margin-bottom:18px">
+          <label style="font-size:.82rem;font-weight:600;color:var(--dark);display:block;margin-bottom:8px" data-i18n="guides.lang_lbl">Ngôn ngữ HDV</label>
+          <select class="filter-select" id="filter-lang">
+            <option value="" data-i18n="guides.lang_all">Tất cả ngôn ngữ</option>
+            <option value="English">🇬🇧 English</option>
+            <option value="Français">🇫🇷 Français</option>
+            <option value="中文">🇨🇳 中文</option>
+            <option value="日本語">🇯🇵 日本語</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom:18px">
+          <label style="font-size:.82rem;font-weight:600;color:var(--dark);display:block;margin-bottom:8px" data-i18n="guides.dest_filter">Điểm đến</label>
+          <select class="filter-select" id="filter-region">
+            <option value="" data-i18n="guides.dest_all">Tất cả điểm đến</option>
+            <option value="nha-trang">🏖️ Nha Trang</option>
+            <option value="hoi-an">🏮 Hội An</option>
+            <option value="da-nang">🌉 Đà Nẵng</option>
+            <option value="sapa">🏔️ Sapa</option>
+            <option value="ha-long">⛵ Hạ Long</option>
+            <option value="da-lat">🌸 Đà Lạt</option>
+            <option value="phu-quoc">🌴 Phú Quốc</option>
+            <option value="ha-giang">🗻 Hà Giang</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom:18px">
+          <label style="font-size:.82rem;font-weight:600;color:var(--dark);display:block;margin-bottom:8px">
+            <span data-i18n="guides.price_max">Giá / ngày (tối đa)</span> — <strong id="price-disp" style="color:var(--blue)">2,000,000đ</strong>
+          </label>
+          <div class="price-slider">
+            <input type="range" id="filter-price" min="400000" max="2000000" step="100000" value="2000000">
+            <div style="display:flex;justify-content:space-between;font-size:.76rem;color:var(--gray-2)">
+              <span>400K</span><span>2M</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:18px">
+          <label style="font-size:.82rem;font-weight:600;color:var(--dark);display:block;margin-bottom:8px" data-i18n="guides.rating_min">Đánh giá tối thiểu</label>
+          <select class="filter-select" id="filter-rating">
+            <option value="" data-i18n="guides.all_ratings">Tất cả</option>
+            <option value="4.5">⭐ 4.5+</option>
+            <option value="4.7">⭐ 4.7+</option>
+            <option value="4.9">⭐ 4.9+</option>
+          </select>
+        </div>
+
+        <button id="btn-reset" class="btn btn-outline btn-sm btn-block">
+          <i class="fa-solid fa-rotate-left"></i> <span data-i18n="guides.reset">Xóa bộ lọc</span>
+        </button>
+      </div>
+
+      <!-- Tip box -->
+      <div class="filter-block" style="background:linear-gradient(135deg,#F0F9FF,#EFF6FF);border-color:var(--blue-light)">
+        <h4 style="color:var(--blue)" data-i18n="guides.tip_h">💡 Mẹo hay</h4>
+        <p style="font-size:.83rem;color:var(--gray);line-height:1.6" data-i18n="guides.tip_text">Chưa biết chọn HDV nào? Hãy <a href="request.html" style="color:var(--blue);font-weight:600">đăng yêu cầu</a> — chúng tôi sẽ ghép HDV phù hợp nhất cho bạn!</p>
+      </div>
+    </aside>
+
+    <!-- GUIDES LIST -->
+    <div class="guides-main">
+      <div class="guides-toolbar">
+        <div class="result-info" id="result-info"><strong>6</strong> <span data-i18n="guides.count_suffix">hướng dẫn viên</span></div>
+        <select class="sort-sel" id="sort-guides">
+          <option value="popular" data-i18n="guides.popular">Phổ biến nhất</option>
+          <option value="rating" data-i18n="guides.top_rated">Đánh giá cao nhất</option>
+          <option value="price-asc" data-i18n="guides.price_asc">Giá thấp nhất</option>
+          <option value="price-desc" data-i18n="guides.price_desc">Giá cao nhất</option>
+        </select>
+      </div>
+      <div id="guides-grid" class="guides-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo"><div class="logo-mark"><i class="fa-solid fa-compass"></i></div> Guide<em style="color:var(--blue)">Travel</em></a>
+        <p data-i18n="footer.brand_sub">Kết nối du khách với hướng dẫn viên địa phương.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="guides.dest_title">Điểm Đến</h4>
+        <ul>
+          <li><a href="guides.html?region=nha-trang">Nha Trang</a></li>
+          <li><a href="guides.html?region=hoi-an">Hội An</a></li>
+          <li><a href="guides.html?region=sapa">Sapa</a></li>
+          <li><a href="guides.html?region=da-lat">Đà Lạt</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.services">Dịch Vụ</h4>
+        <ul>
+          <li><a href="request.html" data-i18n="footer.post_request">Đăng yêu cầu</a></li>
+          <li><a href="guides.html" data-i18n="footer.find_guides">Tất cả HDV</a></li>
+          <li><a href="hdv-register.html" data-i18n="footer.become_guide">Đăng ký làm HDV</a></li>
+          <li><a href="chinh-sach.html" data-i18n="footer.refund">Chính sách hoàn tiền</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.contact">Liên Hệ</h4>
+        <div class="footer-contact">
+          <div class="fc-item"><i class="fa-solid fa-phone"></i><span>1900 123 456</span></div>
+          <div class="fc-item"><i class="fa-solid fa-envelope"></i><span>hello@guidetravel.vn</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p data-i18n="footer.copyright">© 2024 GuideTravel. Bảo lưu mọi quyền.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="lang.js"></script>
+<script src="app.js"></script>
+<style>
+@media (max-width:1024px) { #mobile-filter-bar { display:block !important; } }
+</style>
+</body>
+</html>

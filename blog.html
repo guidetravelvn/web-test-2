@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog Du Lịch Việt Nam — GuideTravel</title>
+  <meta name="description" content="Kinh nghiệm du lịch Việt Nam, mẹo trekking Sapa, khám phá Hội An, Nha Trang, Phú Quốc từ hướng dẫn viên địa phương.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .blog-hero { background: linear-gradient(135deg,#0F172A 0%,#1E3A5F 60%,#0EA5E9 100%); padding: 80px 0 60px; }
+    .blog-hero h1 { color: white; margin-bottom: 12px; }
+    .blog-hero p { color: rgba(255,255,255,.7); font-size: 1.05rem; max-width: 540px; }
+    .blog-search { margin-top: 28px; display: flex; gap: 10px; max-width: 480px; }
+    .blog-search input { flex: 1; padding: 12px 16px; border: none; border-radius: 12px; font-size: .9rem; outline: none; }
+    .blog-search button { padding: 12px 20px; background: var(--orange); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
+    .blog-layout { display: grid; grid-template-columns: 1fr 300px; gap: 32px; padding: 48px 0 80px; align-items: start; }
+    @media(max-width:960px){ .blog-layout { grid-template-columns: 1fr; } .blog-sidebar { display: none; } }
+    /* Category tabs */
+    .cat-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
+    .cat-tab { padding: 7px 16px; border-radius: 99px; font-size: .82rem; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); color: var(--gray); background: white; transition: .2s; }
+    .cat-tab:hover { border-color: var(--blue); color: var(--blue); }
+    .cat-tab.active { background: var(--blue); color: white; border-color: var(--blue); }
+    /* Blog grid */
+    .blog-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    @media(max-width:600px){ .blog-grid { grid-template-columns: 1fr; } }
+    .post-card { background: white; border-radius: var(--radius-lg); border: 1px solid var(--border); overflow: hidden; transition: var(--t); cursor: pointer; }
+    .post-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+    .post-card-img { height: 190px; overflow: hidden; position: relative; }
+    .post-card-img img { width: 100%; height: 100%; object-fit: cover; transition: .4s; }
+    .post-card:hover .post-card-img img { transform: scale(1.04); }
+    .post-cat-badge { position: absolute; top: 12px; left: 12px; background: var(--blue); color: white; font-size: .7rem; font-weight: 700; padding: 3px 10px; border-radius: 99px; }
+    .post-card-body { padding: 18px; }
+    .post-meta { display: flex; align-items: center; gap: 10px; font-size: .75rem; color: var(--gray-2); margin-bottom: 10px; }
+    .post-title { font-size: .95rem; font-weight: 700; color: var(--dark); line-height: 1.4; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .post-excerpt { font-size: .82rem; color: var(--gray); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 14px; }
+    .post-footer { display: flex; align-items: center; justify-content: space-between; }
+    .post-author { display: flex; align-items: center; gap: 7px; font-size: .78rem; font-weight: 600; color: var(--dark); }
+    .post-author img { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; }
+    .read-more { font-size: .78rem; font-weight: 600; color: var(--blue); display: flex; align-items: center; gap: 4px; }
+    /* Featured post */
+    .post-featured { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border); background: white; transition: var(--t); cursor: pointer; }
+    .post-featured:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+    @media(max-width:600px){ .post-featured { grid-template-columns: 1fr; } }
+    .post-featured .post-card-img { height: 260px; }
+    .post-featured .post-card-body { padding: 28px; display: flex; flex-direction: column; justify-content: center; }
+    .post-featured .post-title { font-size: 1.15rem; -webkit-line-clamp: 3; }
+    /* Sidebar */
+    .sidebar-block { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 20px; }
+    .sidebar-block h4 { font-size: .88rem; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 7px; }
+    .popular-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--bg); cursor: pointer; transition: .15s; }
+    .popular-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .popular-item:hover .pi-title { color: var(--blue); }
+    .popular-item img { width: 60px; height: 48px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+    .pi-title { font-size: .82rem; font-weight: 600; color: var(--dark); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .pi-date { font-size: .72rem; color: var(--gray-2); margin-top: 3px; }
+    .tag-cloud { display: flex; flex-wrap: wrap; gap: 7px; }
+    .tag-pill { padding: 5px 12px; border-radius: 99px; background: var(--bg); font-size: .76rem; font-weight: 600; color: var(--gray); cursor: pointer; border: 1px solid var(--border); transition: .15s; }
+    .tag-pill:hover { background: var(--blue-light); color: var(--blue); border-color: var(--blue-light); }
+    .no-results { text-align: center; padding: 60px 0; grid-column: 1 / -1; }
+    .no-results i { font-size: 2.5rem; color: var(--border); display: block; margin-bottom: 14px; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="index.html" class="logo"><div class="logo-mark"><i class="fa-solid fa-compass"></i></div>Guide<em>Travel</em></a>
+      <div class="nav-links">
+        <a href="index.html" data-i18n="nav.home">Trang chủ</a>
+        <a href="guides.html" data-i18n="nav.find_guide">Tìm HDV</a>
+        <a href="blog.html" class="active" data-i18n="nav.blog">Blog</a>
+        <a href="request.html" data-i18n="nav.post_request">Đăng yêu cầu</a>
+      </div>
+      <div class="nav-right"></div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+
+<div class="mob-menu">
+  <div class="mob-panel">
+    <button class="mob-close"><i class="fa-solid fa-xmark"></i></button>
+    <a href="index.html"><i class="fa-solid fa-house"></i> <span data-i18n="nav.home">Trang chủ</span></a>
+    <a href="guides.html"><i class="fa-solid fa-users"></i> <span data-i18n="nav.find_guide">Tìm HDV</span></a>
+    <a href="blog.html" class="active"><i class="fa-solid fa-newspaper"></i> <span data-i18n="nav.blog">Blog</span></a>
+    <a href="request.html"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="nav.post_request">Đăng yêu cầu</span></a>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="blog-hero">
+  <div class="container">
+    <div class="breadcrumb"><a href="index.html" style="color:rgba(255,255,255,.6)" data-i18n="nav.home">Trang chủ</a><span style="color:rgba(255,255,255,.3)">/</span><span style="color:white" data-i18n="nav.blog">Blog</span></div>
+    <h1 data-i18n="blog.title">Blog Du Lịch Việt Nam</h1>
+    <p data-i18n="blog.sub">Kinh nghiệm thực tế từ hướng dẫn viên địa phương — mẹo hay, điểm đến, ngân sách</p>
+    <div class="blog-search">
+      <input type="search" id="blog-search" data-i18n-attr="placeholder" data-i18n="blog.search_ph" placeholder="Tìm bài viết...">
+      <button onclick="doSearch()"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="container">
+  <div class="blog-layout">
+    <div>
+      <!-- Category tabs -->
+      <div class="cat-tabs" id="cat-tabs">
+        <div class="cat-tab active" onclick="filterCat('',this)" data-i18n="blog.cat_all">Tất cả</div>
+        <div class="cat-tab" onclick="filterCat('destination',this)" data-i18n="blog.cat_dest">Điểm đến</div>
+        <div class="cat-tab" onclick="filterCat('tip',this)" data-i18n="blog.cat_tip">Mẹo hay</div>
+        <div class="cat-tab" onclick="filterCat('guide',this)" data-i18n="blog.cat_guide">Hướng dẫn</div>
+      </div>
+      <!-- Posts grid -->
+      <div class="blog-grid" id="blog-grid"></div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="blog-sidebar">
+      <div class="sidebar-block">
+        <h4><i class="fa-solid fa-fire" style="color:var(--orange)"></i> <span data-i18n="blog.popular">Bài viết phổ biến</span></h4>
+        <div id="popular-list"></div>
+      </div>
+      <div class="sidebar-block">
+        <h4><i class="fa-solid fa-tags" style="color:var(--blue)"></i> <span data-i18n="blog.tags">Chủ đề</span></h4>
+        <div class="tag-cloud" id="tag-cloud"></div>
+      </div>
+      <div class="sidebar-block" style="background:linear-gradient(135deg,#EFF6FF,#F5F3FF);border-color:var(--blue-light)">
+        <h4 style="color:var(--blue)"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="blog.cta_h">Sẵn sàng khám phá?</span></h4>
+        <p style="font-size:.83rem;color:var(--gray);line-height:1.6;margin-bottom:14px" data-i18n="blog.cta_p">Gửi yêu cầu miễn phí — HDV địa phương sẽ lên lịch trình riêng cho bạn.</p>
+        <a href="request.html" class="btn btn-orange btn-sm btn-block"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="blog.cta_btn">Đăng yêu cầu ngay</span></a>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo"><div class="logo-mark"><i class="fa-solid fa-compass"></i></div>Guide<em style="color:var(--blue)">Travel</em></a>
+        <p data-i18n="footer.brand_sub">Kết nối du khách với hướng dẫn viên địa phương.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.explore">Khám Phá</h4>
+        <ul>
+          <li><a href="guides.html" data-i18n="footer.find_guides">Tìm HDV</a></li>
+          <li><a href="blog.html" data-i18n="nav.blog">Blog</a></li>
+          <li><a href="about.html" data-i18n="nav.about">Giới thiệu</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.services">Dịch Vụ</h4>
+        <ul>
+          <li><a href="request.html" data-i18n="footer.post_request">Đăng yêu cầu tour</a></li>
+          <li><a href="hdv-register.html" data-i18n="footer.become_guide">Đăng ký làm HDV</a></li>
+          <li><a href="chinh-sach.html" data-i18n="footer.refund">Chính sách hoàn tiền</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.contact">Liên Hệ</h4>
+        <div class="footer-contact">
+          <div class="fc-item"><i class="fa-solid fa-phone"></i><span>1900 123 456</span></div>
+          <div class="fc-item"><i class="fa-solid fa-envelope"></i><span>hello@guidetravel.vn</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom"><p data-i18n="footer.copyright">© 2024 GuideTravel. Bảo lưu mọi quyền.</p></div>
+  </div>
+</footer>
+
+<script src="lang.js"></script>
+<script src="app.js"></script>
+<script>
+let currentCat = '';
+let searchQ = '';
+
+const CAT_LABEL = { destination: { vi:'Điểm đến', en:'Destination' }, tip: { vi:'Mẹo hay', en:'Tips' }, guide: { vi:'Hướng dẫn', en:'Guide' } };
+const CAT_COLOR = { destination: '#0EA5E9', tip: '#F97316', guide: '#7C3AED' };
+
+function getLang() { return localStorage.getItem('gt_lang') || 'vi'; }
+
+function filterCat(cat, el) {
+  currentCat = cat;
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderPosts();
+}
+
+function doSearch() {
+  searchQ = document.getElementById('blog-search').value.trim().toLowerCase();
+  renderPosts();
+}
+document.getElementById('blog-search').addEventListener('input', e => { searchQ = e.target.value.trim().toLowerCase(); renderPosts(); });
+
+function getPostTitle(p) { return getLang() === 'en' && p.titleEn ? p.titleEn : p.title; }
+function getPostExcerpt(p) { return getLang() === 'en' && p.excerptEn ? p.excerptEn : p.excerpt; }
+
+function fmtDate(d) {
+  const date = new Date(d);
+  return getLang() === 'en'
+    ? date.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' })
+    : date.toLocaleDateString('vi-VN');
+}
+
+function postCard(p, featured = false) {
+  const lang = getLang();
+  const title = getPostTitle(p);
+  const excerpt = getPostExcerpt(p);
+  const catLabel = CAT_LABEL[p.category]?.[lang] || p.category;
+  const catColor = CAT_COLOR[p.category] || '#0EA5E9';
+  const readLbl = lang === 'en' ? `${p.readTime} min read` : `${p.readTime} phút đọc`;
+
+  if (featured) {
+    return `<div class="post-featured" onclick="location.href='blog-post.html?id=${p.id}'">
+      <div class="post-card-img">
+        <img src="${p.thumbnail}" alt="${title}" loading="lazy">
+        <span class="post-cat-badge" style="background:${catColor}">${catLabel}</span>
+      </div>
+      <div class="post-card-body">
+        <div class="post-meta">
+          <span><i class="fa-regular fa-calendar"></i> ${fmtDate(p.date)}</span>
+          <span><i class="fa-regular fa-clock"></i> ${readLbl}</span>
+        </div>
+        <div class="post-title" style="-webkit-line-clamp:3;font-size:1.15rem">${title}</div>
+        <div class="post-excerpt" style="-webkit-line-clamp:3">${excerpt}</div>
+        <div class="post-footer">
+          <div class="post-author"><img src="${p.authorAvatar}" alt="${p.author}"> ${p.author}</div>
+          <span class="read-more">${lang === 'en' ? 'Read more' : 'Đọc tiếp'} <i class="fa-solid fa-arrow-right"></i></span>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  return `<div class="post-card" onclick="location.href='blog-post.html?id=${p.id}'">
+    <div class="post-card-img">
+      <img src="${p.thumbnail}" alt="${title}" loading="lazy">
+      <span class="post-cat-badge" style="background:${catColor}">${catLabel}</span>
+    </div>
+    <div class="post-card-body">
+      <div class="post-meta">
+        <span><i class="fa-regular fa-calendar"></i> ${fmtDate(p.date)}</span>
+        <span><i class="fa-regular fa-clock"></i> ${readLbl}</span>
+      </div>
+      <div class="post-title">${title}</div>
+      <div class="post-excerpt">${excerpt}</div>
+      <div class="post-footer">
+        <div class="post-author"><img src="${p.authorAvatar}" alt="${p.author}"> ${p.author}</div>
+        <span class="read-more">${getLang() === 'en' ? 'Read more' : 'Đọc tiếp'} <i class="fa-solid fa-arrow-right"></i></span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderPosts() {
+  const grid = document.getElementById('blog-grid');
+  let list = [...BLOG_POSTS];
+  if (currentCat) list = list.filter(p => p.category === currentCat);
+  if (searchQ) list = list.filter(p => getPostTitle(p).toLowerCase().includes(searchQ) || getPostExcerpt(p).toLowerCase().includes(searchQ) || p.tags.some(tag => tag.toLowerCase().includes(searchQ)));
+
+  if (!list.length) {
+    grid.innerHTML = `<div class="no-results"><i class="fa-solid fa-newspaper"></i><p style="font-weight:600;color:var(--dark)">${getLang() === 'en' ? 'No posts found' : 'Không tìm thấy bài viết'}</p></div>`;
+    return;
+  }
+  grid.innerHTML = list.map((p, i) => postCard(p, i === 0 && !currentCat && !searchQ)).join('');
+}
+
+function renderSidebar() {
+  // Popular: first 4 posts
+  document.getElementById('popular-list').innerHTML = BLOG_POSTS.slice(0, 4).map(p => `
+    <div class="popular-item" onclick="location.href='blog-post.html?id=${p.id}'">
+      <img src="${p.thumbnail}" alt="${getPostTitle(p)}" loading="lazy">
+      <div>
+        <div class="pi-title">${getPostTitle(p)}</div>
+        <div class="pi-date">${fmtDate(p.date)}</div>
+      </div>
+    </div>`).join('');
+
+  // Tags
+  const allTags = [...new Set(BLOG_POSTS.flatMap(p => p.tags))];
+  document.getElementById('tag-cloud').innerHTML = allTags.map(tag => `
+    <span class="tag-pill" onclick="document.getElementById('blog-search').value='${tag}';searchQ='${tag.toLowerCase()}';renderPosts()">${tag}</span>`).join('');
+}
+
+function init() {
+  renderPosts();
+  renderSidebar();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+window.addEventListener('langchange', () => { renderPosts(); renderSidebar(); });
+</script>
+</body>
+</html>

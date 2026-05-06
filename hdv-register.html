@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng Ký Làm HDV - GuideTravel</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .reg-layout { display: grid; grid-template-columns: 1fr 340px; gap: 32px; padding: 48px 0 80px; }
+    .reg-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 20px; }
+    .reg-card h3 { font-size: 1rem; color: var(--dark); margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+    .step-tabs { display: flex; gap: 0; margin-bottom: 32px; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .step-tab { flex: 1; padding: 13px 10px; text-align: center; font-size: .82rem; font-weight: 600; color: var(--gray); background: white; cursor: pointer; transition: var(--t); border-right: 1px solid var(--border); display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .step-tab:last-child { border-right: none; }
+    .step-tab.active { background: var(--blue); color: white; }
+    .step-tab.done { background: var(--green-light); color: #065F46; }
+    .step-section { display: none; }
+    .step-section.show { display: block; }
+    .upload-box { border: 2px dashed var(--border); border-radius: var(--radius-lg); padding: 32px; text-align: center; cursor: pointer; transition: var(--t); background: var(--bg); }
+    .upload-box:hover { border-color: var(--blue); background: var(--blue-light); }
+    .upload-box i { font-size: 2rem; color: var(--gray-2); margin-bottom: 10px; display: block; }
+    .upload-box p { font-size: .85rem; color: var(--gray); margin: 0; }
+    .upload-box strong { color: var(--blue); }
+    .spec-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+    .spec-btn { padding: 10px 8px; border: 1.5px solid var(--border); border-radius: var(--radius); text-align: center; font-size: .82rem; font-weight: 500; color: var(--gray); cursor: pointer; transition: var(--t); display: flex; flex-direction: column; align-items: center; gap: 5px; }
+    .spec-btn .ico { font-size: 1.3rem; }
+    .spec-btn.sel { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+    .lang-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+    .lang-btn { padding: 8px 16px; border: 1.5px solid var(--border); border-radius: 99px; font-size: .82rem; font-weight: 600; color: var(--gray); cursor: pointer; transition: var(--t); }
+    .lang-btn.sel { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+    .price-preview { background: var(--bg); border-radius: var(--radius); padding: 16px; display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+    .nav-btns { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border); }
+    @media (max-width: 900px) { .reg-layout { grid-template-columns: 1fr; } }
+    @media (max-width: 600px) { .spec-grid { grid-template-columns: repeat(2,1fr); } .step-tab span { display: none; } }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-mark"><i class="fa-solid fa-compass"></i></div>
+        Guide<em>Travel</em>
+      </a>
+      <div class="nav-links">
+        <a href="index.html">Trang chủ</a>
+        <a href="guides.html">Tìm HDV</a>
+        <a href="blog.html" data-i18n="nav.blog">Blog</a>
+        <a href="request.html">Đăng yêu cầu</a>
+      </div>
+      <div class="nav-right">
+        <a href="hdv-register.html" class="btn btn-primary">
+          <i class="fa-solid fa-id-card"></i> Đăng ký HDV
+        </a>
+      </div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+
+<div class="mob-menu">
+  <div class="mob-panel">
+    <button class="mob-close"><i class="fa-solid fa-xmark"></i></button>
+    <a href="index.html"><i class="fa-solid fa-house"></i> Trang chủ</a>
+    <a href="guides.html"><i class="fa-solid fa-users"></i> Tìm HDV</a>
+    <a href="blog.html"><i class="fa-solid fa-newspaper"></i> <span data-i18n="nav.blog">Blog</span></a>
+    <a href="request.html"><i class="fa-solid fa-paper-plane"></i> Đăng yêu cầu</a>
+    <div class="mob-divider"></div>
+    <a href="hdv-register.html" class="active"><i class="fa-solid fa-id-card"></i> Đăng ký làm HDV</a>
+  </div>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-hd">
+  <div class="container">
+    <div class="breadcrumb"><a href="index.html">Trang chủ</a><span>/</span><span style="color:white">Đăng ký HDV</span></div>
+    <h1>Trở Thành Hướng Dẫn Viên</h1>
+    <p>Chia sẻ tình yêu với quê hương — kiếm thêm thu nhập bằng đam mê dẫn tour</p>
+  </div>
+</div>
+
+<!-- FORM SECTION -->
+<div id="reg-form-section">
+  <div class="container">
+    <div class="reg-layout">
+
+      <!-- MAIN FORM -->
+      <div>
+        <!-- Step Tabs -->
+        <div class="step-tabs">
+          <div class="step-tab active" id="tab-1"><i class="fa-solid fa-user"></i> <span>Thông tin</span></div>
+          <div class="step-tab" id="tab-2"><i class="fa-solid fa-map-location-dot"></i> <span>Hoạt động</span></div>
+          <div class="step-tab" id="tab-3"><i class="fa-solid fa-images"></i> <span>Giới thiệu</span></div>
+          <div class="step-tab" id="tab-4"><i class="fa-solid fa-tag"></i> <span>Giá & Xác nhận</span></div>
+        </div>
+
+        <!-- STEP 1: Thông tin cá nhân -->
+        <div class="step-section show" id="step-1">
+          <div class="reg-card">
+            <h3><i class="fa-solid fa-user" style="color:var(--blue)"></i> Thông Tin Cá Nhân</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div class="fg">
+                <label>Họ và tên <span style="color:var(--red)">*</span></label>
+                <input type="text" id="hdv-name" class="form-input" placeholder="Nguyễn Văn A">
+                <div class="err-msg" id="err-hdv-name">Vui lòng nhập họ tên</div>
+              </div>
+              <div class="fg">
+                <label>Ngày sinh</label>
+                <input type="date" id="hdv-dob" class="form-input">
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div class="fg">
+                <label>Số điện thoại <span style="color:var(--red)">*</span></label>
+                <input type="tel" id="hdv-phone" class="form-input" placeholder="0912 345 678">
+                <div class="err-msg" id="err-hdv-phone">Số điện thoại không hợp lệ</div>
+              </div>
+              <div class="fg">
+                <label>Email <span style="color:var(--red)">*</span></label>
+                <input type="email" id="hdv-email" class="form-input" placeholder="email@example.com">
+                <div class="err-msg" id="err-hdv-email">Email không hợp lệ</div>
+              </div>
+            </div>
+            <div class="fg">
+              <label>Địa chỉ hiện tại <span style="color:var(--red)">*</span></label>
+              <input type="text" id="hdv-address" class="form-input" placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành">
+              <div class="err-msg" id="err-hdv-address">Vui lòng nhập địa chỉ</div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div class="fg">
+                <label>Số CCCD / CMND <span style="color:var(--red)">*</span></label>
+                <input type="text" id="hdv-idcard" class="form-input" placeholder="012345678910">
+                <div class="err-msg" id="err-hdv-idcard">Vui lòng nhập số CCCD</div>
+              </div>
+              <div class="fg">
+                <label>Số năm kinh nghiệm</label>
+                <select id="hdv-exp" class="form-input">
+                  <option value="0">Mới bắt đầu</option>
+                  <option value="1">1 - 2 năm</option>
+                  <option value="3">3 - 5 năm</option>
+                  <option value="5">5 - 10 năm</option>
+                  <option value="10">Trên 10 năm</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chứng chỉ -->
+          <div class="reg-card">
+            <h3><i class="fa-solid fa-certificate" style="color:var(--yellow)"></i> Chứng Chỉ & Giấy Phép</h3>
+            <div class="fg">
+              <label>Số thẻ hướng dẫn viên (nếu có)</label>
+              <input type="text" id="hdv-license" class="form-input" placeholder="VD: VN-2024-XXXX">
+              <div style="font-size:.76rem;color:var(--gray-2);margin-top:5px">Có thẻ HDV sẽ được hiển thị badge "Đã xác minh" trên hồ sơ</div>
+            </div>
+            <div class="fg" style="margin-bottom:0">
+              <label>Upload CCCD / Thẻ HDV (ảnh chụp rõ 2 mặt)</label>
+              <div class="upload-box" onclick="document.getElementById('file-id').click()">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <p><strong>Nhấn để chọn ảnh</strong> hoặc kéo thả vào đây</p>
+                <p style="margin-top:4px;font-size:.76rem">JPG, PNG — tối đa 5MB mỗi file</p>
+              </div>
+              <input type="file" id="file-id" accept="image/*" multiple style="display:none" onchange="previewFiles(this,'preview-id')">
+              <div id="preview-id" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"></div>
+            </div>
+          </div>
+
+          <div class="nav-btns">
+            <div></div>
+            <button class="btn btn-primary btn-lg" onclick="goStep(2)">
+              Tiếp theo <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 2: Khu vực & Chuyên môn -->
+        <div class="step-section" id="step-2">
+          <div class="reg-card">
+            <h3><i class="fa-solid fa-map-location-dot" style="color:var(--orange)"></i> Khu Vực Hoạt Động</h3>
+            <div class="fg">
+              <label>Điểm đến chính <span style="color:var(--red)">*</span></label>
+              <select id="hdv-region" class="form-input">
+                <option value="">-- Chọn điểm đến --</option>
+                <option value="nha-trang">Nha Trang, Khánh Hòa</option>
+                <option value="hoi-an">Hội An, Quảng Nam</option>
+                <option value="da-nang">Đà Nẵng</option>
+                <option value="sapa">Sapa, Lào Cai</option>
+                <option value="ha-long">Hạ Long, Quảng Ninh</option>
+                <option value="da-lat">Đà Lạt, Lâm Đồng</option>
+                <option value="phu-quoc">Phú Quốc, Kiên Giang</option>
+                <option value="ha-giang">Hà Giang</option>
+                <option value="hue">Huế, Thừa Thiên Huế</option>
+                <option value="ha-noi">Hà Nội & vùng phụ cận</option>
+                <option value="hcm">TP. Hồ Chí Minh</option>
+                <option value="ninh-binh">Ninh Bình</option>
+                <option value="mui-ne">Mũi Né, Phan Thiết</option>
+                <option value="mekong">Đồng bằng sông Cửu Long</option>
+                <option value="other">Điểm khác</option>
+              </select>
+              <div class="err-msg" id="err-hdv-region">Vui lòng chọn điểm đến</div>
+            </div>
+            <div class="fg" style="margin-bottom:0">
+              <label>Điểm đến phụ (thêm nếu có)</label>
+              <input type="text" id="hdv-region2" class="form-input" placeholder="VD: Đà Lạt, Mũi Né, Ninh Thuận...">
+            </div>
+          </div>
+
+          <div class="reg-card">
+            <h3><i class="fa-solid fa-star" style="color:var(--yellow)"></i> Chuyên Môn</h3>
+            <div style="margin-bottom:20px">
+              <label style="font-size:.85rem;font-weight:600;color:var(--dark);display:block;margin-bottom:12px">Bạn giỏi dẫn tour loại nào? <span style="font-weight:400;color:var(--gray-2)">(chọn nhiều)</span></label>
+              <div class="spec-grid">
+                <button type="button" class="spec-btn" data-val="bien"><div class="ico">🏖️</div>Biển đảo</button>
+                <button type="button" class="spec-btn" data-val="trekking"><div class="ico">🥾</div>Trekking</button>
+                <button type="button" class="spec-btn" data-val="am-thuc"><div class="ico">🍜</div>Ẩm thực</button>
+                <button type="button" class="spec-btn" data-val="van-hoa"><div class="ico">🏛️</div>Văn hóa</button>
+                <button type="button" class="spec-btn" data-val="chup-anh"><div class="ico">📷</div>Chụp ảnh</button>
+                <button type="button" class="spec-btn" data-val="lan-bien"><div class="ico">🤿</div>Lặn biển</button>
+                <button type="button" class="spec-btn" data-val="ban-lang"><div class="ico">🏡</div>Bản làng</button>
+                <button type="button" class="spec-btn" data-val="nghi-duong"><div class="ico">🧘</div>Nghỉ dưỡng</button>
+                <button type="button" class="spec-btn" data-val="xe-may"><div class="ico">🏍️</div>Motorbiking</button>
+              </div>
+            </div>
+            <div>
+              <label style="font-size:.85rem;font-weight:600;color:var(--dark);display:block;margin-bottom:12px">Ngôn ngữ <span style="font-weight:400;color:var(--gray-2)">(chọn nhiều)</span></label>
+              <div class="lang-grid">
+                <button type="button" class="lang-btn sel" data-lang="Tiếng Việt">🇻🇳 Tiếng Việt</button>
+                <button type="button" class="lang-btn" data-lang="English">🇬🇧 English</button>
+                <button type="button" class="lang-btn" data-lang="中文">🇨🇳 中文</button>
+                <button type="button" class="lang-btn" data-lang="日本語">🇯🇵 日本語</button>
+                <button type="button" class="lang-btn" data-lang="한국어">🇰🇷 한국어</button>
+                <button type="button" class="lang-btn" data-lang="Français">🇫🇷 Français</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="nav-btns">
+            <button class="btn btn-outline" onclick="goStep(1)"><i class="fa-solid fa-arrow-left"></i> Quay lại</button>
+            <button class="btn btn-primary btn-lg" onclick="goStep(3)">Tiếp theo <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+        </div>
+
+        <!-- STEP 3: Giới thiệu & Ảnh -->
+        <div class="step-section" id="step-3">
+          <div class="reg-card">
+            <h3><i class="fa-solid fa-pen-to-square" style="color:var(--blue)"></i> Giới Thiệu Bản Thân</h3>
+            <div class="fg">
+              <label>Bio ngắn — sẽ hiển thị trên hồ sơ <span style="color:var(--red)">*</span></label>
+              <textarea id="hdv-bio" class="form-input" rows="5" placeholder="VD: Sinh ra và lớn lên tại Nha Trang, tôi có 7 năm kinh nghiệm dẫn tour biển. Tôi biết những góc biển đẹp ít ai biết, những quán ăn ngon giá rẻ của người địa phương và sẵn sàng thiết kế chuyến đi hoàn toàn theo sở thích của bạn..."></textarea>
+              <div class="err-msg" id="err-hdv-bio">Vui lòng viết giới thiệu (tối thiểu 50 ký tự)</div>
+              <div style="text-align:right;font-size:.76rem;color:var(--gray-2);margin-top:4px"><span id="bio-count">0</span> / 500 ký tự</div>
+            </div>
+          </div>
+
+          <div class="reg-card">
+            <h3><i class="fa-solid fa-camera" style="color:var(--orange)"></i> Ảnh Hồ Sơ & Ảnh Bìa</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div class="fg" style="margin-bottom:0">
+                <label>Ảnh đại diện <span style="color:var(--red)">*</span></label>
+                <div class="upload-box" style="padding:24px" onclick="document.getElementById('file-avatar').click()">
+                  <i class="fa-solid fa-user-circle" style="font-size:2.5rem"></i>
+                  <p style="margin-top:8px"><strong>Upload ảnh</strong></p>
+                  <p style="font-size:.76rem">Ảnh rõ mặt, nền sáng</p>
+                </div>
+                <input type="file" id="file-avatar" accept="image/*" style="display:none" onchange="previewSingle(this,'prev-avatar')">
+                <div id="prev-avatar" style="margin-top:8px"></div>
+              </div>
+              <div class="fg" style="margin-bottom:0">
+                <label>Ảnh bìa (ảnh đang đi tour)</label>
+                <div class="upload-box" style="padding:24px" onclick="document.getElementById('file-cover').click()">
+                  <i class="fa-solid fa-image" style="font-size:2.5rem"></i>
+                  <p style="margin-top:8px"><strong>Upload ảnh</strong></p>
+                  <p style="font-size:.76rem">Ảnh phong cảnh hoặc đang dẫn tour</p>
+                </div>
+                <input type="file" id="file-cover" accept="image/*" style="display:none" onchange="previewSingle(this,'prev-cover')">
+                <div id="prev-cover" style="margin-top:8px"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="reg-card">
+            <h3><i class="fa-solid fa-route" style="color:var(--blue)"></i> Lịch Trình Mẫu (tùy chọn)</h3>
+            <p style="font-size:.85rem;color:var(--gray);margin-bottom:16px">Đăng 1-2 lịch trình mẫu để khách có thể hình dung phong cách dẫn tour của bạn</p>
+            <div class="fg">
+              <label>Tên lịch trình</label>
+              <input type="text" id="itin-title" class="form-input" placeholder="VD: Nha Trang 3 ngày - Biển & Ẩm thực địa phương">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div class="fg">
+                <label>Số ngày</label>
+                <select id="itin-days" class="form-input">
+                  <option value="1">1 ngày</option>
+                  <option value="2" selected>2 ngày</option>
+                  <option value="3">3 ngày</option>
+                  <option value="4">4 ngày</option>
+                  <option value="5">5+ ngày</option>
+                </select>
+              </div>
+              <div class="fg">
+                <label>Giá tham khảo</label>
+                <input type="number" id="itin-price" class="form-input" placeholder="1500000" step="100000">
+              </div>
+            </div>
+            <div class="fg" style="margin-bottom:0">
+              <label>Mô tả ngắn lịch trình</label>
+              <textarea id="itin-desc" class="form-input" rows="3" placeholder="Ngày 1: Làm gì... Ngày 2: Làm gì..."></textarea>
+            </div>
+          </div>
+
+          <div class="nav-btns">
+            <button class="btn btn-outline" onclick="goStep(2)"><i class="fa-solid fa-arrow-left"></i> Quay lại</button>
+            <button class="btn btn-primary btn-lg" onclick="goStep(4)">Tiếp theo <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+        </div>
+
+        <!-- STEP 4: Giá & Xác nhận -->
+        <div class="step-section" id="step-4">
+          <div class="reg-card">
+            <h3><i class="fa-solid fa-tag" style="color:var(--green)"></i> Thiết Lập Giá Dịch Vụ</h3>
+            <div class="fg">
+              <label>Giá dịch vụ / ngày <span style="color:var(--red)">*</span></label>
+              <input type="number" id="hdv-price" class="form-input" placeholder="700000" step="50000" min="200000" oninput="updatePricePreview()">
+              <div class="err-msg" id="err-hdv-price">Vui lòng nhập giá (tối thiểu 200,000đ)</div>
+              <div style="font-size:.76rem;color:var(--gray-2);margin-top:5px">Đây là giá cơ bản / ngày. Giá thực tế tùy theo lịch trình cụ thể.</div>
+            </div>
+
+            <!-- COMMISSION SELECTOR -->
+            <div class="fg">
+              <label>Mức hoa hồng cho GuideTravel <span style="color:var(--red)">*</span></label>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px">
+                <label class="comm-opt" data-val="15" style="border:2px solid var(--border);border-radius:var(--radius);padding:14px 10px;text-align:center;cursor:pointer;transition:all .2s">
+                  <input type="radio" name="commission" value="15" style="display:none">
+                  <div style="font-size:1.3rem;font-weight:800;color:var(--gray)">15%</div>
+                  <div style="font-size:.72rem;color:var(--gray-2);margin-top:4px;font-weight:600">Cơ bản</div>
+                  <div style="font-size:.7rem;color:var(--gray-2);margin-top:6px;line-height:1.4">Hiển thị bình thường</div>
+                </label>
+                <label class="comm-opt" data-val="20" style="border:2px solid var(--border);border-radius:var(--radius);padding:14px 10px;text-align:center;cursor:pointer;transition:all .2s">
+                  <input type="radio" name="commission" value="20" style="display:none">
+                  <div style="font-size:1.3rem;font-weight:800;color:#0284C7">20%</div>
+                  <div style="font-size:.72rem;color:#0284C7;margin-top:4px;font-weight:600">Ưu tiên</div>
+                  <div style="font-size:.7rem;color:var(--gray-2);margin-top:6px;line-height:1.4">👍 Badge Ưu tiên</div>
+                </label>
+                <label class="comm-opt" data-val="25" style="border:2px solid var(--border);border-radius:var(--radius);padding:14px 10px;text-align:center;cursor:pointer;transition:all .2s">
+                  <input type="radio" name="commission" value="25" style="display:none">
+                  <div style="font-size:1.3rem;font-weight:800;color:#7C3AED">25%</div>
+                  <div style="font-size:.72rem;color:#7C3AED;margin-top:4px;font-weight:600">Đề xuất</div>
+                  <div style="font-size:.7rem;color:var(--gray-2);margin-top:6px;line-height:1.4">⭐ Badge Đề xuất</div>
+                </label>
+                <label class="comm-opt" data-val="30" style="border:2px solid var(--border);border-radius:var(--radius);padding:14px 10px;text-align:center;cursor:pointer;transition:all .2s">
+                  <input type="radio" name="commission" value="30" style="display:none">
+                  <div style="font-size:1.3rem;font-weight:800;color:var(--orange)">30%</div>
+                  <div style="font-size:.72rem;color:var(--orange);margin-top:4px;font-weight:600">Nổi bật #1</div>
+                  <div style="font-size:.7rem;color:var(--gray-2);margin-top:6px;line-height:1.4">🏆 Top đầu trang</div>
+                </label>
+              </div>
+              <div id="earn-preview" style="background:var(--green-light);border-radius:var(--radius);padding:12px 16px;margin-top:12px;font-size:.83rem;color:#065F46;display:none;justify-content:space-between;align-items:center">
+                <span>Mỗi ngày dẫn tour, bạn nhận được:</span>
+                <strong id="earn-amount" style="font-size:1rem">0đ</strong>
+              </div>
+              <div style="background:var(--bg);border-radius:var(--radius);padding:12px 16px;margin-top:10px;font-size:.8rem;color:var(--gray);display:flex;align-items:flex-start;gap:8px">
+                <i class="fa-solid fa-circle-info" style="color:var(--blue);flex-shrink:0;margin-top:2px"></i>
+                <span>Hoa hồng trừ tự động khi khách thanh toán. <strong style="color:var(--dark)">Mức cao hơn = xuất hiện đầu trang + được đề xuất nhiều hơn.</strong> Bạn có thể thay đổi mức này bất cứ lúc nào.</span>
+              </div>
+            </div>
+
+            <div class="price-preview" id="price-preview" style="display:none">
+              <div>
+                <div style="font-size:.82rem;color:var(--gray)">Khách thấy giá từ</div>
+                <div style="font-size:1.3rem;font-weight:800;color:var(--blue)" id="prev-price-display">0đ</div>
+                <div style="font-size:.76rem;color:var(--gray-2)">/ ngày</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:.82rem;color:var(--gray)">Bạn nhận được</div>
+                <div style="font-size:1.1rem;font-weight:700;color:var(--green)" id="prev-earn-display">0đ</div>
+                <div style="font-size:.76rem;color:var(--gray-2)">/ ngày</div>
+              </div>
+            </div>
+            <div style="background:var(--orange-light);border-radius:var(--radius);padding:14px;margin-top:14px;font-size:.82rem;color:var(--orange)">
+              <i class="fa-solid fa-circle-info"></i> GuideTravel thu <strong>15% hoa hồng</strong> mỗi đơn thành công. Không mất phí đăng ký hay phí hàng tháng.
+            </div>
+          </div>
+
+          <div class="reg-card">
+            <h3><i class="fa-solid fa-clock" style="color:var(--blue)"></i> Lịch Làm Việc</h3>
+            <div class="fg">
+              <label>Thời gian có thể dẫn tour</label>
+              <div style="display:flex;flex-wrap:wrap;gap:8px">
+                {['T2','T3','T4','T5','T6','T7','CN'].map(d => `<label style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1.5px solid var(--border);border-radius:99px;cursor:pointer;font-size:.82rem;font-weight:600;transition:var(--t)" class="day-lbl"><input type="checkbox" value="${d}" style="accent-color:var(--blue)"> ${d}</label>`).join('')}
+              </div>
+            </div>
+            <div class="fg" style="margin-bottom:0">
+              <label>Thời gian phản hồi khách thường là</label>
+              <select id="hdv-response" class="form-input">
+                <option value="1h">Trong 1 giờ</option>
+                <option value="2h" selected>Trong 2 giờ</option>
+                <option value="4h">Trong 4 giờ</option>
+                <option value="24h">Trong 24 giờ</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Terms -->
+          <div class="reg-card">
+            <h3><i class="fa-solid fa-file-contract" style="color:var(--gray)"></i> Điều Khoản & Xác Nhận</h3>
+            <div style="background:var(--bg);border-radius:var(--radius);padding:16px;font-size:.82rem;color:var(--gray);line-height:1.8;margin-bottom:16px;max-height:140px;overflow-y:auto">
+              Bằng cách đăng ký, bạn đồng ý: (1) Cung cấp thông tin trung thực và chính xác. (2) Tuân thủ quy định của GuideTravel về chất lượng dịch vụ. (3) Phản hồi yêu cầu khách trong thời gian cam kết. (4) Không dẫn khách ra ngoài nền tảng để tránh phí hoa hồng. (5) GuideTravel có quyền đình chỉ tài khoản nếu vi phạm. (6) Chính sách thanh toán: nhận tiền sau 48h kể từ khi tour kết thúc và khách xác nhận.
+            </div>
+            <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer">
+              <input type="checkbox" id="agree-terms" style="margin-top:3px;accent-color:var(--blue);width:16px;height:16px;flex-shrink:0">
+              <span style="font-size:.85rem;color:var(--gray)">Tôi đã đọc và đồng ý với <strong style="color:var(--blue)">Điều khoản dịch vụ</strong> và <strong style="color:var(--blue)">Chính sách của GuideTravel</strong></span>
+            </label>
+          </div>
+
+          <div class="nav-btns">
+            <button class="btn btn-outline" onclick="goStep(3)"><i class="fa-solid fa-arrow-left"></i> Quay lại</button>
+            <button class="btn btn-orange btn-lg" onclick="submitRegistration()">
+              <i class="fa-solid fa-paper-plane"></i> Gửi Đăng Ký
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIDEBAR -->
+      <div>
+        <!-- Benefits -->
+        <div style="background:linear-gradient(135deg,#0F172A,#1E3A5F);border-radius:var(--radius-lg);padding:24px;color:white;margin-bottom:16px">
+          <div style="font-size:1.6rem;margin-bottom:12px">💰</div>
+          <h3 style="color:white;font-size:1rem;margin-bottom:16px">Lợi ích khi tham gia</h3>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:flex-start;gap:10px">
+              <i class="fa-solid fa-circle-check" style="color:var(--green);margin-top:2px;flex-shrink:0"></i>
+              <div style="font-size:.83rem;color:rgba(255,255,255,.8)"><strong style="color:white;display:block">Tiếp cận khách trực tiếp</strong>Khách tìm đến bạn — không cần tự marketing</div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px">
+              <i class="fa-solid fa-circle-check" style="color:var(--green);margin-top:2px;flex-shrink:0"></i>
+              <div style="font-size:.83rem;color:rgba(255,255,255,.8)"><strong style="color:white;display:block">Thu nhập linh hoạt</strong>Làm khi rảnh, nhận đơn theo lịch của bạn</div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px">
+              <i class="fa-solid fa-circle-check" style="color:var(--green);margin-top:2px;flex-shrink:0"></i>
+              <div style="font-size:.83rem;color:rgba(255,255,255,.8)"><strong style="color:white;display:block">Thanh toán đảm bảo</strong>Tiền được giữ an toàn, không lo bị quỵt tiền</div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px">
+              <i class="fa-solid fa-circle-check" style="color:var(--green);margin-top:2px;flex-shrink:0"></i>
+              <div style="font-size:.83rem;color:rgba(255,255,255,.8)"><strong style="color:white;display:block">Miễn phí đăng ký</strong>Chỉ trả 15% khi có đơn thành công</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Income estimate -->
+        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px;margin-bottom:16px">
+          <h4 style="font-size:.95rem;color:var(--dark);margin-bottom:14px">Thu nhập ước tính</h4>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg);border-radius:var(--radius-sm)">
+              <span style="font-size:.82rem;color:var(--gray)">4 đơn / tháng</span>
+              <strong style="color:var(--blue)">~2.4 triệu</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg);border-radius:var(--radius-sm)">
+              <span style="font-size:.82rem;color:var(--gray)">8 đơn / tháng</span>
+              <strong style="color:var(--blue)">~4.8 triệu</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--orange-light);border-radius:var(--radius-sm)">
+              <span style="font-size:.82rem;color:var(--orange)">15 đơn / tháng</span>
+              <strong style="color:var(--orange)">~9 triệu</strong>
+            </div>
+          </div>
+          <p style="font-size:.76rem;color:var(--gray-2);margin-top:10px">*Ước tính dựa trên 700K/ngày, 2 ngày/đơn</p>
+        </div>
+
+        <!-- Support -->
+        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px">
+          <h4 style="font-size:.95rem;color:var(--dark);margin-bottom:12px">Cần hỗ trợ?</h4>
+          <p style="font-size:.83rem;color:var(--gray);margin-bottom:14px">Đội ngũ của chúng tôi hỗ trợ đăng ký 24/7</p>
+          <a href="tel:1900123456" class="btn btn-outline btn-block btn-sm">
+            <i class="fa-solid fa-phone" style="color:var(--blue)"></i> 1900 123 456
+          </a>
+          <a href="#" class="btn btn-outline btn-block btn-sm mt-sm" style="margin-top:8px">
+            <i class="fa-brands fa-facebook-messenger" style="color:#0084FF"></i> Chat trên Messenger
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div id="reg-success-section" class="hidden">
+  <div class="container">
+    <div class="success-wrap">
+      <div class="success-icon"><i class="fa-solid fa-check"></i></div>
+      <h2>Đã gửi hồ sơ! 🎉</h2>
+      <p>Chúng tôi đã nhận được thông tin của bạn. Đội ngũ GuideTravel sẽ xét duyệt và liên hệ trong vòng <strong>1-2 ngày làm việc</strong>.</p>
+      <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:var(--radius-lg);padding:18px 24px;max-width:440px;margin:0 auto 24px;text-align:left">
+        <div style="font-weight:700;color:#F97316;margin-bottom:6px"><i class="fa-solid fa-clock"></i> Trạng thái: Đang chờ duyệt</div>
+        <div style="font-size:.84rem;color:#92400E">Hồ sơ chưa được hiển thị công khai. Bạn sẽ nhận được thông báo khi được duyệt.</div>
+      </div>
+      <div style="background:var(--bg);border-radius:var(--radius-lg);padding:24px;max-width:440px;margin:0 auto 32px;text-align:left">
+        <div style="font-weight:700;color:var(--dark);margin-bottom:14px">Các bước tiếp theo</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:flex-start;gap:10px">
+            <div style="width:26px;height:26px;border-radius:50%;background:var(--blue);color:white;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0">1</div>
+            <div style="font-size:.85rem;color:var(--gray)">GuideTravel xét duyệt hồ sơ (1-2 ngày)</div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px">
+            <div style="width:26px;height:26px;border-radius:50%;background:var(--blue);color:white;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0">2</div>
+            <div style="font-size:.85rem;color:var(--gray)">Phỏng vấn ngắn qua điện thoại (nếu cần)</div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px">
+            <div style="width:26px;height:26px;border-radius:50%;background:#16A34A;color:white;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0">3</div>
+            <div style="font-size:.85rem;color:var(--gray)">Được duyệt → hồ sơ hiển thị & bắt đầu nhận yêu cầu!</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a href="hdv-dashboard.html" class="btn btn-primary btn-lg">
+          <i class="fa-solid fa-gauge"></i> Vào Dashboard
+        </a>
+        <a href="index.html" class="btn btn-outline btn-lg">
+          <i class="fa-solid fa-house"></i> Về Trang Chủ
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo"><div class="logo-mark"><i class="fa-solid fa-compass"></i></div> Guide<em style="color:var(--blue)">Travel</em></a>
+        <p>Kết nối du khách với hướng dẫn viên địa phương.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Dành Cho HDV</h4>
+        <ul>
+          <li><a href="hdv-register.html">Đăng ký làm HDV</a></li>
+          <li><a href="guides.html">Xem hồ sơ HDV khác</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Dành Cho Khách</h4>
+        <ul>
+          <li><a href="guides.html">Tìm HDV</a></li>
+          <li><a href="request.html">Đăng yêu cầu tour</a></li>
+          <li><a href="chinh-sach.html">Chính sách hoàn tiền</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Liên Hệ</h4>
+        <div class="footer-contact">
+          <div class="fc-item"><i class="fa-solid fa-phone"></i><span>1900 123 456</span></div>
+          <div class="fc-item"><i class="fa-solid fa-envelope"></i><span>hello@guidetravel.vn</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom"><p>© 2024 GuideTravel. Bảo lưu mọi quyền.</p></div>
+  </div>
+</footer>
+
+<script src="lang.js"></script>
+<script src="app.js"></script>
+<script>
+let currentStep = 1;
+let selectedSpecs = [];
+let selectedLangs = ['Tiếng Việt'];
+
+// Step navigation
+function goStep(n) {
+  if (n > currentStep && !validateStep(currentStep)) return;
+  document.getElementById('step-' + currentStep).classList.remove('show');
+  document.getElementById('tab-' + currentStep).classList.remove('active');
+  document.getElementById('tab-' + currentStep).classList.add('done');
+  currentStep = n;
+  document.getElementById('step-' + n).classList.add('show');
+  document.getElementById('tab-' + n).classList.remove('done');
+  document.getElementById('tab-' + n).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function validateStep(s) {
+  if (s === 1) {
+    const checks = [
+      ['hdv-name', 'err-hdv-name', v => v.trim().length >= 2],
+      ['hdv-phone', 'err-hdv-phone', v => /^[0-9]{10,11}$/.test(v.trim())],
+      ['hdv-email', 'err-hdv-email', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())],
+      ['hdv-address', 'err-hdv-address', v => v.trim().length >= 5],
+      ['hdv-idcard', 'err-hdv-idcard', v => v.trim().length >= 9],
+    ];
+    let ok = true;
+    checks.forEach(([id, eid, fn]) => {
+      const el = document.getElementById(id);
+      const err = document.getElementById(eid);
+      const valid = el && fn(el.value);
+      if (el) el.classList.toggle('err', !valid);
+      if (err) err.classList.toggle('show', !valid);
+      if (!valid) ok = false;
+    });
+    return ok;
+  }
+  if (s === 2) {
+    const r = document.getElementById('hdv-region');
+    const err = document.getElementById('err-hdv-region');
+    const ok = r && r.value !== '';
+    if (r) r.classList.toggle('err', !ok);
+    if (err) err.classList.toggle('show', !ok);
+    return ok;
+  }
+  if (s === 3) {
+    const bio = document.getElementById('hdv-bio');
+    const err = document.getElementById('err-hdv-bio');
+    const ok = bio && bio.value.trim().length >= 50;
+    if (bio) bio.classList.toggle('err', !ok);
+    if (err) err.classList.toggle('show', !ok);
+    return ok;
+  }
+  return true;
+}
+
+// Specialties
+document.querySelectorAll('.spec-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const v = btn.dataset.val;
+    const i = selectedSpecs.indexOf(v);
+    if (i > -1) selectedSpecs.splice(i, 1); else selectedSpecs.push(v);
+    btn.classList.toggle('sel', selectedSpecs.includes(v));
+  });
+});
+
+// Languages
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const v = btn.dataset.lang;
+    if (v === 'Tiếng Việt') return; // always selected
+    const i = selectedLangs.indexOf(v);
+    if (i > -1) selectedLangs.splice(i, 1); else selectedLangs.push(v);
+    btn.classList.toggle('sel', selectedLangs.includes(v));
+  });
+});
+
+// Bio counter
+document.getElementById('hdv-bio')?.addEventListener('input', function() {
+  document.getElementById('bio-count').textContent = this.value.length;
+});
+
+// Commission selector
+let selectedCommission = 15;
+document.querySelectorAll('.comm-opt').forEach(opt => {
+  opt.addEventListener('click', () => {
+    selectedCommission = parseInt(opt.dataset.val);
+    document.querySelectorAll('.comm-opt').forEach(o => {
+      o.style.borderColor = 'var(--border)';
+      o.style.background = 'white';
+      o.style.transform = 'none';
+    });
+    const colors = { 15: 'var(--gray)', 20: '#0284C7', 25: '#7C3AED', 30: 'var(--orange)' };
+    const bgs    = { 15: '#F8FAFC',     20: '#E0F2FE', 25: '#F5F3FF', 30: '#FFF7ED'       };
+    opt.style.borderColor = colors[selectedCommission] || 'var(--blue)';
+    opt.style.background  = bgs[selectedCommission]   || 'var(--blue-light)';
+    opt.style.transform   = 'translateY(-2px)';
+    opt.querySelector('input').checked = true;
+    updateEarnPreview();
+  });
+});
+
+function updateEarnPreview() {
+  const price = parseInt(document.getElementById('hdv-price').value);
+  const earnEl = document.getElementById('earn-preview');
+  const amtEl  = document.getElementById('earn-amount');
+  if (!price || price < 200000 || !selectedCommission) { if (earnEl) earnEl.style.display = 'none'; return; }
+  const earn = Math.round(price * (1 - selectedCommission / 100));
+  if (earnEl) earnEl.style.display = 'flex';
+  if (amtEl)  amtEl.textContent = new Intl.NumberFormat('vi-VN').format(earn) + 'đ';
+}
+
+// Price preview
+function updatePricePreview() {
+  const val = parseInt(document.getElementById('hdv-price').value);
+  const prev = document.getElementById('price-preview');
+  if (!val || val < 200000) { prev.style.display = 'none'; return; }
+  prev.style.display = 'flex';
+  const fmt = n => new Intl.NumberFormat('vi-VN').format(n) + 'đ';
+  const comm = selectedCommission || 15;
+  document.getElementById('prev-price-display').textContent = fmt(val);
+  document.getElementById('prev-earn-display').textContent = fmt(Math.round(val * (1 - comm / 100)));
+  updateEarnPreview();
+}
+
+// File preview
+function previewFiles(input, previewId) {
+  const container = document.getElementById(previewId);
+  container.innerHTML = '';
+  Array.from(input.files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.style.cssText = 'width:70px;height:70px;object-fit:cover;border-radius:8px;border:2px solid var(--border)';
+      container.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function previewSingle(input, previewId) {
+  const container = document.getElementById(previewId);
+  container.innerHTML = '';
+  if (!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.createElement('img');
+    img.src = e.target.result;
+    img.style.cssText = 'width:100%;height:120px;object-fit:cover;border-radius:var(--radius);border:2px solid var(--blue)';
+    container.appendChild(img);
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+// Submit
+function submitRegistration() {
+  if (!validateStep(4)) return;
+  if (!document.getElementById('agree-terms').checked) {
+    toast('Vui lòng đồng ý với điều khoản dịch vụ!', 'err');
+    return;
+  }
+  const price = document.getElementById('hdv-price').value;
+  if (!price || parseInt(price) < 200000) {
+    document.getElementById('hdv-price').classList.add('err');
+    document.getElementById('err-hdv-price').classList.add('show');
+    toast('Vui lòng nhập giá dịch vụ!', 'err');
+    return;
+  }
+  // Save HDV profile to localStorage
+  const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
+  const regionMap = {
+    'nha-trang':'Nha Trang','hoi-an':'Hội An','da-nang':'Đà Nẵng','sapa':'Sapa',
+    'ha-long':'Hạ Long','da-lat':'Đà Lạt','phu-quoc':'Phú Quốc','ha-giang':'Hà Giang',
+    'hue':'Huế','ha-noi':'Hà Nội','hcm':'TP. HCM','ninh-binh':'Ninh Bình',
+    'mui-ne':'Mũi Né','mekong':'Đồng bằng SCL','other':'Khác'
+  };
+  const regionVal = document.getElementById('hdv-region').value;
+  const hdvName = document.getElementById('hdv-name').value;
+  const hdvEmail = document.getElementById('hdv-email').value || (session ? session.email : '');
+  const profile = {
+    id: 'HDV' + Date.now(),
+    userId: session ? session.id : null,
+    email: hdvEmail,
+    name: hdvName,
+    phone: document.getElementById('hdv-phone').value,
+    location: regionMap[regionVal] || regionVal,
+    region: regionVal,
+    regions: [regionVal],
+    experience: parseInt(document.getElementById('hdv-exp').value) || 0,
+    license: document.getElementById('hdv-license').value,
+    bio: document.getElementById('hdv-bio').value,
+    bioEn: '',
+    pricePerDay: parseInt(price),
+    commission: selectedCommission,
+    languages: [...selectedLangs],
+    specialties: [...selectedSpecs],
+    rating: 0,
+    reviews: 0,
+    trips: 0,
+    reviewList: [],
+    itineraries: [],
+    avatar: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(hdvName) + '&size=200&background=0284C7&color=fff',
+    coverImg: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=800&q=80',
+    verified: true,
+    status: 'pending_review',
+    createdAt: new Date().toISOString()
+  };
+  const profiles = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+  const existIdx = profiles.findIndex(p => p.email === profile.email);
+  if (existIdx > -1) profiles[existIdx] = { ...profiles[existIdx], ...profile };
+  else profiles.push(profile);
+  localStorage.setItem('gt_hdv_profiles', JSON.stringify(profiles));
+
+  // Mark session as verified
+  if (session && session.type === 'guide') {
+    session.verified = true;
+    localStorage.setItem('gt_session', JSON.stringify(session));
+    const users = JSON.parse(localStorage.getItem('gt_users') || '[]');
+    const idx = users.findIndex(u => u.id === session.id);
+    if (idx !== -1) { users[idx].verified = true; localStorage.setItem('gt_users', JSON.stringify(users)); }
+  }
+  document.getElementById('reg-form-section').classList.add('hidden');
+  document.getElementById('reg-success-section').classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

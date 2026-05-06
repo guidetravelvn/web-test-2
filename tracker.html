@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📋 Tracker - GuideTravel</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:'Segoe UI',sans-serif; background:#F1F5F9; color:#0F172A; }
+    .top-bar { background:linear-gradient(135deg,#0F172A,#1E3A5F); padding:20px 32px; display:flex; align-items:center; justify-content:space-between; }
+    .top-bar h1 { color:white; font-size:1.2rem; font-weight:700; display:flex; align-items:center; gap:10px; }
+    .top-bar span { font-size:.8rem; color:rgba(255,255,255,.5); }
+    .progress-bar-wrap { background:rgba(255,255,255,.1); border-radius:99px; height:8px; width:220px; overflow:hidden; }
+    .progress-bar-fill { height:100%; background:linear-gradient(90deg,#34D399,#0EA5E9); border-radius:99px; transition:.5s; }
+    .wrap { max-width:1100px; margin:0 auto; padding:28px 20px; }
+    .summary-row { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:28px; }
+    .scard { background:white; border-radius:12px; padding:18px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+    .scard-val { font-size:2rem; font-weight:800; }
+    .scard-lbl { font-size:.75rem; color:#64748B; margin-top:4px; }
+    .section { background:white; border-radius:12px; box-shadow:0 1px 4px rgba(0,0,0,.06); margin-bottom:20px; overflow:hidden; }
+    .section-head { padding:14px 20px; font-size:.85rem; font-weight:700; color:white; display:flex; align-items:center; gap:8px; }
+    table { width:100%; border-collapse:collapse; }
+    th { background:#F8FAFC; padding:10px 16px; text-align:left; font-size:.75rem; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:.05em; border-bottom:1px solid #E2E8F0; }
+    td { padding:11px 16px; font-size:.85rem; border-bottom:1px solid #F1F5F9; vertical-align:middle; }
+    tr:last-child td { border-bottom:none; }
+    tr:hover td { background:#FAFAFA; }
+    .badge { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:99px; font-size:.74rem; font-weight:700; }
+    .b-done   { background:#F0FDF4; color:#16A34A; }
+    .b-todo   { background:#FFF7ED; color:#F97316; }
+    .b-skip   { background:#F1F5F9; color:#94A3B8; }
+    .b-inprog { background:#EFF6FF; color:#2563EB; }
+    .priority { display:inline-flex; align-items:center; gap:4px; font-size:.75rem; padding:3px 8px; border-radius:6px; font-weight:600; }
+    .p-high   { background:#FEF2F2; color:#DC2626; }
+    .p-med    { background:#FFF7ED; color:#D97706; }
+    .p-low    { background:#F0FDF4; color:#16A34A; }
+    .file-link { color:#0EA5E9; text-decoration:none; font-size:.8rem; font-family:monospace; }
+    .file-link:hover { text-decoration:underline; }
+    .note-cell { font-size:.78rem; color:#64748B; max-width:260px; }
+    .updated { font-size:.72rem; color:#94A3B8; margin-top:24px; text-align:right; }
+    .toggle-btn { border:none; background:transparent; cursor:pointer; color:#94A3B8; padding:4px 8px; border-radius:6px; font-size:.8rem; transition:.15s; }
+    .toggle-btn:hover { background:#F1F5F9; color:#0F172A; }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><i class="fa-solid fa-table-cells"></i> GuideTravel — Project Tracker</h1>
+  <div style="display:flex;align-items:center;gap:16px">
+    <div style="text-align:right">
+      <div style="font-size:.75rem;color:rgba(255,255,255,.6);margin-bottom:4px">Tiến độ tổng thể</div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="main-progress"></div></div>
+    </div>
+    <div style="text-align:center">
+      <div style="font-size:1.4rem;font-weight:800;color:white" id="pct-text">0%</div>
+      <div style="font-size:.7rem;color:rgba(255,255,255,.5)">hoàn thành</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="summary-row">
+    <div class="scard"><div class="scard-val" id="cnt-done" style="color:#16A34A">0</div><div class="scard-lbl">Đã hoàn thành</div></div>
+    <div class="scard"><div class="scard-val" id="cnt-todo" style="color:#F97316">0</div><div class="scard-lbl">Cần làm</div></div>
+    <div class="scard"><div class="scard-val" id="cnt-inprog" style="color:#2563EB">0</div><div class="scard-lbl">Đang làm</div></div>
+    <div class="scard"><div class="scard-val" id="cnt-total" style="color:#0F172A">0</div><div class="scard-lbl">Tổng mục</div></div>
+  </div>
+
+  <div id="sections-wrap"></div>
+  <div class="updated">Cập nhật lần cuối: <span id="last-update"></span></div>
+</div>
+
+<script>
+const DATA = {
+  lastUpdate: '2026-05-06 (fix dashboard data, HDV mới vào danh sách, admin quản lý HDV mới)',
+  sections: [
+    {
+      title: '📄 Trang HTML',
+      color: 'linear-gradient(90deg,#0F172A,#1E3A5F)',
+      items: [
+        { name: 'Trang chủ', file: 'index.html', status: 'done', priority: 'high', note: 'Hero, tìm kiếm, danh sách HDV nổi bật, điểm đến' },
+        { name: 'Tìm HDV', file: 'guides.html', status: 'done', priority: 'high', note: 'Filter khu vực, giá, đánh giá, sắp xếp theo hoa hồng' },
+        { name: 'Hồ sơ HDV', file: 'guide-profile.html', status: 'done', priority: 'high', note: 'Ảnh bìa, bio, lịch trình mẫu, đánh giá, form đặt tour' },
+        { name: 'Đăng yêu cầu', file: 'request.html', status: 'done', priority: 'high', note: 'Form đầy đủ, chọn sở thích, mã yêu cầu sau submit' },
+        { name: 'Đăng ký HDV', file: 'hdv-register.html', status: 'done', priority: 'high', note: '4 bước, chọn hoa hồng 15-30%, preview thu nhập' },
+        { name: 'Chính sách hoàn tiền', file: 'chinh-sach.html', status: 'done', priority: 'med', note: '7 mục, bảng hoàn tiền, xử lý tranh chấp, bất khả kháng' },
+        { name: 'Đăng nhập / Đăng ký', file: 'login.html', status: 'done', priority: 'high', note: 'Tab login/register, phân loại khách & HDV, localStorage' },
+        { name: 'Dashboard HDV', file: 'hdv-dashboard.html', status: 'done', priority: 'high', note: 'Xem yêu cầu, chấp nhận/từ chối, thu nhập, hồ sơ' },
+        { name: 'Thanh toán', file: 'payment.html', status: 'done', priority: 'high', note: 'VNPay/MoMo/Stripe/PayPal, tóm tắt đơn, escrow note' },
+        { name: 'Dashboard khách', file: 'tourist-dashboard.html', status: 'done', priority: 'high', note: 'Lịch sử đặt tour, trạng thái yêu cầu, đánh giá sau tour' },
+        { name: 'FAQ', file: 'faq.html', status: 'done', priority: 'high', note: 'Câu hỏi thường gặp cho cả khách và HDV' },
+        { name: 'Giới thiệu (About)', file: 'about.html', status: 'done', priority: 'med', note: 'Sứ mệnh, 4 giá trị, cách hoạt động, phân chia doanh thu, timeline, đội ngũ' },
+        { name: 'Trang 404', file: '404.html', status: 'done', priority: 'med', note: 'Compass animation, ô search, quick links 5 điểm đến' },
+      ]
+    },
+    {
+      title: '⚙️ Tính năng & Logic',
+      color: 'linear-gradient(90deg,#0369A1,#0EA5E9)',
+      items: [
+        { name: 'Dữ liệu HDV (6 người)', file: 'app.js', status: 'done', priority: 'high', note: 'Avatar, cover, rating, commission, reviews, lịch trình mẫu' },
+        { name: 'Hệ thống hoa hồng', file: 'app.js', status: 'done', priority: 'high', note: '15/20/25/30% — badge và ưu tiên hiển thị trong danh sách' },
+        { name: 'Lưu yêu cầu localStorage', file: 'app.js', status: 'done', priority: 'high', note: 'gt_requests, gt_session, gt_users' },
+        { name: 'Auth (đăng nhập/đăng ký)', file: 'app.js', status: 'done', priority: 'high', note: 'Session check, auto navbar, route guard dashboard' },
+        { name: 'Filter & Sort HDV', file: 'app.js', status: 'done', priority: 'med', note: 'Khu vực, giá, đánh giá, sắp xếp' },
+        { name: 'Form đặt tour → Thanh toán', file: 'app.js', status: 'done', priority: 'high', note: 'Redirect đúng từ guide-profile → payment.html' },
+        { name: 'HDV chấp nhận/từ chối yêu cầu', file: 'hdv-dashboard.html', status: 'done', priority: 'high', note: 'Cập nhật status trong localStorage' },
+        { name: 'Đánh giá sau tour', file: 'tourist-dashboard.html', status: 'done', priority: 'med', note: 'Modal đánh giá sao + text, lưu gt_my_reviews, hiển thị trên hồ sơ HDV' },
+        { name: 'Thông báo cho HDV', file: 'app.js', status: 'done', priority: 'low', note: 'Badge đỏ số yêu cầu pending trên nút Dashboard (navbar + hdv-dashboard)' },
+        { name: 'Tìm kiếm HDV theo tên', file: 'guides.html', status: 'done', priority: 'low', note: 'Ô search trong sidebar, filter realtime theo tên' },
+        { name: 'Filter HDV theo ngôn ngữ', file: 'guides.html', status: 'done', priority: 'low', note: 'Dropdown lọc theo English/Français/中文/日本語' },
+        { name: 'Dashboard HDV hiển thị đúng dữ liệu', file: 'hdv-dashboard.html', status: 'done', priority: 'high', note: 'Đọc từ gt_hdv_profiles khi không tìm thấy trong GUIDES[], không còn fallback GUIDES[0]' },
+        { name: 'HDV mới xuất hiện trong danh sách', file: 'app.js', status: 'done', priority: 'high', note: 'getFilteredGuides() merge GUIDES[] + gt_hdv_profiles, loại trùng theo email' },
+      ]
+    },
+    {
+      title: '🎨 Giao diện & UX',
+      color: 'linear-gradient(90deg,#7C3AED,#A855F7)',
+      items: [
+        { name: 'Design system (CSS variables)', file: 'style.css', status: 'done', priority: 'high', note: 'Colors, spacing, typography, components' },
+        { name: 'Responsive mobile', file: 'style.css', status: 'done', priority: 'high', note: 'Navbar hamburger, grid stacking, filter mobile' },
+        { name: 'Toast notifications', file: 'app.js', status: 'done', priority: 'med', note: 'Toàn trang dùng chung' },
+        { name: 'Loading states', file: 'style.css', status: 'done', priority: 'low', note: 'Skeleton shimmer + fadeUp animation cho guide cards' },
+        { name: 'Ảnh placeholder đẹp', file: '—', status: 'done', priority: 'low', note: 'Unsplash CDN cho avatar và cover' },
+        { name: 'Dark mode', file: '—', status: 'skip', priority: 'low', note: 'Không nằm trong scope hiện tại' },
+      ]
+    },
+    {
+      title: '💼 Kinh doanh & Vận hành',
+      color: 'linear-gradient(90deg,#D97706,#F59E0B)',
+      items: [
+        { name: 'Mô hình hoa hồng', file: '—', status: 'done', priority: 'high', note: 'Tối thiểu 15%, HDV trả nhiều hơn được hiển thị nổi bật' },
+        { name: 'Escrow thanh toán', file: 'payment.html', status: 'done', priority: 'high', note: 'Mô tả flow, tiền giữ bởi platform đến khi tour xong' },
+        { name: 'Chính sách hoàn tiền', file: 'chinh-sach.html', status: 'done', priority: 'high', note: '>7 ngày=100%, 3-7 ngày=50%, <3 ngày=0%' },
+        { name: 'Trang admin quản lý', file: 'admin.html', status: 'done', priority: 'low', note: 'Login admin123, stats, bảng yêu cầu + action, HDV, doanh thu, đánh giá' },
+        { name: 'Admin duyệt HDV mới', file: 'admin.html', status: 'done', priority: 'med', note: 'Bảng HDV mới đăng ký từ gt_hdv_profiles, nút Xóa để quản lý' },
+        { name: 'Blog / SEO content', file: 'blog.html', status: 'done', priority: 'low', note: 'blog.html (danh sách, filter, search), blog-post.html (chi tiết, TOC, related, CTA), 6 bài mẫu VI/EN' },
+        { name: 'Hỗ trợ đa ngôn ngữ VI/EN', file: 'lang.js', status: 'done', priority: 'med', note: 'lang.js + data-i18n toàn trang, fmtPrice USD/VND, t() cho mọi chuỗi JS động, badge tier, toast, status đã dịch đầy đủ' },
+        { name: 'i18n hdv-dashboard.html', file: 'hdv-dashboard.html', status: 'skip', priority: 'low', note: 'Dashboard HDV chỉ dành cho người Việt dùng — tạm bỏ qua' },
+      ]
+    }
+  ]
+};
+
+const statusMap = {
+  done:   { label: '✅ Đã xong',   cls: 'b-done' },
+  todo:   { label: '⏳ Cần làm',   cls: 'b-todo' },
+  inprog: { label: '🔄 Đang làm',  cls: 'b-inprog' },
+  skip:   { label: '⏭ Bỏ qua',    cls: 'b-skip' },
+};
+const priorityMap = {
+  high: { label: '🔴 Cao',   cls: 'p-high' },
+  med:  { label: '🟡 Trung', cls: 'p-med' },
+  low:  { label: '🟢 Thấp',  cls: 'p-low' },
+};
+
+function render() {
+  const wrap = document.getElementById('sections-wrap');
+  wrap.innerHTML = '';
+  let totalDone = 0, totalTodo = 0, totalInprog = 0, totalAll = 0;
+
+  DATA.sections.forEach((sec, si) => {
+    totalAll += sec.items.length;
+    totalDone += sec.items.filter(i => i.status === 'done').length;
+    totalTodo += sec.items.filter(i => i.status === 'todo').length;
+    totalInprog += sec.items.filter(i => i.status === 'inprog').length;
+
+    const el = document.createElement('div');
+    el.className = 'section';
+    el.innerHTML = `
+      <div class="section-head" style="background:${sec.color}">
+        <i class="fa-solid fa-table-list"></i> ${sec.title}
+        <span style="margin-left:auto;font-weight:400;font-size:.78rem;opacity:.8">
+          ${sec.items.filter(i=>i.status==='done').length}/${sec.items.length} hoàn thành
+        </span>
+      </div>
+      <table>
+        <thead><tr>
+          <th style="width:200px">Mục</th>
+          <th style="width:140px">File</th>
+          <th style="width:110px">Trạng thái</th>
+          <th style="width:90px">Ưu tiên</th>
+          <th>Ghi chú</th>
+        </tr></thead>
+        <tbody>
+          ${sec.items.map((item, ii) => `
+            <tr>
+              <td style="font-weight:600">${item.name}</td>
+              <td>${item.file !== '—' ? `<a class="file-link" href="${item.file}" target="_blank">${item.file}</a>` : '<span style="color:#CBD5E1">—</span>'}</td>
+              <td><span class="badge ${statusMap[item.status]?.cls || 'b-skip'}">${statusMap[item.status]?.label || item.status}</span></td>
+              <td><span class="priority ${priorityMap[item.priority]?.cls || ''}">${priorityMap[item.priority]?.label || ''}</span></td>
+              <td class="note-cell">${item.note}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>`;
+    wrap.appendChild(el);
+  });
+
+  document.getElementById('cnt-done').textContent   = totalDone;
+  document.getElementById('cnt-todo').textContent   = totalTodo;
+  document.getElementById('cnt-inprog').textContent = totalInprog;
+  document.getElementById('cnt-total').textContent  = totalAll;
+
+  const pct = Math.round(totalDone / totalAll * 100);
+  document.getElementById('main-progress').style.width = pct + '%';
+  document.getElementById('pct-text').textContent = pct + '%';
+  document.getElementById('last-update').textContent = DATA.lastUpdate;
+}
+
+function changeStatus(si, ii, val) {
+  DATA.sections[si].items[ii].status = val;
+  DATA.lastUpdate = new Date().toLocaleDateString('vi-VN');
+  render();
+  // Save to localStorage
+  localStorage.setItem('gt_tracker', JSON.stringify(DATA));
+}
+
+// Load saved state
+const saved = JSON.parse(localStorage.getItem('gt_tracker') || 'null');
+if (saved) {
+  saved.sections.forEach((sec, si) => {
+    sec.items.forEach((item, ii) => {
+      if (DATA.sections[si]?.items[ii]) DATA.sections[si].items[ii].status = item.status;
+    });
+  });
+}
+
+render();
+</script>
+</body>
+</html>

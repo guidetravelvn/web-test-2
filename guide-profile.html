@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guide Profile - GuideTravel</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-mark"><i class="fa-solid fa-compass"></i></div>
+        Guide<em>Travel</em>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" data-i18n="nav.home">Trang chủ</a>
+        <a href="guides.html" data-i18n="nav.find_guide">Tìm HDV</a>
+        <a href="blog.html" data-i18n="nav.blog">Blog</a>
+        <a href="request.html" data-i18n="nav.post_request">Đăng yêu cầu</a>
+      </div>
+      <div class="nav-right"></div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+
+<div class="mob-menu">
+  <div class="mob-panel">
+    <button class="mob-close"><i class="fa-solid fa-xmark"></i></button>
+    <a href="index.html"><i class="fa-solid fa-house"></i> <span data-i18n="nav.home">Trang chủ</span></a>
+    <a href="guides.html"><i class="fa-solid fa-users"></i> <span data-i18n="nav.find_guide">Tìm HDV</span></a>
+    <a href="blog.html"><i class="fa-solid fa-newspaper"></i> <span data-i18n="nav.blog">Blog</span></a>
+    <a href="request.html"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="nav.post_request">Đăng yêu cầu</span></a>
+  </div>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-hd" style="padding-bottom:0">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="index.html" data-i18n="nav.home">Trang chủ</a><span>/</span>
+      <a href="guides.html" data-i18n="nav.find_guide">HDV</a><span>/</span>
+      <span style="color:white" id="page-title">Profile</span>
+    </div>
+  </div>
+  <!-- Cover photo -->
+  <div style="height:220px;overflow:hidden;margin-top:20px;position:relative">
+    <img id="p-cover" src="" alt="Cover" style="width:100%;height:100%;object-fit:cover">
+    <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(15,23,42,.6),transparent)"></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="container">
+  <div class="profile-layout">
+
+    <!-- LEFT -->
+    <div>
+      <!-- Profile top card -->
+      <div class="profile-card" style="margin-top:-40px;position:relative">
+        <div class="profile-top">
+          <div class="profile-avatar">
+            <img id="p-avatar" src="" alt="">
+          </div>
+          <div class="profile-info">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">
+              <div class="profile-name" id="p-name">Loading...</div>
+              <span id="p-verified"></span>
+            </div>
+            <div class="profile-meta">
+              <div class="pmeta-item"><i class="fa-solid fa-location-dot"></i> <span id="p-location"></span></div>
+              <div class="pmeta-item rating"><i class="fa-solid fa-star"></i> <span id="p-rating"></span></div>
+              <div class="pmeta-item"><i class="fa-solid fa-briefcase"></i> <span id="p-exp"></span></div>
+              <div class="pmeta-item"><i class="fa-regular fa-clock"></i> <span data-i18n="profile.resp_lbl">Phản hồi</span> <span id="p-response"></span></div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap" id="p-langs"></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px" id="p-specs"></div>
+        <div class="profile-stats">
+          <div class="pstat"><strong id="p-trips">0</strong><span data-i18n="profile.trips">Chuyến đã dẫn</span></div>
+          <div class="pstat"><strong id="p-reviews-count">0</strong><span data-i18n="profile.reviews_stat">Đánh giá</span></div>
+          <div class="pstat"><strong style="color:var(--blue)" id="p-price-from">0đ</strong><span data-i18n="profile.per_day_lbl">/ ngày</span></div>
+        </div>
+      </div>
+
+      <!-- About -->
+      <div class="profile-card">
+        <h3><i class="fa-solid fa-user" style="color:var(--blue)"></i> <span data-i18n="profile.about_h">Giới Thiệu</span></h3>
+        <p id="p-bio" style="line-height:1.75;color:var(--gray)"></p>
+      </div>
+
+      <!-- Sample Itineraries -->
+      <div class="profile-card">
+        <h3><i class="fa-solid fa-map" style="color:var(--blue)"></i> <span data-i18n="profile.itin_h">Lịch Trình Mẫu</span></h3>
+        <div id="p-itineraries"></div>
+        <p style="font-size:.82rem;color:var(--gray-2);margin-top:12px">
+          <i class="fa-solid fa-circle-info"></i> <span data-i18n="profile.itin_note">Đây là lịch trình mẫu. HDV sẽ tùy chỉnh theo yêu cầu của bạn.</span>
+        </p>
+      </div>
+
+      <!-- Reviews -->
+      <div class="profile-card">
+        <h3><i class="fa-solid fa-star" style="color:var(--yellow)"></i> <span data-i18n="profile.reviews_h">Đánh Giá Từ Khách</span></h3>
+        <div id="p-reviews"></div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="book-sidebar">
+      <div class="book-card featured">
+        <div class="book-price">
+          <div class="from" data-i18n="profile.price_from_lbl">Giá dịch vụ từ</div>
+          <div><span class="amount" id="sb-price">0đ</span> <span class="per" data-i18n="profile.per_day_lbl">/ ngày</span></div>
+          <div class="note" data-i18n="profile.price_note_lbl">Giá cuối tùy theo lịch trình & yêu cầu của bạn</div>
+        </div>
+
+        <form id="booking-form" class="book-form">
+          <div class="fg">
+            <label data-i18n="profile.start_lbl">Ngày bắt đầu</label>
+            <input type="date" id="bf-date" required>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="fg">
+              <label data-i18n="profile.days_lbl">Số ngày</label>
+              <select id="bf-days">
+                <option value="1">1</option>
+                <option value="2" selected>2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="7">7</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label data-i18n="profile.people_lbl">Số người</label>
+              <select id="bf-people">
+                <option value="1">1</option>
+                <option value="2" selected>2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5+</option>
+              </select>
+            </div>
+          </div>
+          <div class="book-divider"></div>
+          <div class="book-total">
+            <span data-i18n="profile.est_lbl">Dự kiến</span>
+            <strong id="bf-total">0đ</strong>
+          </div>
+          <button type="submit" class="btn btn-orange btn-block btn-lg">
+            <i class="fa-solid fa-paper-plane"></i> <span data-i18n="profile.req_btn">Gửi Yêu Cầu</span>
+          </button>
+        </form>
+
+        <div class="book-guarantees">
+          <div class="guarantee-row"><i class="fa-solid fa-circle-check"></i> <span data-i18n="profile.g1">Miễn phí gửi yêu cầu</span></div>
+          <div class="guarantee-row"><i class="fa-solid fa-circle-check"></i> <span data-i18n="profile.g2">HDV phản hồi trong 24h</span></div>
+          <div class="guarantee-row"><i class="fa-solid fa-circle-check"></i> <span data-i18n="profile.g3">Thanh toán sau khi chốt lịch trình</span></div>
+        </div>
+      </div>
+
+      <!-- Share -->
+      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;margin-top:14px">
+        <div style="font-size:.85rem;font-weight:600;color:var(--dark);margin-bottom:12px" data-i18n="profile.share_h">Chia sẻ hồ sơ này</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" style="background:#1877F2;color:white;flex:1" onclick="shareProfile('fb')">
+            <i class="fa-brands fa-facebook-f"></i>
+          </button>
+          <button class="btn btn-sm" style="background:#25D366;color:white;flex:1" onclick="shareProfile('zalo')">
+            Zalo
+          </button>
+          <button class="btn btn-sm btn-outline" onclick="copyProfileLink()" title="Copy link">
+            <i class="fa-solid fa-link"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo"><div class="logo-mark"><i class="fa-solid fa-compass"></i></div> Guide<em style="color:var(--blue)">Travel</em></a>
+        <p data-i18n="footer.brand_sub">Kết nối du khách với hướng dẫn viên địa phương.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.explore">Khám Phá</h4>
+        <ul>
+          <li><a href="guides.html" data-i18n="footer.find_guides">Tìm HDV</a></li>
+          <li><a href="request.html" data-i18n="footer.post_request">Đăng yêu cầu</a></li>
+          <li><a href="hdv-register.html" data-i18n="footer.become_guide">Đăng ký làm HDV</a></li>
+          <li><a href="chinh-sach.html" data-i18n="footer.refund">Chính sách hoàn tiền</a></li>
+        </ul>
+      </div>
+      <div class="footer-col"></div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.contact">Liên Hệ</h4>
+        <div class="footer-contact">
+          <div class="fc-item"><i class="fa-solid fa-phone"></i><span>1900 123 456</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom"><p data-i18n="footer.copyright">© 2024 GuideTravel.</p></div>
+  </div>
+</footer>
+
+<script src="lang.js"></script>
+<script src="app.js"></script>
+<script>
+document.getElementById('bf-date').min = new Date().toISOString().split('T')[0];
+function shareProfile(p) {
+  const url = encodeURIComponent(location.href);
+  if (p === 'fb') window.open('https://www.facebook.com/sharer/sharer.php?u=' + url);
+}
+function copyProfileLink() {
+  navigator.clipboard.writeText(location.href).then(() => toast('Đã sao chép link!', 'ok'));
+}
+</script>
+</body>
+</html>

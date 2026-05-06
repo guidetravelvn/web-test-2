@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard HDV - GuideTravel</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .dash-wrap { display:grid; grid-template-columns:280px 1fr; gap:28px; padding:32px 0 60px; }
+    @media(max-width:900px){ .dash-wrap { grid-template-columns:1fr; } .dash-sidebar { display:none; } }
+    .dash-sidebar {}
+    .guide-id-card { background:linear-gradient(135deg,#0F172A,#1E3A5F); border-radius:var(--radius-lg); padding:24px; color:white; margin-bottom:16px; }
+    .gic-avatar { width:72px; height:72px; border-radius:50%; object-fit:cover; border:3px solid rgba(255,255,255,.3); margin-bottom:12px; }
+    .gic-name { font-size:1.1rem; font-weight:700; }
+    .gic-role { font-size:.8rem; color:rgba(255,255,255,.6); margin-top:2px; }
+    .gic-stats { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px; }
+    .gic-stat { background:rgba(255,255,255,.1); border-radius:8px; padding:10px; text-align:center; }
+    .gic-stat strong { display:block; font-size:1.2rem; color:white; }
+    .gic-stat span { font-size:.72rem; color:rgba(255,255,255,.6); }
+    .dash-nav { background:white; border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+    .dash-nav a { display:flex; align-items:center; gap:10px; padding:13px 18px; color:var(--gray); font-size:.88rem; font-weight:500; border-left:3px solid transparent; transition:.15s; text-decoration:none; }
+    .dash-nav a:hover { background:#F8FAFC; color:var(--dark); }
+    .dash-nav a.active { color:var(--blue); background:#EFF6FF; border-left-color:var(--blue); }
+    .dash-nav a i { width:18px; text-align:center; }
+    .dash-main {}
+    .dash-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
+    @media(max-width:700px){ .dash-stats { grid-template-columns:1fr 1fr; } }
+    .dstat { background:white; border:1px solid var(--border); border-radius:var(--radius-lg); padding:20px; }
+    .dstat-icon { width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; margin-bottom:12px; }
+    .dstat-val { font-size:1.5rem; font-weight:800; color:var(--dark); }
+    .dstat-lbl { font-size:.78rem; color:var(--gray-2); margin-top:2px; }
+    .section-card { background:white; border:1px solid var(--border); border-radius:var(--radius-lg); padding:24px; margin-bottom:20px; }
+    .section-card h3 { font-size:1rem; font-weight:700; color:var(--dark); margin-bottom:18px; display:flex; align-items:center; gap:8px; }
+    .req-tabs { display:flex; gap:0; border-bottom:2px solid var(--border); margin-bottom:20px; }
+    .req-tab { padding:10px 20px; font-size:.85rem; font-weight:600; cursor:pointer; color:var(--gray-2); border-bottom:3px solid transparent; margin-bottom:-2px; transition:.2s; }
+    .req-tab.active { color:var(--blue); border-bottom-color:var(--blue); }
+    .req-card { border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:12px; transition:.2s; }
+    .req-card:hover { border-color:var(--blue-light); box-shadow:0 2px 12px rgba(14,165,233,.08); }
+    .req-card-head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:10px; }
+    .req-code { font-size:.75rem; font-family:monospace; color:var(--gray-2); }
+    .req-status { font-size:.73rem; font-weight:700; padding:3px 10px; border-radius:99px; }
+    .st-pending { background:#FFF7ED; color:#F97316; }
+    .st-accepted { background:#F0FDF4; color:#16A34A; }
+    .st-declined { background:#FEF2F2; color:#DC2626; }
+    .st-done { background:#EFF6FF; color:#0EA5E9; }
+    .req-info { display:grid; grid-template-columns:1fr 1fr; gap:6px 16px; font-size:.83rem; color:var(--gray); margin-bottom:12px; }
+    .req-info span { display:flex; align-items:center; gap:5px; }
+    .req-info strong { color:var(--dark); }
+    .req-actions { display:flex; gap:8px; }
+    .req-tourist { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+    .req-tourist-ava { width:36px; height:36px; border-radius:50%; background:var(--blue); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.95rem; flex-shrink:0; }
+    .req-tourist-name { font-weight:600; font-size:.9rem; color:var(--dark); }
+    .req-tourist-contact { font-size:.78rem; color:var(--gray-2); }
+    .empty-state { text-align:center; padding:48px 0; color:var(--gray-2); }
+    .empty-state i { font-size:2.5rem; margin-bottom:12px; display:block; color:var(--border); }
+    .earn-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); font-size:.85rem; }
+    .earn-row:last-child { border-bottom:none; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-mark"><i class="fa-solid fa-compass"></i></div>
+        Guide<em>Travel</em>
+      </a>
+      <div class="nav-links">
+        <a href="index.html">Trang chủ</a>
+        <a href="guides.html">Tìm HDV</a>
+      </div>
+      <div class="nav-right" id="nav-right-dash">
+        <div style="display:flex;gap:2px;border:1px solid var(--border);border-radius:8px;overflow:hidden;flex-shrink:0">
+          <button class="lang-btn" data-lang="vi" onclick="setLang('vi')" style="padding:5px 9px;font-size:.75rem;font-weight:700;border:none;cursor:pointer;background:white;color:var(--gray-2)">🇻🇳 VI</button>
+          <button class="lang-btn" data-lang="en" onclick="setLang('en')" style="padding:5px 9px;font-size:.75rem;font-weight:700;border:none;cursor:pointer;background:white;color:var(--gray-2)">🇬🇧 EN</button>
+        </div>
+        <a href="hdv-dashboard.html" class="btn btn-outline btn-sm active" style="position:relative" id="nav-dash-btn"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+        <button class="btn btn-sm" style="background:#FEF2F2;color:#DC2626;border:1px solid #FECACA" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="nav.logout">Đăng xuất</span></button>
+      </div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+
+<div class="page-hd" style="padding:28px 0">
+  <div class="container">
+    <h1 id="dash-greeting">Dashboard HDV</h1>
+    <p id="dash-sub">Quản lý yêu cầu và theo dõi thu nhập của bạn</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="dash-wrap">
+
+    <!-- SIDEBAR -->
+    <div class="dash-sidebar">
+      <div class="guide-id-card">
+        <img id="d-avatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80" alt="" class="gic-avatar">
+        <div class="gic-name" id="d-name">Đang tải...</div>
+        <div class="gic-role"><i class="fa-solid fa-circle-check" style="color:#34D399"></i> Hướng dẫn viên đã xác minh</div>
+        <div class="gic-stats">
+          <div class="gic-stat"><strong id="d-trips">0</strong><span>Chuyến</span></div>
+          <div class="gic-stat"><strong id="d-rating">0</strong><span>Đánh giá</span></div>
+          <div class="gic-stat"><strong id="d-comm">0%</strong><span>Hoa hồng</span></div>
+          <div class="gic-stat"><strong id="d-price">0đ</strong><span>/ ngày</span></div>
+        </div>
+      </div>
+      <nav class="dash-nav">
+        <a href="#requests" class="active" onclick="showSection('requests',this)"><i class="fa-solid fa-inbox"></i> Yêu cầu từ khách</a>
+        <a href="#earnings" onclick="showSection('earnings',this)"><i class="fa-solid fa-chart-line"></i> Thu nhập</a>
+        <a href="#profile" onclick="showSection('profile',this)"><i class="fa-solid fa-user"></i> Hồ sơ của tôi</a>
+        <a href="guide-profile.html" id="d-profile-link"><i class="fa-solid fa-eye"></i> Xem hồ sơ công khai</a>
+        <a href="chinh-sach.html"><i class="fa-solid fa-file-contract"></i> Chính sách hoàn tiền</a>
+      </nav>
+    </div>
+
+    <!-- MAIN -->
+    <div class="dash-main">
+      <!-- Stats row -->
+      <div class="dash-stats">
+        <div class="dstat">
+          <div class="dstat-icon" style="background:#EFF6FF;color:var(--blue)"><i class="fa-solid fa-inbox"></i></div>
+          <div class="dstat-val" id="st-new">0</div>
+          <div class="dstat-lbl">Yêu cầu mới</div>
+        </div>
+        <div class="dstat">
+          <div class="dstat-icon" style="background:#F0FDF4;color:#16A34A"><i class="fa-solid fa-circle-check"></i></div>
+          <div class="dstat-val" id="st-accepted">0</div>
+          <div class="dstat-lbl">Đã xác nhận</div>
+        </div>
+        <div class="dstat">
+          <div class="dstat-icon" style="background:#FFF7ED;color:#F97316"><i class="fa-solid fa-sack-dollar"></i></div>
+          <div class="dstat-val" id="st-earn">0đ</div>
+          <div class="dstat-lbl">Dự kiến thu nhập</div>
+        </div>
+        <div class="dstat">
+          <div class="dstat-icon" style="background:#F5F3FF;color:#7C3AED"><i class="fa-solid fa-star"></i></div>
+          <div class="dstat-val" id="st-rating2">0</div>
+          <div class="dstat-lbl">Điểm đánh giá</div>
+        </div>
+      </div>
+
+      <!-- REQUESTS SECTION -->
+      <div class="section-card" id="sec-requests">
+        <h3><i class="fa-solid fa-inbox" style="color:var(--blue)"></i> Yêu cầu từ khách</h3>
+        <div class="req-tabs">
+          <div class="req-tab active" onclick="filterReqs('all',this)">Tất cả</div>
+          <div class="req-tab" onclick="filterReqs('pending',this)">Chờ xử lý <span id="badge-pending" style="background:#FFF7ED;color:#F97316;border-radius:99px;padding:1px 7px;font-size:.72rem;margin-left:4px"></span></div>
+          <div class="req-tab" onclick="filterReqs('accepted',this)">Đã chấp nhận</div>
+          <div class="req-tab" onclick="filterReqs('declined',this)">Đã từ chối</div>
+        </div>
+        <div id="req-list"></div>
+      </div>
+
+      <!-- EARNINGS SECTION -->
+      <div class="section-card" id="sec-earnings" style="display:none">
+        <h3><i class="fa-solid fa-chart-line" style="color:var(--blue)"></i> Thu nhập</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+          <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--radius);padding:18px;text-align:center">
+            <div style="font-size:.8rem;color:#16A34A;font-weight:600;margin-bottom:4px">Tháng này</div>
+            <div style="font-size:1.6rem;font-weight:800;color:#15803D" id="earn-month">0đ</div>
+          </div>
+          <div style="background:#EFF6FF;border:1px solid #BAE6FD;border-radius:var(--radius);padding:18px;text-align:center">
+            <div style="font-size:.8rem;color:var(--blue);font-weight:600;margin-bottom:4px">Tổng cộng</div>
+            <div style="font-size:1.6rem;font-weight:800;color:#0369A1" id="earn-total">0đ</div>
+          </div>
+        </div>
+        <div style="font-size:.85rem;font-weight:600;color:var(--dark);margin-bottom:10px">Chi tiết giao dịch</div>
+        <div id="earn-list"><div class="empty-state"><i class="fa-solid fa-receipt"></i><p>Chưa có giao dịch</p></div></div>
+      </div>
+
+      <!-- PROFILE SECTION -->
+      <div class="section-card" id="sec-profile" style="display:none">
+        <h3><i class="fa-solid fa-user" style="color:var(--blue)"></i> Thông tin hồ sơ</h3>
+        <div id="profile-info"></div>
+        <div style="margin-top:16px;display:flex;gap:10px">
+          <a id="edit-profile-link" href="hdv-register.html" class="btn btn-outline btn-sm"><i class="fa-solid fa-pen"></i> Chỉnh sửa hồ sơ</a>
+          <a id="pub-profile-link" href="guides.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-eye"></i> Xem hồ sơ công khai</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom"><p>© 2024 GuideTravel.</p></div>
+  </div>
+</footer>
+
+<script src="lang.js"></script>
+<script src="app.js"></script>
+<script>
+const fmt2 = n => new Intl.NumberFormat('vi-VN').format(n) + 'đ';
+
+function updateNavBadge() {
+  const btn = document.getElementById('nav-dash-btn');
+  if (!btn) return;
+  const old = btn.querySelector('.nav-badge');
+  if (old) old.remove();
+  const reqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
+  const n = reqs.filter(r => r.status === 'pending').length;
+  if (n > 0) {
+    const badge = document.createElement('span');
+    badge.className = 'nav-badge';
+    badge.textContent = n > 9 ? '9+' : n;
+    badge.style.cssText = 'position:absolute;top:-6px;right:-6px;background:#EF4444;color:white;font-size:.65rem;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid white;line-height:1';
+    btn.appendChild(badge);
+  }
+}
+
+function logout() {
+  localStorage.removeItem('gt_session');
+  location.href = 'login.html';
+}
+
+function showSection(name, el) {
+  ['requests','earnings','profile'].forEach(s => {
+    document.getElementById('sec-' + s).style.display = s === name ? 'block' : 'none';
+  });
+  document.querySelectorAll('.dash-nav a').forEach(a => a.classList.remove('active'));
+  if (el) el.classList.add('active');
+  return false;
+}
+
+let allReqs = [];
+let currentFilter = 'all';
+
+function filterReqs(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.req-tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderReqs();
+}
+
+function renderReqs() {
+  const list = document.getElementById('req-list');
+  let reqs = allReqs;
+  if (currentFilter !== 'all') reqs = reqs.filter(r => r.status === currentFilter);
+  if (!reqs.length) {
+    list.innerHTML = `<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>Không có yêu cầu nào</p></div>`;
+    return;
+  }
+  list.innerHTML = reqs.map(r => {
+    const statusMap = { pending:'st-pending', accepted:'st-accepted', declined:'st-declined', done:'st-done' };
+    const statusLabel = { pending:'Chờ xử lý', accepted:'Đã chấp nhận', declined:'Đã từ chối', done:'Hoàn thành' };
+    const sc = statusMap[r.status] || 'st-pending';
+    const sl = statusLabel[r.status] || r.status;
+    const isPending = r.status === 'pending' || r.status === 'Chờ xác nhận';
+    return `
+    <div class="req-card">
+      <div class="req-card-head">
+        <div>
+          <div class="req-tourist">
+            <div class="req-tourist-ava">${(r.name||'K')[0].toUpperCase()}</div>
+            <div>
+              <div class="req-tourist-name">${r.name || 'Ẩn danh'}</div>
+              <div class="req-tourist-contact">${r.phone || ''} ${r.email ? '· ' + r.email : ''}</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+          <span class="req-status ${sc}">${sl}</span>
+          <span class="req-code">#${r.id}</span>
+        </div>
+      </div>
+      <div class="req-info">
+        <span><i class="fa-solid fa-location-dot"></i> <strong>${r.destination || 'Chưa rõ'}</strong></span>
+        <span><i class="fa-regular fa-calendar"></i> <strong>${r.date || '—'}</strong></span>
+        <span><i class="fa-solid fa-moon"></i> <strong>${r.days || 1} ngày</strong></span>
+        <span><i class="fa-solid fa-users"></i> <strong>${r.people || 1} người</strong></span>
+        ${r.budget ? `<span><i class="fa-solid fa-wallet"></i> <strong>${r.budget}</strong></span>` : ''}
+        ${r.interests && r.interests.length ? `<span><i class="fa-solid fa-tags"></i> <strong>${r.interests.slice(0,3).join(', ')}</strong></span>` : ''}
+      </div>
+      ${r.notes ? `<div style="font-size:.82rem;color:var(--gray);background:#F8FAFC;border-radius:6px;padding:8px 10px;margin-bottom:10px"><i class="fa-solid fa-quote-left" style="margin-right:4px"></i>${r.notes}</div>` : ''}
+      ${isPending ? `
+      <div class="req-actions">
+        <button class="btn btn-sm" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="acceptReq('${r.id}')"><i class="fa-solid fa-check"></i> Chấp nhận</button>
+        <button class="btn btn-sm" style="background:#FEF2F2;color:#DC2626;border:1px solid #FECACA" onclick="declineReq('${r.id}')"><i class="fa-solid fa-xmark"></i> Từ chối</button>
+        <button class="btn btn-sm btn-outline" onclick="contactTourist('${r.phone||''}','${r.name||''}')"><i class="fa-solid fa-phone"></i> Liên hệ</button>
+      </div>` : `
+      <div class="req-actions">
+        <button class="btn btn-sm btn-outline" onclick="contactTourist('${r.phone||''}','${r.name||''}')"><i class="fa-solid fa-phone"></i> Liên hệ</button>
+      </div>`}
+    </div>`;
+  }).join('');
+}
+
+function acceptReq(id) {
+  const reqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
+  const idx = reqs.findIndex(r => r.id === id);
+  if (idx > -1) { reqs[idx].status = 'accepted'; localStorage.setItem('gt_requests', JSON.stringify(reqs)); }
+  allReqs = allReqs.map(r => r.id === id ? {...r, status:'accepted'} : r);
+  renderReqs();
+  updateStats();
+  updateNavBadge();
+  toast('Đã chấp nhận yêu cầu!', 'ok');
+}
+
+function declineReq(id) {
+  const reqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
+  const idx = reqs.findIndex(r => r.id === id);
+  if (idx > -1) { reqs[idx].status = 'declined'; localStorage.setItem('gt_requests', JSON.stringify(reqs)); }
+  allReqs = allReqs.map(r => r.id === id ? {...r, status:'declined'} : r);
+  renderReqs();
+  updateStats();
+  updateNavBadge();
+  toast('Đã từ chối yêu cầu.', 'ok');
+}
+
+function contactTourist(phone, name) {
+  if (phone) window.open('tel:' + phone);
+  else toast('Khách chưa để lại số điện thoại.', 'err');
+}
+
+function updateStats() {
+  const pending = allReqs.filter(r => r.status === 'pending' || r.status === 'Chờ xác nhận').length;
+  const accepted = allReqs.filter(r => r.status === 'accepted').length;
+  document.getElementById('st-new').textContent = pending;
+  document.getElementById('st-accepted').textContent = accepted;
+  const badge = document.getElementById('badge-pending');
+  if (badge) badge.textContent = pending || '';
+}
+
+function initDash() {
+  let session = JSON.parse(localStorage.getItem('gt_session') || 'null');
+  if (!session || session.type !== 'guide') {
+    location.href = 'login.html?redirect=hdv-dashboard.html';
+    return;
+  }
+  if (!session.verified) {
+    // Check if this is one of the demo guides (pre-verified by email)
+    const isDemo = [
+      'khoa@guidetravel.vn','lan@guidetravel.vn','minh@guidetravel.vn',
+      'thu@guidetravel.vn','hung@guidetravel.vn','hoa@guidetravel.vn'
+    ].includes(session.email);
+    if (!isDemo) {
+      document.body.innerHTML = `
+        <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#F1F5F9;font-family:'Segoe UI',sans-serif">
+          <div style="background:white;border-radius:16px;padding:48px 40px;text-align:center;max-width:420px;box-shadow:0 4px 24px rgba(0,0,0,.1)">
+            <div style="width:72px;height:72px;background:#FEF2F2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
+              <i class="fa-solid fa-lock" style="font-size:2rem;color:#EF4444"></i>
+            </div>
+            <h2 style="font-size:1.3rem;font-weight:700;color:#0F172A;margin-bottom:10px">Chưa đăng ký HDV</h2>
+            <p style="color:#64748B;font-size:.9rem;line-height:1.6;margin-bottom:28px">Bạn cần hoàn tất đăng ký hướng dẫn viên chuyên nghiệp trước khi sử dụng dashboard và nhận yêu cầu tour.</p>
+            <a href="hdv-register.html" style="display:inline-block;background:#F97316;color:white;font-weight:700;padding:12px 28px;border-radius:10px;text-decoration:none;font-size:.95rem">
+              <i class="fa-solid fa-id-card"></i> Đăng ký ngay
+            </a>
+            <div style="margin-top:14px"><a href="index.html" style="color:#94A3B8;font-size:.85rem">Về trang chủ</a></div>
+          </div>
+        </div>`;
+      return;
+    }
+    // Auto-verify demo accounts
+    session.verified = true;
+    localStorage.setItem('gt_session', JSON.stringify(session));
+  }
+
+  // Find guide data: check GUIDES[] first, then gt_hdv_profiles
+  const localProfiles = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+  const guide = GUIDES.find(g => g.email === session.email)
+    || localProfiles.find(p => p.email === session.email)
+    || null;
+
+  if (!guide) {
+    document.getElementById('dash-greeting').textContent = 'Xin chào, ' + session.name + '!';
+    document.getElementById('d-name').textContent = session.name;
+    document.getElementById('sec-requests').innerHTML = `<div class="empty-state"><i class="fa-solid fa-file-circle-question"></i><p>Chưa có hồ sơ HDV. <a href="hdv-register.html" style="color:var(--blue)">Đăng ký ngay</a></p></div>`;
+    return;
+  }
+
+  // Show pending banner if not yet approved
+  if (guide.status === 'pending_review') {
+    const banner = document.createElement('div');
+    banner.style.cssText = 'background:#FFF7ED;border:1px solid #FED7AA;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px';
+    banner.innerHTML = `<i class="fa-solid fa-clock" style="font-size:1.5rem;color:#F97316;flex-shrink:0"></i><div><div style="font-weight:700;color:#F97316;margin-bottom:3px">Hồ sơ đang chờ duyệt</div><div style="font-size:.85rem;color:#92400E">GuideTravel đang xét duyệt thông tin của bạn (1-2 ngày). Sau khi được duyệt, hồ sơ sẽ hiển thị công khai và bạn có thể nhận yêu cầu tour.</div></div>`;
+    document.querySelector('.dash-main').prepend(banner);
+    document.getElementById('sec-requests').innerHTML = `<div class="empty-state"><i class="fa-solid fa-lock"></i><p>Chờ admin duyệt hồ sơ trước khi nhận yêu cầu</p></div>`;
+    return;
+  }
+
+  // Update greeting
+  document.getElementById('dash-greeting').textContent = 'Xin chào, ' + guide.name + '!';
+  document.getElementById('d-name').textContent = guide.name;
+  document.getElementById('d-avatar').src = guide.avatar;
+  document.getElementById('d-trips').textContent = (guide.trips || 0) + (guide.trips ? '+' : '');
+  document.getElementById('d-rating').textContent = guide.rating || '—';
+  document.getElementById('d-comm').textContent = (guide.commission || 15) + '%';
+  document.getElementById('d-price').textContent = fmt2(guide.pricePerDay || 0);
+  document.getElementById('st-rating2').textContent = guide.rating || '—';
+  const profileLink = guide.id ? 'guide-profile.html?id=' + guide.id : 'guides.html';
+  document.getElementById('d-profile-link').href = profileLink;
+  document.getElementById('pub-profile-link').href = profileLink;
+
+  // Load requests - show all requests (demo mode)
+  const storedReqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
+
+  // Add some demo requests if empty
+  if (!storedReqs.length) {
+    const demo = [
+      { id:'GT00000001', name:'Lê Thị Hương', phone:'0901234567', email:'huong@gmail.com', destination:'Nha Trang', date:'2024-06-15', days:3, people:2, budget:'5-10 triệu', interests:['Biển đảo','Ẩm thực'], notes:'Gia đình 2 người lớn, thích chỗ ít du khách.', status:'pending', createdAt: new Date().toISOString() },
+      { id:'GT00000002', name:'Trần Quốc Bảo', phone:'0912345678', email:'bao@gmail.com', destination:'Nha Trang', date:'2024-06-20', days:2, people:4, budget:'10-20 triệu', interests:['Lặn biển'], notes:'Nhóm bạn 4 người, muốn lặn ngắm san hô.', status:'pending', createdAt: new Date().toISOString() },
+      { id:'GT00000003', name:'Phạm Thúy Linh', phone:'0923456789', email:'linh@gmail.com', destination:'Đà Lạt', date:'2024-05-28', days:4, people:2, budget:'< 5 triệu', interests:['Chụp ảnh','Cà phê'], notes:'', status:'accepted', createdAt: new Date().toISOString() },
+    ];
+    localStorage.setItem('gt_requests', JSON.stringify(demo));
+    allReqs = demo;
+  } else {
+    allReqs = storedReqs;
+  }
+
+  renderReqs();
+  updateStats();
+  updateNavBadge();
+
+  // Earnings calc
+  const price = guide.pricePerDay || 0;
+  const comm = guide.commission || 15;
+  const acceptedReqs = allReqs.filter(r => r.status === 'accepted');
+  const totalEarn = acceptedReqs.reduce((s, r) => s + (price * (1 - comm/100) * parseInt(r.days||1)), 0);
+  document.getElementById('st-earn').textContent = fmt2(Math.round(totalEarn));
+  document.getElementById('earn-total').textContent = fmt2(Math.round(totalEarn));
+  document.getElementById('earn-month').textContent = fmt2(Math.round(totalEarn * 0.4));
+
+  // Earn list
+  if (acceptedReqs.length) {
+    document.getElementById('earn-list').innerHTML = acceptedReqs.map(r => `
+      <div class="earn-row">
+        <div>
+          <div style="font-weight:600;font-size:.85rem">${r.name} — ${r.destination}</div>
+          <div style="font-size:.75rem;color:var(--gray-2)">${r.date} · ${r.days} ngày · ${r.people} người</div>
+        </div>
+        <div style="font-weight:700;color:#16A34A">+${fmt2(Math.round(price * (1 - comm/100) * parseInt(r.days||1)))}</div>
+      </div>`).join('');
+  }
+
+  // Profile section
+  const expLabel = guide.experience > 0 ? guide.experience + ' năm' : 'Mới bắt đầu';
+  document.getElementById('profile-info').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;font-size:.87rem">
+      <div><span style="color:var(--gray-2)">Tên</span><div style="font-weight:600">${guide.name}</div></div>
+      <div><span style="color:var(--gray-2)">Khu vực</span><div style="font-weight:600">${guide.location || '—'}</div></div>
+      <div><span style="color:var(--gray-2)">Kinh nghiệm</span><div style="font-weight:600">${expLabel}</div></div>
+      <div><span style="color:var(--gray-2)">Mức hoa hồng</span><div style="font-weight:600">${comm}%</div></div>
+      <div><span style="color:var(--gray-2)">Giá/ngày</span><div style="font-weight:600">${fmt2(price)}</div></div>
+      <div><span style="color:var(--gray-2)">Ngôn ngữ</span><div style="font-weight:600">${(guide.languages || []).join(', ') || '—'}</div></div>
+    </div>`;
+}
+
+document.addEventListener('DOMContentLoaded', initDash);
+</script>
+</body>
+</html>

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🚀 Production Tracker - GuideTravel</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',sans-serif;background:#F1F5F9;color:#0F172A;min-height:100vh}
+    .topbar{background:linear-gradient(135deg,#0F172A 0%,#1E3A5F 100%);padding:22px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+    .topbar-left h1{color:white;font-size:1.15rem;font-weight:700;display:flex;align-items:center;gap:10px}
+    .topbar-left p{color:rgba(255,255,255,.5);font-size:.78rem;margin-top:3px}
+    .topbar-right{display:flex;align-items:center;gap:20px}
+    .launch-status{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:10px 18px;text-align:center}
+    .launch-status .label{font-size:.7rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em}
+    .launch-status .val{font-size:1.1rem;font-weight:800;color:white;margin-top:2px}
+    .overall-progress{text-align:right}
+    .progress-track{background:rgba(255,255,255,.12);border-radius:99px;height:10px;width:200px;overflow:hidden;margin-top:6px}
+    .progress-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#34D399,#0EA5E9);transition:.6s}
+    .pct{font-size:1.3rem;font-weight:800;color:white}
+    .pct-sub{font-size:.7rem;color:rgba(255,255,255,.5)}
+    .wrap{max-width:1140px;margin:0 auto;padding:28px 20px 60px}
+    /* Phase cards */
+    .phase-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:28px}
+    @media(max-width:900px){.phase-row{grid-template-columns:1fr 1fr}}
+    @media(max-width:500px){.phase-row{grid-template-columns:1fr}}
+    .phase-card{background:white;border-radius:12px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.06);cursor:pointer;transition:.2s;border-top:4px solid var(--border,#E2E8F0)}
+    .phase-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.1)}
+    .phase-card.active-phase{box-shadow:0 0 0 3px var(--phase-color,#0EA5E9)22}
+    .pc-icon{font-size:1.4rem;margin-bottom:8px}
+    .pc-name{font-size:.82rem;font-weight:700;color:#0F172A;margin-bottom:6px}
+    .pc-prog{background:#F1F5F9;border-radius:99px;height:6px;overflow:hidden;margin-bottom:6px}
+    .pc-fill{height:100%;border-radius:99px;transition:.5s}
+    .pc-stat{font-size:.73rem;color:#64748B}
+    /* Sections */
+    .section{background:white;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-bottom:18px;overflow:hidden}
+    .section-head{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+    .section-head-left{display:flex;align-items:center;gap:10px}
+    .section-head h3{font-size:.9rem;font-weight:700;color:white}
+    .section-head-meta{font-size:.75rem;color:rgba(255,255,255,.65)}
+    .section-body{overflow:hidden;transition:.3s}
+    table{width:100%;border-collapse:collapse}
+    th{background:#F8FAFC;padding:9px 16px;text-align:left;font-size:.72rem;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #E2E8F0}
+    td{padding:11px 16px;font-size:.84rem;border-bottom:1px solid #F8FAFC;vertical-align:middle}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#FAFCFF}
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:99px;font-size:.72rem;font-weight:700}
+    .b-done{background:#F0FDF4;color:#16A34A}
+    .b-doing{background:#EFF6FF;color:#2563EB}
+    .b-todo{background:#FFF7ED;color:#F97316}
+    .b-block{background:#FEF2F2;color:#DC2626}
+    .b-skip{background:#F1F5F9;color:#94A3B8}
+    .pri{display:inline-flex;align-items:center;gap:3px;font-size:.72rem;padding:2px 7px;border-radius:6px;font-weight:600}
+    .p-critical{background:#FEF2F2;color:#DC2626}
+    .p-high{background:#FFF7ED;color:#D97706}
+    .p-med{background:#F0FDF4;color:#16A34A}
+    .p-low{background:#F1F5F9;color:#94A3B8}
+    .cost-cell{font-size:.8rem;color:#7C3AED;font-weight:600}
+    .time-cell{font-size:.8rem;color:#0369A1}
+    .note-cell{font-size:.78rem;color:#64748B;max-width:240px}
+    select.status-sel{font-size:.74rem;padding:3px 6px;border:1px solid #E2E8F0;border-radius:6px;cursor:pointer;color:#0F172A}
+    .dep-tag{font-size:.7rem;background:#F5F3FF;color:#7C3AED;padding:2px 6px;border-radius:4px;font-weight:600}
+    .est-box{background:linear-gradient(135deg,#F0FDF4,#EFF6FF);border:1px solid #BAE6FD;border-radius:12px;padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+    .est-item{text-align:center;flex:1;min-width:100px}
+    .est-val{font-size:1.4rem;font-weight:800;color:#0F172A}
+    .est-lbl{font-size:.75rem;color:#64748B;margin-top:2px}
+    .timeline{display:flex;gap:0;overflow-x:auto;padding-bottom:8px;margin-bottom:24px}
+    .tl-item{flex:1;min-width:130px;position:relative}
+    .tl-line{height:3px;background:#E2E8F0;position:relative;top:14px;margin:0 -1px}
+    .tl-line.done{background:linear-gradient(90deg,#34D399,#0EA5E9)}
+    .tl-dot{width:28px;height:28px;border-radius:50%;border:3px solid #E2E8F0;background:white;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:#94A3B8;position:relative;z-index:1;margin:0 auto}
+    .tl-dot.done{background:#34D399;border-color:#34D399;color:white}
+    .tl-dot.current{background:#0EA5E9;border-color:#0EA5E9;color:white;box-shadow:0 0 0 4px #BAE6FD}
+    .tl-label{text-align:center;font-size:.72rem;font-weight:600;color:#64748B;margin-top:8px}
+    .tl-sub{text-align:center;font-size:.68rem;color:#94A3B8;margin-top:2px}
+    .checklist-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #F1F5F9}
+    .checklist-item:last-child{border-bottom:none}
+    .ci-check{width:20px;height:20px;border-radius:5px;border:2px solid #E2E8F0;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;margin-top:1px;transition:.15s}
+    .ci-check.checked{background:#16A34A;border-color:#16A34A;color:white}
+    .ci-text{font-size:.84rem;color:#334155}
+    .ci-text.done-text{text-decoration:line-through;color:#94A3B8}
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <h1><i class="fa-solid fa-rocket"></i> GuideTravel — Production Readiness Tracker</h1>
+    <p>Theo dõi tiến độ triển khai thực tế • Cập nhật: <span id="last-upd"></span></p>
+  </div>
+  <div class="topbar-right">
+    <div class="launch-status">
+      <div class="label">Trạng thái</div>
+      <div class="val" id="launch-label">🛠 Đang xây dựng</div>
+    </div>
+    <div class="overall-progress">
+      <div style="display:flex;align-items:baseline;gap:6px;justify-content:flex-end">
+        <span class="pct" id="pct-main">0%</span>
+        <span class="pct-sub">hoàn thành</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="main-fill"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- Phase summary -->
+  <div class="phase-row" id="phase-row"></div>
+
+  <!-- Timeline -->
+  <div style="background:white;border-radius:12px;padding:20px 24px;margin-bottom:18px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+    <div style="font-size:.82rem;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px">Lộ trình triển khai</div>
+    <div class="timeline" id="timeline"></div>
+  </div>
+
+  <!-- Cost & Time estimate -->
+  <div class="est-box" id="est-box">
+    <div class="est-item"><div class="est-val" id="est-cost">—</div><div class="est-lbl">Chi phí ước tính</div></div>
+    <div class="est-item"><div class="est-val" id="est-time">—</div><div class="est-lbl">Thời gian ước tính</div></div>
+    <div class="est-item"><div class="est-val" id="est-done">0</div><div class="est-lbl">Mục đã xong</div></div>
+    <div class="est-item"><div class="est-val" id="est-remain">0</div><div class="est-lbl">Còn lại</div></div>
+    <div class="est-item"><div class="est-val" id="est-block">0</div><div class="est-lbl" style="color:#DC2626">Đang bị chặn</div></div>
+  </div>
+
+  <!-- Sections -->
+  <div id="sections-wrap"></div>
+
+  <!-- Pre-launch checklist -->
+  <div class="section">
+    <div class="section-head" style="background:linear-gradient(90deg,#0F172A,#1E3A5F)" onclick="toggleSection(this)">
+      <div class="section-head-left">
+        <i class="fa-solid fa-clipboard-check" style="color:white"></i>
+        <h3>✅ Checklist trước khi ra mắt</h3>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="section-head-meta" id="cl-meta">0/15 hoàn thành</span>
+        <i class="fa-solid fa-chevron-down" style="color:rgba(255,255,255,.6);transition:.3s"></i>
+      </div>
+    </div>
+    <div class="section-body" id="checklist-body">
+      <div style="padding:16px 20px">
+        <div id="checklist-items"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const PHASES = [
+  { id:'infra',   name:'Hạ tầng',      icon:'🖥',  color:'#0EA5E9' },
+  { id:'backend', name:'Backend',       icon:'⚙️', color:'#7C3AED' },
+  { id:'payment', name:'Thanh toán',    icon:'💳', color:'#F97316' },
+  { id:'legal',   name:'Pháp lý',       icon:'⚖️', color:'#16A34A' },
+  { id:'ops',     name:'Vận hành',      icon:'🔧', color:'#DC2626' },
+];
+
+const TIMELINE = [
+  { label:'Deploy static', sub:'Vercel + domain', phase:1 },
+  { label:'Firebase setup', sub:'Auth + Database', phase:2 },
+  { label:'Tích hợp Stripe', sub:'Thanh toán quốc tế', phase:3 },
+  { label:'Tích hợp VNPay', sub:'Thanh toán nội địa', phase:4 },
+  { label:'Pháp lý', sub:'ĐKKD + Giấy phép', phase:5 },
+  { label:'Beta test', sub:'Test nội bộ', phase:6 },
+  { label:'Ra mắt', sub:'Go live!', phase:7 },
+];
+
+const SECTIONS = [
+  {
+    id:'infra', phase:'infra',
+    title:'🖥 Hạ tầng & Hosting',
+    color:'linear-gradient(90deg,#0369A1,#0EA5E9)',
+    items:[
+      { name:'Đăng ký tên miền (.vn)', status:'todo', priority:'critical', cost:'300k/năm', time:'1 ngày', note:'guidetravel.vn hoặc guidetravel.com.vn', dep:'' },
+      { name:'Deploy lên Vercel / Netlify', status:'todo', priority:'critical', cost:'Miễn phí', time:'2 giờ', note:'Kéo thả thư mục là xong', dep:'' },
+      { name:'Cài SSL certificate', status:'todo', priority:'critical', cost:'Miễn phí', time:'Tự động', note:'Let\'s Encrypt đi kèm Vercel', dep:'Deploy Vercel' },
+      { name:'Cấu hình custom domain', status:'todo', priority:'high', cost:'Miễn phí', time:'1–24 giờ', note:'Trỏ DNS từ domain về Vercel', dep:'Tên miền + Vercel' },
+      { name:'CDN cho ảnh (Cloudinary)', status:'todo', priority:'med', cost:'Miễn phí 25GB', time:'1 ngày', note:'Upload ảnh HDV lên cloud thay localhost', dep:'' },
+      { name:'Google Analytics 4', status:'todo', priority:'med', cost:'Miễn phí', time:'2 giờ', note:'Theo dõi lượt truy cập, conversion', dep:'Deploy' },
+    ]
+  },
+  {
+    id:'backend', phase:'backend',
+    title:'⚙️ Backend & Database',
+    color:'linear-gradient(90deg,#6D28D9,#7C3AED)',
+    items:[
+      { name:'Tạo project Firebase', status:'todo', priority:'critical', cost:'Miễn phí', time:'1 giờ', note:'Firebase Console → tạo project GuideTravel', dep:'' },
+      { name:'Firestore Database', status:'todo', priority:'critical', cost:'Miễn phí (Spark)', time:'1 ngày', note:'Thay toàn bộ localStorage bằng Firestore', dep:'Firebase project' },
+      { name:'Firebase Authentication', status:'todo', priority:'critical', cost:'Miễn phí', time:'1 ngày', note:'Email/pass + Google login, thay auth localStorage', dep:'Firebase project' },
+      { name:'Firebase Storage', status:'todo', priority:'high', cost:'Miễn phí 5GB', time:'1 ngày', note:'Upload ảnh avatar, cover, CCCD HDV', dep:'Firebase project' },
+      { name:'Cloud Functions (email)', status:'todo', priority:'high', cost:'~200k/tháng', time:'2 ngày', note:'Gửi email xác nhận đặt tour, thông báo HDV', dep:'Firebase project' },
+      { name:'Security Rules Firestore', status:'todo', priority:'critical', cost:'Miễn phí', time:'1 ngày', note:'Phân quyền: khách chỉ đọc data mình, HDV đọc request của mình', dep:'Firestore' },
+      { name:'Backup database tự động', status:'todo', priority:'high', cost:'~150k/tháng', time:'2 giờ', note:'Backup hàng ngày lên Cloud Storage', dep:'Firestore' },
+    ]
+  },
+  {
+    id:'payment', phase:'payment',
+    title:'💳 Hệ thống thanh toán',
+    color:'linear-gradient(90deg,#EA580C,#F97316)',
+    items:[
+      { name:'Đăng ký tài khoản Stripe', status:'todo', priority:'critical', cost:'2.9% + 30¢/GD', time:'1–2 ngày', note:'Cần CMND + tài khoản ngân hàng', dep:'' },
+      { name:'Tích hợp Stripe Checkout', status:'todo', priority:'critical', cost:'Phí theo GD', time:'2–3 ngày', note:'Thanh toán Visa/Mastercard cho khách quốc tế', dep:'Stripe account + Backend' },
+      { name:'Đăng ký merchant VNPay', status:'todo', priority:'critical', cost:'Thương lượng', time:'2–4 tuần', note:'Cần ĐKKD, ký hợp đồng, KYC với VNPay', dep:'ĐKKD doanh nghiệp' },
+      { name:'Tích hợp VNPay SDK', status:'todo', priority:'critical', cost:'Phí theo GD', time:'3–5 ngày', note:'Thanh toán nội địa cho phần lớn khách VN', dep:'Merchant VNPay' },
+      { name:'Đăng ký merchant MoMo', status:'todo', priority:'high', cost:'Thương lượng', time:'1–2 tuần', note:'Quy trình tương tự VNPay, phổ biến hơn với mobile', dep:'ĐKKD doanh nghiệp' },
+      { name:'Logic escrow (giữ tiền)', status:'todo', priority:'critical', cost:'Dev cost', time:'3–5 ngày', note:'Giữ tiền trong Stripe/VNPay, release sau 48h tour xong', dep:'Stripe + Backend' },
+      { name:'Webhook thanh toán', status:'todo', priority:'critical', cost:'Miễn phí', time:'2 ngày', note:'Nhận xác nhận thanh toán thành công từ cổng', dep:'Stripe/VNPay' },
+      { name:'Trang quản lý thanh toán admin', status:'todo', priority:'high', cost:'Dev cost', time:'3 ngày', note:'Xem tổng doanh thu, release tiền cho HDV', dep:'Backend + DB' },
+    ]
+  },
+  {
+    id:'legal', phase:'legal',
+    title:'⚖️ Pháp lý & Tuân thủ',
+    color:'linear-gradient(90deg,#15803D,#16A34A)',
+    items:[
+      { name:'Đăng ký kinh doanh (ĐKKD)', status:'todo', priority:'critical', cost:'200–500k', time:'3–7 ngày', note:'Công ty TNHH 1 thành viên là đơn giản nhất', dep:'' },
+      { name:'Đăng ký website với Bộ TTTT', status:'todo', priority:'critical', cost:'Miễn phí', time:'5–10 ngày', note:'Bắt buộc cho website thương mại VN', dep:'ĐKKD' },
+      { name:'Giấy phép sàn TMĐT', status:'todo', priority:'critical', cost:'~500k', time:'2–4 tuần', note:'Bắt buộc theo Nghị định 52/2013 nếu có giao dịch', dep:'ĐKKD' },
+      { name:'Đăng ký thuế GTGT', status:'todo', priority:'critical', cost:'Miễn phí', time:'5 ngày', note:'Thuế suất GTGT 10% trên dịch vụ', dep:'ĐKKD' },
+      { name:'Chính sách bảo mật (Privacy Policy)', status:'done', priority:'critical', cost:'Miễn phí', time:'Đã có', note:'Đã có chinh-sach.html, cần cập nhật cho đầy đủ pháp lý', dep:'' },
+      { name:'Điều khoản sử dụng (Terms of Service)', status:'todo', priority:'critical', cost:'~2–5 triệu (luật sư)', time:'1 tuần', note:'Bắt buộc, nên thuê luật sư soạn thảo', dep:'ĐKKD' },
+      { name:'Hợp đồng HDV', status:'todo', priority:'high', cost:'~2 triệu (luật sư)', time:'1 tuần', note:'Hợp đồng giữa platform và HDV, điều khoản hoa hồng', dep:'ĐKKD' },
+    ]
+  },
+  {
+    id:'ops', phase:'ops',
+    title:'🔧 Vận hành & Hỗ trợ',
+    color:'linear-gradient(90deg,#B91C1C,#DC2626)',
+    items:[
+      { name:'Quy trình xác minh HDV', status:'todo', priority:'critical', cost:'Nhân sự', time:'1 tuần setup', note:'Form nộp hồ sơ → Review thủ công → Phê duyệt/Từ chối', dep:'Backend' },
+      { name:'Hotline hỗ trợ 24/7', status:'todo', priority:'high', cost:'~500k–2tr/tháng', time:'1 tuần', note:'Đăng ký số 1800/1900, setup IVR', dep:'' },
+      { name:'Email hỗ trợ & ticketing', status:'todo', priority:'high', cost:'~200k/tháng', time:'1 ngày', note:'Freshdesk hoặc Gmail + Zapier', dep:'' },
+      { name:'Hệ thống phát hiện gian lận', status:'todo', priority:'high', cost:'Dev cost', time:'1 tuần', note:'Chặn tài khoản fake, yêu cầu spam, thanh toán gian lận', dep:'Backend' },
+      { name:'Monitoring & Alert (Sentry)', status:'todo', priority:'high', cost:'Miễn phí', time:'2 giờ', note:'Theo dõi lỗi JS, cảnh báo khi có sự cố', dep:'Deploy' },
+      { name:'Uptime monitoring', status:'todo', priority:'med', cost:'Miễn phí', time:'1 giờ', note:'UptimeRobot ping mỗi 5 phút, alert qua email', dep:'Deploy' },
+      { name:'Quy trình onboarding HDV', status:'todo', priority:'high', cost:'Nhân sự', time:'1 tuần', note:'Video hướng dẫn, email chào mừng, hỗ trợ setup hồ sơ', dep:'' },
+      { name:'Chính sách giải quyết tranh chấp', status:'done', priority:'high', cost:'Miễn phí', time:'Đã có', note:'Đã có trong chinh-sach.html', dep:'' },
+    ]
+  },
+];
+
+const CHECKLIST = [
+  'Website load dưới 3 giây trên mobile 3G',
+  'Tất cả form validate đúng, không có XSS',
+  'Trang 404 hoạt động',
+  'SSL certificate active (https://)',
+  'Google Analytics theo dõi được conversion',
+  'Luồng đặt tour → thanh toán → xác nhận hoạt động end-to-end',
+  'Email thông báo đến HDV khi có yêu cầu mới',
+  'Email xác nhận đến khách sau khi thanh toán',
+  'Hoàn tiền test case: hủy trước 7 ngày → nhận lại 100%',
+  'Mobile responsive trên iPhone SE và Android nhỏ',
+  'Đã có ít nhất 5 HDV thực sự đăng ký và xác minh',
+  'Điều khoản sử dụng và Privacy Policy đăng tải',
+  'Giấy phép sàn TMĐT đã được cấp',
+  'Backup database đã test restore thành công',
+  'Chạy stress test với 100 user đồng thời',
+];
+
+const statusMap = {
+  done:  { label:'✅ Đã xong',  cls:'b-done' },
+  doing: { label:'🔄 Đang làm', cls:'b-doing' },
+  todo:  { label:'⏳ Chưa làm', cls:'b-todo' },
+  block: { label:'🚫 Bị chặn',  cls:'b-block' },
+  skip:  { label:'⏭ Bỏ qua',   cls:'b-skip' },
+};
+const priMap = {
+  critical:{ label:'🔴 Bắt buộc', cls:'p-critical' },
+  high:    { label:'🟠 Cao',      cls:'p-high' },
+  med:     { label:'🟡 Trung',    cls:'p-med' },
+  low:     { label:'🟢 Thấp',     cls:'p-low' },
+};
+
+function loadState() {
+  return JSON.parse(localStorage.getItem('gt_prod_tracker') || 'null');
+}
+function saveState() {
+  const state = {
+    items:{}, checklist:{}, lastUpdate: new Date().toLocaleDateString('vi-VN')
+  };
+  SECTIONS.forEach((sec,si) => {
+    sec.items.forEach((item,ii) => { state.items[si+'_'+ii] = item.status; });
+  });
+  document.querySelectorAll('.ci-check').forEach((el,i) => {
+    state.checklist[i] = el.classList.contains('checked');
+  });
+  localStorage.setItem('gt_prod_tracker', JSON.stringify(state));
+}
+
+function applyState() {
+  const state = loadState();
+  if (!state) return;
+  SECTIONS.forEach((sec,si) => {
+    sec.items.forEach((item,ii) => {
+      if (state.items[si+'_'+ii]) item.status = state.items[si+'_'+ii];
+    });
+  });
+}
+
+function calcStats() {
+  let done=0, todo=0, block=0, total=0;
+  SECTIONS.forEach(s => s.items.forEach(i => {
+    total++;
+    if(i.status==='done') done++;
+    if(i.status==='todo'||i.status==='doing') todo++;
+    if(i.status==='block') block++;
+  }));
+  return {done, todo, block, total};
+}
+
+function renderPhases() {
+  const row = document.getElementById('phase-row');
+  row.innerHTML = PHASES.map(p => {
+    const sec = SECTIONS.find(s => s.id === p.id);
+    const total = sec.items.length;
+    const done = sec.items.filter(i => i.status === 'done').length;
+    const pct = Math.round(done/total*100);
+    return `<div class="phase-card" style="border-top-color:${p.color}">
+      <div class="pc-icon">${p.icon}</div>
+      <div class="pc-name">${p.name}</div>
+      <div class="pc-prog"><div class="pc-fill" style="width:${pct}%;background:${p.color}"></div></div>
+      <div class="pc-stat">${done}/${total} &nbsp;·&nbsp; ${pct}%</div>
+    </div>`;
+  }).join('');
+}
+
+function renderTimeline() {
+  const tl = document.getElementById('timeline');
+  const totalDone = calcStats().done;
+  const totalItems = calcStats().total;
+  const progress = totalDone / totalItems;
+  const currentPhase = Math.min(Math.ceil(progress * TIMELINE.length), TIMELINE.length - 1);
+
+  tl.innerHTML = TIMELINE.map((t, i) => {
+    const isDone = i < currentPhase;
+    const isCurrent = i === currentPhase;
+    return `<div class="tl-item">
+      ${i < TIMELINE.length-1 ? `<div class="tl-line${isDone?' done':''}"></div>` : ''}
+      <div class="tl-dot${isDone?' done':isCurrent?' current':''}">${isDone?'✓':i+1}</div>
+      <div class="tl-label">${t.label}</div>
+      <div class="tl-sub">${t.sub}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderEstimates() {
+  const {done, todo, block, total} = calcStats();
+  const pct = Math.round(done/total*100);
+  document.getElementById('pct-main').textContent = pct + '%';
+  document.getElementById('main-fill').style.width = pct + '%';
+  document.getElementById('est-done').textContent = done;
+  document.getElementById('est-remain').textContent = todo;
+  document.getElementById('est-block').textContent = block;
+  document.getElementById('est-cost').textContent = '~5–15 triệu';
+  document.getElementById('est-time').textContent = '6–10 tuần';
+  const label = pct < 20 ? '🛠 Đang xây dựng' : pct < 60 ? '⚡ Đang phát triển' : pct < 90 ? '🧪 Đang test' : '🚀 Sẵn sàng ra mắt';
+  document.getElementById('launch-label').textContent = label;
+  document.getElementById('last-upd').textContent = loadState()?.lastUpdate || new Date().toLocaleDateString('vi-VN');
+}
+
+function renderSections() {
+  const wrap = document.getElementById('sections-wrap');
+  wrap.innerHTML = '';
+  SECTIONS.forEach((sec, si) => {
+    const done = sec.items.filter(i => i.status === 'done').length;
+    const el = document.createElement('div');
+    el.className = 'section';
+    el.innerHTML = `
+      <div class="section-head" style="background:${sec.color}" onclick="toggleSection(this)">
+        <div class="section-head-left">
+          <i class="fa-solid fa-layer-group" style="color:white"></i>
+          <h3>${sec.title}</h3>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="section-head-meta">${done}/${sec.items.length} hoàn thành</span>
+          <i class="fa-solid fa-chevron-down" style="color:rgba(255,255,255,.6);transition:.3s"></i>
+        </div>
+      </div>
+      <div class="section-body">
+        <table>
+          <thead><tr>
+            <th style="width:200px">Hạng mục</th>
+            <th style="width:115px">Trạng thái</th>
+            <th style="width:100px">Ưu tiên</th>
+            <th style="width:110px">Chi phí</th>
+            <th style="width:100px">Thời gian</th>
+            <th>Ghi chú / Phụ thuộc</th>
+          </tr></thead>
+          <tbody>
+            ${sec.items.map((item, ii) => `
+              <tr>
+                <td style="font-weight:600">${item.name}</td>
+                <td><span class="badge ${statusMap[item.status]?.cls||'b-todo'}">${statusMap[item.status]?.label||item.status}</span></td>
+                <td><span class="pri ${priMap[item.priority]?.cls||''}">${priMap[item.priority]?.label||''}</span></td>
+                <td class="cost-cell">${item.cost}</td>
+                <td class="time-cell">${item.time}</td>
+                <td class="note-cell">
+                  ${item.note}
+                  ${item.dep ? `<br><span class="dep-tag">⛓ ${item.dep}</span>` : ''}
+                </td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`;
+    wrap.appendChild(el);
+  });
+}
+
+function renderChecklist() {
+  const saved = loadState();
+  const el = document.getElementById('checklist-items');
+  el.innerHTML = CHECKLIST.map((text, i) => {
+    const checked = saved?.checklist?.[i] || false;
+    return `<div class="checklist-item">
+      <div class="ci-check${checked?' checked':''}" onclick="toggleCheck(this,${i})">
+        ${checked?'<i class="fa-solid fa-check" style="font-size:.6rem"></i>':''}
+      </div>
+      <span class="ci-text${checked?' done-text':''}">${text}</span>
+    </div>`;
+  }).join('');
+  updateChecklistMeta();
+}
+
+function updateChecklistMeta() {
+  const total = CHECKLIST.length;
+  const done = document.querySelectorAll('.ci-check.checked').length;
+  document.getElementById('cl-meta').textContent = `${done}/${total} hoàn thành`;
+}
+
+function toggleCheck(el, i) {
+  const isChecked = el.classList.toggle('checked');
+  const textEl = el.nextElementSibling;
+  textEl.classList.toggle('done-text', isChecked);
+  el.innerHTML = isChecked ? '<i class="fa-solid fa-check" style="font-size:.6rem"></i>' : '';
+  updateChecklistMeta();
+  saveState();
+}
+
+function changeStatus(si, ii, val) {
+  SECTIONS[si].items[ii].status = val;
+  renderPhases();
+  renderTimeline();
+  renderEstimates();
+  // Update just the badge in the row without full re-render
+  const rows = document.querySelectorAll('.section-body tbody tr');
+  let rowIdx = 0;
+  for (let s = 0; s < si; s++) rowIdx += SECTIONS[s].items.length;
+  rowIdx += ii;
+  const badgeEl = rows[rowIdx]?.querySelector('.badge');
+  if (badgeEl) {
+    badgeEl.className = `badge ${statusMap[val]?.cls||'b-todo'}`;
+    badgeEl.textContent = statusMap[val]?.label || val;
+  }
+  // Update section header meta
+  const secHead = document.querySelectorAll('.section-head-meta')[si];
+  if (secHead) {
+    const done2 = SECTIONS[si].items.filter(i => i.status === 'done').length;
+    secHead.textContent = `${done2}/${SECTIONS[si].items.length} hoàn thành`;
+  }
+  saveState();
+}
+
+function toggleSection(headEl) {
+  const body = headEl.nextElementSibling;
+  const icon = headEl.querySelector('.fa-chevron-down');
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : '';
+  if (icon) icon.style.transform = isOpen ? 'rotate(-90deg)' : '';
+}
+
+function init() {
+  applyState();
+  renderPhases();
+  renderTimeline();
+  renderEstimates();
+  renderSections();
+  renderChecklist();
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Post a Trip Request - GuideTravel</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-mark"><i class="fa-solid fa-compass"></i></div>
+        Guide<em>Travel</em>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" data-i18n="nav.home">Trang chủ</a>
+        <a href="guides.html" data-i18n="nav.find_guide">Tìm HDV</a>
+        <a href="blog.html" data-i18n="nav.blog">Blog</a>
+        <a href="request.html" class="active" data-i18n="nav.post_request">Đăng yêu cầu</a>
+      </div>
+      <div class="nav-right"></div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+
+<div class="mob-menu">
+  <div class="mob-panel">
+    <button class="mob-close"><i class="fa-solid fa-xmark"></i></button>
+    <a href="index.html"><i class="fa-solid fa-house"></i> <span data-i18n="nav.home">Trang chủ</span></a>
+    <a href="guides.html"><i class="fa-solid fa-users"></i> <span data-i18n="nav.find_guide">Tìm HDV</span></a>
+    <a href="blog.html"><i class="fa-solid fa-newspaper"></i> <span data-i18n="nav.blog">Blog</span></a>
+    <a href="request.html" class="active"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="nav.post_request">Đăng yêu cầu</span></a>
+  </div>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-hd">
+  <div class="container">
+    <div class="breadcrumb"><a href="index.html" data-i18n="nav.home">Trang chủ</a><span>/</span><span style="color:white" data-i18n="nav.post_request">Đăng yêu cầu</span></div>
+    <h1 data-i18n="req.page_title">Mô Tả Chuyến Đi Của Bạn</h1>
+    <p data-i18n="req.page_sub">Chỉ mất 2 phút — HDV sẽ phản hồi lịch trình trong 24 giờ</p>
+  </div>
+</div>
+
+<!-- FORM SECTION -->
+<div id="request-form-section">
+  <div class="container">
+    <div class="request-layout">
+
+      <!-- FORM -->
+      <div class="request-card">
+        <h2 data-i18n="req.form_title">Thông Tin Chuyến Đi</h2>
+        <p data-i18n="req.form_sub">Càng chi tiết, HDV càng dễ thiết kế lịch trình phù hợp cho bạn</p>
+
+        <form id="request-form">
+          <!-- Hidden fields -->
+          <input type="hidden" id="req-guide-id">
+          <input type="hidden" id="req-guide-name-f">
+
+          <!-- Selected guide card -->
+          <div id="req-guide-card" style="margin-bottom:20px"></div>
+
+          <!-- Personal info -->
+          <div style="background:var(--bg);border-radius:var(--radius);padding:20px;margin-bottom:24px">
+            <div style="font-size:.88rem;font-weight:700;color:var(--dark);margin-bottom:16px;display:flex;align-items:center;gap:8px">
+              <i class="fa-solid fa-user" style="color:var(--blue)"></i> <span data-i18n="req.your_info">Thông tin của bạn</span>
+            </div>
+            <div class="form-grid">
+              <div class="fg">
+                <label data-i18n="req.name">Họ và tên</label> <span style="color:var(--red)">*</span>
+                <input type="text" id="req-name" class="form-input" data-i18n="login.name_ph" data-i18n-attr="placeholder" placeholder="Nguyễn Văn A" autocomplete="name">
+                <div class="err-msg" id="err-name">Vui lòng nhập tên</div>
+              </div>
+              <div class="fg">
+                <label data-i18n="req.phone">Số điện thoại</label> <span style="color:var(--red)">*</span>
+                <input type="tel" id="req-phone" class="form-input" data-i18n="login.phone_ph" data-i18n-attr="placeholder" placeholder="0912 345 678" autocomplete="tel">
+                <div class="err-msg" id="err-phone">Số điện thoại không hợp lệ</div>
+              </div>
+            </div>
+            <div class="fg">
+              <label data-i18n="req.email">Email</label> <span style="color:var(--red)">*</span>
+              <input type="email" id="req-email" class="form-input" placeholder="email@example.com" autocomplete="email">
+              <div class="err-msg" id="err-email">Email không hợp lệ</div>
+            </div>
+          </div>
+
+          <!-- Trip info -->
+          <div style="background:var(--bg);border-radius:var(--radius);padding:20px;margin-bottom:24px">
+            <div style="font-size:.88rem;font-weight:700;color:var(--dark);margin-bottom:16px;display:flex;align-items:center;gap:8px">
+              <i class="fa-solid fa-map-location-dot" style="color:var(--orange)"></i> <span data-i18n="req.trip_info">Thông tin chuyến đi</span>
+            </div>
+            <div class="fg">
+              <label data-i18n="req.dest">Điểm đến</label> <span style="color:var(--red)">*</span>
+              <input type="text" id="req-dest" class="form-input" placeholder="VD: Nha Trang, Khánh Hòa">
+              <div class="err-msg" id="err-dest">Vui lòng nhập điểm đến</div>
+            </div>
+            <div class="form-grid">
+              <div class="fg">
+                <label data-i18n="req.date">Ngày bắt đầu</label> <span style="color:var(--red)">*</span>
+                <input type="date" id="req-date" class="form-input">
+                <div class="err-msg" id="err-date">Vui lòng chọn ngày</div>
+              </div>
+              <div class="fg">
+                <label data-i18n="req.days">Số ngày</label>
+                <select id="req-days" class="form-input">
+                  <option value="1">1</option>
+                  <option value="2" selected>2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="7">7</option>
+                  <option value="10">10+</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="fg">
+                <label data-i18n="req.people">Số người</label>
+                <select id="req-people" class="form-input">
+                  <option value="1">1</option>
+                  <option value="2" selected>2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5-6</option>
+                  <option value="7">7-10</option>
+                </select>
+              </div>
+              <div class="fg">
+                <label data-i18n="req.budget">Ngân sách / người</label>
+                <select id="req-budget" class="form-input">
+                  <option value="">—</option>
+                  <option value="duoi-1tr">Dưới 1tr / &lt;$40</option>
+                  <option value="1-2tr">1-2tr / $40-80</option>
+                  <option value="2-4tr">2-4tr / $80-160</option>
+                  <option value="4-7tr">4-7tr / $160-280</option>
+                  <option value="tren-7tr">Trên 7tr / $280+</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interests -->
+          <div style="margin-bottom:24px">
+            <div style="font-size:.88rem;font-weight:700;color:var(--dark);margin-bottom:14px;display:flex;align-items:center;gap:8px">
+              <i class="fa-solid fa-heart" style="color:var(--red)"></i>
+              <span data-i18n="req.likes">Bạn thích gì?</span>
+              <span style="font-weight:400;color:var(--gray-2)" data-i18n="req.pick_multi">(chọn nhiều)</span>
+            </div>
+            <div class="interest-grid">
+              <button type="button" class="interest-btn" data-val="bien"><div class="ico">🏖️</div><span data-i18n="int.beach">Biển & Bơi lội</span></button>
+              <button type="button" class="interest-btn" data-val="leo-nui"><div class="ico">🥾</div><span data-i18n="int.trekking">Trekking</span></button>
+              <button type="button" class="interest-btn" data-val="am-thuc"><div class="ico">🍜</div><span data-i18n="int.food">Ẩm thực</span></button>
+              <button type="button" class="interest-btn" data-val="van-hoa"><div class="ico">🏛️</div><span data-i18n="int.culture">Văn hóa</span></button>
+              <button type="button" class="interest-btn" data-val="chup-anh"><div class="ico">📷</div><span data-i18n="int.photo">Chụp ảnh</span></button>
+              <button type="button" class="interest-btn" data-val="mua-sam"><div class="ico">🛍️</div><span data-i18n="int.shopping">Mua sắm</span></button>
+              <button type="button" class="interest-btn" data-val="nghi-duong"><div class="ico">🧘</div><span data-i18n="int.relax">Nghỉ dưỡng</span></button>
+              <button type="button" class="interest-btn" data-val="ban-lang"><div class="ico">🏡</div><span data-i18n="int.village">Bản làng</span></button>
+              <button type="button" class="interest-btn" data-val="the-thao"><div class="ico">🤿</div><span data-i18n="int.watersport">Thể thao biển</span></button>
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div class="fg" style="margin-bottom:28px">
+            <label data-i18n="req.extra_notes">Yêu cầu thêm / Ghi chú</label>
+            <textarea id="req-notes" class="form-input" rows="4" data-i18n="req.notes_ph" data-i18n-attr="placeholder" placeholder="VD: Có trẻ em 5 tuổi, cần đi lại thuận tiện..."></textarea>
+            <div class="hint" style="font-size:.76rem;color:var(--gray-2);margin-top:5px" data-i18n="req.notes_hint">Thông tin này giúp HDV thiết kế lịch trình phù hợp hơn</div>
+          </div>
+
+          <button type="submit" class="btn btn-orange btn-block btn-lg">
+            <i class="fa-solid fa-paper-plane"></i> <span data-i18n="req.submit_btn">Gửi Yêu Cầu Miễn Phí</span>
+          </button>
+          <p style="font-size:.78rem;color:var(--gray-2);text-align:center;margin-top:12px">
+            <i class="fa-solid fa-lock"></i> <span data-i18n="req.privacy">Thông tin của bạn được bảo mật tuyệt đối</span>
+          </p>
+        </form>
+      </div>
+
+      <!-- SIDEBAR -->
+      <div class="request-sidebar">
+        <!-- What happens next -->
+        <div class="info-card">
+          <h4 data-i18n="req.next_title">Tiếp theo sẽ như thế nào?</h4>
+          <div class="info-step">
+            <div class="info-step-num">1</div>
+            <div class="info-step-text"><strong data-i18n="req.s1t">HDV nhận yêu cầu</strong><span data-i18n="req.s1d">Trong vài giờ, HDV phù hợp sẽ xem yêu cầu của bạn</span></div>
+          </div>
+          <div class="info-step">
+            <div class="info-step-num">2</div>
+            <div class="info-step-text"><strong data-i18n="req.s2t">Nhận lịch trình trong 24h</strong><span data-i18n="req.s2d">HDV gửi lịch trình chi tiết + báo giá qua email/điện thoại</span></div>
+          </div>
+          <div class="info-step">
+            <div class="info-step-num">3</div>
+            <div class="info-step-text"><strong data-i18n="req.s3t">Chỉnh sửa miễn phí</strong><span data-i18n="req.s3d">Thoải mái điều chỉnh lịch trình cho đến khi ưng ý</span></div>
+          </div>
+          <div class="info-step">
+            <div class="info-step-num">4</div>
+            <div class="info-step-text"><strong data-i18n="req.s4t">Xác nhận & Đặt cọc</strong><span data-i18n="req.s4d">Đặt cọc 30% an toàn qua nền tảng để chốt lịch</span></div>
+          </div>
+        </div>
+
+        <!-- Guide suggestions -->
+        <div class="info-card">
+          <h4 data-i18n="req.suggest_h">HDV có thể phù hợp</h4>
+          <div id="side-guides"></div>
+          <a href="guides.html" style="display:block;text-align:center;font-size:.82rem;color:var(--blue);margin-top:10px;font-weight:600" data-i18n="req.suggest_all">
+            Xem tất cả HDV →
+          </a>
+        </div>
+
+        <!-- Pledge -->
+        <div class="info-card" style="background:var(--green-light);border-color:rgba(16,185,129,.2)">
+          <h4 style="color:#065F46" data-i18n="req.pledge_h">Cam kết của GuideTravel</h4>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:9px;font-size:.83rem;color:#065F46">
+              <i class="fa-solid fa-circle-check"></i> <span data-i18n="req.pledge1">Gửi yêu cầu hoàn toàn miễn phí</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:9px;font-size:.83rem;color:#065F46">
+              <i class="fa-solid fa-circle-check"></i> <span data-i18n="req.pledge2">Không bị ép đặt tour nếu chưa ưng</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:9px;font-size:.83rem;color:#065F46">
+              <i class="fa-solid fa-circle-check"></i> <span data-i18n="req.pledge3">Hoàn tiền 100% nếu hủy trước 7 ngày</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS SECTION -->
+<div id="request-success-section" class="hidden">
+  <div class="container">
+    <div class="success-wrap">
+      <div class="success-icon"><i class="fa-solid fa-check"></i></div>
+      <h2 data-i18n="req.success_h">Yêu Cầu Đã Được Gửi! 🎉</h2>
+      <p data-i18n="req.success_p">Cảm ơn bạn đã gửi yêu cầu. HDV sẽ liên hệ với bạn qua điện thoại và email trong vòng <strong>24 giờ</strong> để gửi lịch trình cá nhân hóa.</p>
+      <div>
+        <div style="font-size:.82rem;color:var(--gray);margin-bottom:8px" data-i18n="req.code_lbl">Mã yêu cầu của bạn</div>
+        <div class="request-code" id="req-code">GT00000000</div>
+      </div>
+      <div style="background:var(--bg);border-radius:var(--radius-lg);padding:24px;max-width:480px;margin:0 auto 32px;text-align:left">
+        <div style="font-weight:700;color:var(--dark);margin-bottom:14px" data-i18n="req.waiting_h">Trong lúc chờ đợi...</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--gray)">
+            <i class="fa-solid fa-envelope" style="color:var(--blue)"></i> <span data-i18n="req.wait1">Kiểm tra email để nhận thông báo</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--gray)">
+            <i class="fa-solid fa-phone" style="color:var(--blue)"></i> <span data-i18n="req.wait2">Để ý điện thoại — HDV có thể gọi trực tiếp</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--gray)">
+            <i class="fa-solid fa-users" style="color:var(--blue)"></i> <span data-i18n="req.wait3">Xem thêm hồ sơ các HDV khác</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a href="guides.html" class="btn btn-primary btn-lg">
+          <i class="fa-solid fa-users"></i> <span data-i18n="req.see_more">Xem Thêm HDV</span>
+        </a>
+        <a href="index.html" class="btn btn-outline btn-lg">
+          <i class="fa-solid fa-house"></i> <span data-i18n="req.back_home">Trang Chủ</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo"><div class="logo-mark"><i class="fa-solid fa-compass"></i></div> Guide<em style="color:var(--blue)">Travel</em></a>
+        <p data-i18n="footer.brand_sub">Kết nối du khách với hướng dẫn viên địa phương.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.explore">Khám Phá</h4>
+        <ul>
+          <li><a href="guides.html" data-i18n="footer.find_guides">Tìm HDV</a></li>
+          <li><a href="request.html" data-i18n="footer.post_request">Đăng yêu cầu</a></li>
+          <li><a href="hdv-register.html" data-i18n="footer.become_guide">Đăng ký làm HDV</a></li>
+          <li><a href="chinh-sach.html" data-i18n="footer.refund">Chính sách hoàn tiền</a></li>
+        </ul>
+      </div>
+      <div class="footer-col"></div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.contact">Liên Hệ</h4>
+        <div class="footer-contact">
+          <div class="fc-item"><i class="fa-solid fa-phone"></i><span>1900 123 456</span></div>
+          <div class="fc-item"><i class="fa-solid fa-envelope"></i><span>hello@guidetravel.vn</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom"><p data-i18n="footer.copyright">© 2024 GuideTravel. Bảo lưu mọi quyền.</p></div>
+  </div>
+</footer>
+
+<script src="lang.js"></script>
+<script src="app.js"></script>
+<script>
+document.getElementById('req-date').min = new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>
