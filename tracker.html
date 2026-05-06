@@ -72,7 +72,7 @@
 
 <script>
 const DATA = {
-  lastUpdate: '2026-05-06 (fix dashboard data, HDV mới vào danh sách, admin quản lý HDV mới)',
+  lastUpdate: '2026-05-06 (thêm yêu cầu OTP đăng ký + quên mật khẩu; fix bug login sai type)',
   sections: [
     {
       title: '📄 Trang HTML',
@@ -136,6 +136,13 @@ const DATA = {
         { name: 'Blog / SEO content', file: 'blog.html', status: 'done', priority: 'low', note: 'blog.html (danh sách, filter, search), blog-post.html (chi tiết, TOC, related, CTA), 6 bài mẫu VI/EN' },
         { name: 'Hỗ trợ đa ngôn ngữ VI/EN', file: 'lang.js', status: 'done', priority: 'med', note: 'lang.js + data-i18n toàn trang, fmtPrice USD/VND, t() cho mọi chuỗi JS động, badge tier, toast, status đã dịch đầy đủ' },
         { name: 'i18n hdv-dashboard.html', file: 'hdv-dashboard.html', status: 'skip', priority: 'low', note: 'Dashboard HDV chỉ dành cho người Việt dùng — tạm bỏ qua' },
+        { name: 'i18n FAQ đầy đủ', file: 'faq.html', status: 'todo', priority: 'med', note: 'faq.html còn nhiều chỗ hardcode tiếng Việt chưa có data-i18n' },
+        { name: 'SEO meta tags', file: '—', status: 'todo', priority: 'med', note: 'Thêm og:image, og:title, og:description cho từng trang để share đẹp trên mạng xã hội' },
+        { name: 'OTP đăng ký tài khoản', file: 'login.html', status: 'todo', priority: 'high', note: 'Sau khi điền form đăng ký → gửi OTP về email → nhập đúng OTP mới tạo tài khoản thành công. Dùng EmailJS (free 200 email/tháng) vì không có backend' },
+        { name: 'Quên mật khẩu + OTP reset', file: 'login.html', status: 'todo', priority: 'high', note: 'Người dùng nhấn Quên MK → nhập email → gửi OTP → nhập đúng → đặt mật khẩu mới. Lưu ý: yêu cầu admin duyệt thủ công không khả thi với static site — cần EmailJS hoặc backend' },
+        { name: 'Tin nhắn khách ↔ HDV', file: '—', status: 'todo', priority: 'high', note: 'Chat đơn giản trong dashboard, lưu localStorage, badge unread' },
+        { name: 'Lịch hẹn / Calendar HDV', file: '—', status: 'todo', priority: 'med', note: 'HDV chặn ngày bận, khách thấy ngày trống khi đặt tour' },
+        { name: 'Thông báo real-time', file: '—', status: 'todo', priority: 'low', note: 'Badge đỏ cho cả khách lẫn HDV khi có cập nhật yêu cầu mới' },
       ]
     }
   ]

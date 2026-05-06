@@ -23,11 +23,20 @@
     .type-btn span { font-size:.82rem; font-weight:600; color:var(--gray); }
     .type-btn.sel { border-color:var(--blue); background:#EFF6FF; }
     .type-btn.sel i, .type-btn.sel span { color:var(--blue); }
-    .auth-divider { text-align:center; position:relative; margin:18px 0; color:var(--gray-2); font-size:.82rem; }
-    .auth-divider::before { content:''; position:absolute; left:0; top:50%; width:42%; height:1px; background:var(--border); }
-    .auth-divider::after { content:''; position:absolute; right:0; top:50%; width:42%; height:1px; background:var(--border); }
     .auth-footer { text-align:center; font-size:.85rem; color:var(--gray); margin-top:16px; }
     .auth-footer a { color:var(--blue); font-weight:600; }
+    .otp-sim-box { background:#FFF7ED; border:1.5px dashed #F97316; border-radius:10px; padding:14px 16px; margin-bottom:18px; text-align:center; }
+    .otp-sim-box .otp-label { font-size:.78rem; color:#92400E; margin-bottom:6px; }
+    .otp-sim-box .otp-code { font-size:2rem; font-weight:800; letter-spacing:8px; color:#F97316; font-family:monospace; }
+    .otp-sim-box .otp-expire { font-size:.74rem; color:#B45309; margin-top:4px; }
+    .otp-input-wrap { display:flex; gap:8px; justify-content:center; margin:16px 0; }
+    .otp-input-wrap input { width:48px; height:52px; text-align:center; font-size:1.3rem; font-weight:700; border:2px solid var(--border); border-radius:10px; outline:none; transition:.2s; }
+    .otp-input-wrap input:focus { border-color:var(--blue); }
+    .step-back { display:flex; align-items:center; gap:6px; font-size:.84rem; color:var(--gray); cursor:pointer; margin-bottom:18px; }
+    .step-back:hover { color:var(--blue); }
+    .step-title { font-size:1.1rem; font-weight:700; color:var(--dark); margin-bottom:4px; }
+    .step-sub { font-size:.85rem; color:var(--gray); margin-bottom:20px; }
+    .forgot-link { display:block; text-align:right; font-size:.82rem; color:var(--blue); font-weight:600; margin-top:6px; cursor:pointer; }
   </style>
 </head>
 <body>
@@ -57,7 +66,7 @@
       <p data-i18n="login.platform_sub">Nền tảng kết nối du khách & hướng dẫn viên</p>
     </div>
 
-    <div class="auth-tabs">
+    <div class="auth-tabs" id="auth-tabs">
       <div class="auth-tab active" id="tab-login" onclick="switchTab('login')" data-i18n="login.tab_login">Đăng nhập</div>
       <div class="auth-tab" id="tab-register" onclick="switchTab('register')" data-i18n="login.tab_register">Đăng ký</div>
     </div>
@@ -81,6 +90,7 @@
       <div class="fg">
         <label data-i18n="login.pass_lbl">Mật khẩu</label>
         <input type="password" id="l-pass" data-i18n="login.pass_ph" data-i18n-attr="placeholder" placeholder="••••••••">
+        <span class="forgot-link" onclick="showForgot()">Quên mật khẩu?</span>
       </div>
       <button class="btn btn-orange btn-block btn-lg" style="margin-top:8px" onclick="doLogin()" data-i18n="login.login_btn">
         <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập
@@ -91,7 +101,7 @@
       </div>
     </div>
 
-    <!-- REGISTER FORM -->
+    <!-- REGISTER FORM — Step 1: Thông tin -->
     <div class="auth-body" id="form-register" style="display:none">
       <div class="user-type-row">
         <div class="type-btn sel" id="rt-tourist" onclick="setRegType('tourist')">
@@ -119,14 +129,90 @@
         <label data-i18n="login.phone_lbl">Số điện thoại</label>
         <input type="tel" id="r-phone" data-i18n="login.phone_ph" data-i18n-attr="placeholder" placeholder="0912 345 678">
       </div>
-      <button class="btn btn-orange btn-block btn-lg" style="margin-top:8px" onclick="doRegister()" data-i18n="login.create_btn">
-        <i class="fa-solid fa-user-plus"></i> Tạo tài khoản
+      <button class="btn btn-orange btn-block btn-lg" style="margin-top:8px" onclick="sendRegOtp()">
+        <i class="fa-solid fa-paper-plane"></i> Gửi OTP xác nhận
       </button>
       <div class="auth-footer">
         <span data-i18n="login.have_account">Đã có tài khoản?</span>
         <a onclick="switchTab('login')" style="cursor:pointer" data-i18n="login.login_link">Đăng nhập</a>
       </div>
     </div>
+
+    <!-- REGISTER — Step 2: Nhập OTP -->
+    <div class="auth-body" id="form-reg-otp" style="display:none">
+      <div class="step-back" onclick="switchTab('register')"><i class="fa-solid fa-arrow-left"></i> Quay lại</div>
+      <div class="step-title">Xác nhận OTP</div>
+      <div class="step-sub" id="reg-otp-sub">Mã OTP đã được gửi tới email của bạn</div>
+      <div class="otp-sim-box">
+        <div class="otp-label"><i class="fa-solid fa-flask"></i> Giả lập — OTP của bạn là:</div>
+        <div class="otp-code" id="reg-otp-display">------</div>
+        <div class="otp-expire">Hết hạn sau 5 phút</div>
+      </div>
+      <div class="fg">
+        <label>Nhập mã OTP (6 chữ số)</label>
+        <div class="otp-input-wrap" id="reg-otp-inputs"></div>
+      </div>
+      <button class="btn btn-orange btn-block btn-lg" onclick="verifyRegOtp()">
+        <i class="fa-solid fa-check"></i> Xác nhận & Tạo tài khoản
+      </button>
+      <div class="auth-footer" style="margin-top:12px">
+        <a onclick="sendRegOtp()" style="cursor:pointer">Gửi lại OTP</a>
+      </div>
+    </div>
+
+    <!-- FORGOT — Step 1: Nhập email -->
+    <div class="auth-body" id="form-forgot" style="display:none">
+      <div class="step-back" onclick="showLogin()"><i class="fa-solid fa-arrow-left"></i> Quay lại đăng nhập</div>
+      <div class="step-title">Quên mật khẩu</div>
+      <div class="step-sub">Nhập email tài khoản để nhận mã OTP đặt lại mật khẩu</div>
+      <div class="fg">
+        <label>Email</label>
+        <input type="email" id="f-email" placeholder="email@example.com">
+      </div>
+      <button class="btn btn-orange btn-block btn-lg" onclick="sendForgotOtp()">
+        <i class="fa-solid fa-paper-plane"></i> Gửi OTP
+      </button>
+    </div>
+
+    <!-- FORGOT — Step 2: Nhập OTP -->
+    <div class="auth-body" id="form-forgot-otp" style="display:none">
+      <div class="step-back" onclick="showForgot()"><i class="fa-solid fa-arrow-left"></i> Quay lại</div>
+      <div class="step-title">Nhập mã OTP</div>
+      <div class="step-sub" id="forgot-otp-sub">Mã OTP đã được gửi tới email của bạn</div>
+      <div class="otp-sim-box">
+        <div class="otp-label"><i class="fa-solid fa-flask"></i> Giả lập — OTP của bạn là:</div>
+        <div class="otp-code" id="forgot-otp-display">------</div>
+        <div class="otp-expire">Hết hạn sau 5 phút</div>
+      </div>
+      <div class="fg">
+        <label>Nhập mã OTP (6 chữ số)</label>
+        <div class="otp-input-wrap" id="forgot-otp-inputs"></div>
+      </div>
+      <button class="btn btn-orange btn-block btn-lg" onclick="verifyForgotOtp()">
+        <i class="fa-solid fa-check"></i> Xác nhận OTP
+      </button>
+      <div class="auth-footer" style="margin-top:12px">
+        <a onclick="sendForgotOtp()" style="cursor:pointer">Gửi lại OTP</a>
+      </div>
+    </div>
+
+    <!-- FORGOT — Step 3: Đặt mật khẩu mới -->
+    <div class="auth-body" id="form-new-pass" style="display:none">
+      <div class="step-title">Đặt mật khẩu mới</div>
+      <div class="step-sub">Nhập mật khẩu mới cho tài khoản của bạn</div>
+      <div class="fg">
+        <label>Mật khẩu mới</label>
+        <input type="password" id="np-pass" placeholder="Tối thiểu 6 ký tự">
+      </div>
+      <div class="fg">
+        <label>Xác nhận mật khẩu</label>
+        <input type="password" id="np-pass2" placeholder="Nhập lại mật khẩu">
+      </div>
+      <button class="btn btn-orange btn-block btn-lg" style="margin-top:8px" onclick="doResetPass()">
+        <i class="fa-solid fa-lock"></i> Đặt lại mật khẩu
+      </button>
+    </div>
+
   </div>
 </div>
 
@@ -135,12 +221,60 @@
 <script>
 let loginType = 'tourist';
 let regType = 'tourist';
+let pendingOtp = null;
+let otpExpiry = null;
+let pendingRegData = null;
+let forgotEmail = null;
 
+// ===== HELPERS =====
+function genOtp() { return String(Math.floor(100000 + Math.random() * 900000)); }
+
+function buildOtpInputs(containerId) {
+  const wrap = document.getElementById(containerId);
+  wrap.innerHTML = '';
+  for (let i = 0; i < 6; i++) {
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.inputMode = 'numeric';
+    inp.maxLength = 1;
+    inp.dataset.idx = i;
+    inp.addEventListener('input', e => {
+      e.target.value = e.target.value.replace(/\D/g, '');
+      if (e.target.value && i < 5) wrap.children[i + 1].focus();
+    });
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !e.target.value && i > 0) wrap.children[i - 1].focus();
+    });
+    wrap.appendChild(inp);
+  }
+}
+
+function getOtpValue(containerId) {
+  return Array.from(document.getElementById(containerId).children).map(i => i.value).join('');
+}
+
+function showPanel(id) {
+  ['form-login','form-register','form-reg-otp','form-forgot','form-forgot-otp','form-new-pass']
+    .forEach(p => { const el = document.getElementById(p); if (el) el.style.display = 'none'; });
+  document.getElementById(id).style.display = 'block';
+}
+
+// ===== TAB / NAV =====
 function switchTab(tab) {
-  document.getElementById('form-login').style.display = tab === 'login' ? 'block' : 'none';
-  document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('auth-tabs').style.display = 'flex';
   document.getElementById('tab-login').classList.toggle('active', tab === 'login');
   document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+  showPanel(tab === 'login' ? 'form-login' : 'form-register');
+}
+
+function showLogin() {
+  document.getElementById('auth-tabs').style.display = 'flex';
+  showPanel('form-login');
+}
+
+function showForgot() {
+  document.getElementById('auth-tabs').style.display = 'none';
+  showPanel('form-forgot');
 }
 
 function setLoginType(t) {
@@ -155,37 +289,112 @@ function setRegType(t) {
   document.getElementById('rt-guide').classList.toggle('sel', t === 'guide');
 }
 
+// ===== LOGIN =====
 function doLogin() {
   const email = document.getElementById('l-email').value.trim();
   const pass = document.getElementById('l-pass').value;
   if (!email || !pass) { toast('Vui lòng nhập đầy đủ thông tin!', 'err'); return; }
   const users = JSON.parse(localStorage.getItem('gt_users') || '[]');
-  const user = users.find(u => u.email === email && u.pass === pass && u.type === loginType);
+  const user = users.find(u => u.email === email && u.pass === pass);
   if (!user) { toast('Email hoặc mật khẩu không đúng!', 'err'); return; }
   localStorage.setItem('gt_session', JSON.stringify(user));
   toast('Đăng nhập thành công!', 'ok');
   const rd = new URLSearchParams(location.search).get('redirect');
-  setTimeout(() => { location.href = rd || (loginType === 'guide' ? 'hdv-dashboard.html' : 'index.html'); }, 800);
+  setTimeout(() => { location.href = rd || (user.type === 'guide' ? 'hdv-dashboard.html' : 'index.html'); }, 800);
 }
 
-function doRegister() {
-  const name = document.getElementById('r-name').value.trim();
+// ===== REGISTER + OTP =====
+function sendRegOtp() {
+  const name  = document.getElementById('r-name').value.trim();
   const email = document.getElementById('r-email').value.trim();
-  const pass = document.getElementById('r-pass').value;
+  const pass  = document.getElementById('r-pass').value;
   const phone = document.getElementById('r-phone').value.trim();
   if (!name || !email || !pass) { toast('Vui lòng điền đầy đủ thông tin!', 'err'); return; }
   if (pass.length < 6) { toast('Mật khẩu tối thiểu 6 ký tự!', 'err'); return; }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast('Email không hợp lệ!', 'err'); return; }
   const users = JSON.parse(localStorage.getItem('gt_users') || '[]');
   if (users.find(u => u.email === email)) { toast('Email đã được sử dụng!', 'err'); return; }
-  const user = { id: 'U' + Date.now(), type: regType, name, email, pass, phone, createdAt: new Date().toISOString() };
+
+  pendingOtp = genOtp();
+  otpExpiry = Date.now() + 5 * 60 * 1000;
+  pendingRegData = { name, email, pass, phone, type: regType };
+
+  document.getElementById('reg-otp-display').textContent = pendingOtp;
+  document.getElementById('reg-otp-sub').textContent = 'Mã OTP đã được gửi tới ' + email;
+  document.getElementById('auth-tabs').style.display = 'none';
+  buildOtpInputs('reg-otp-inputs');
+  showPanel('form-reg-otp');
+  toast('OTP đã được gửi! (Giả lập — xem mã bên trên)', 'ok');
+}
+
+function verifyRegOtp() {
+  const entered = getOtpValue('reg-otp-inputs');
+  if (entered.length < 6) { toast('Vui lòng nhập đủ 6 chữ số!', 'err'); return; }
+  if (Date.now() > otpExpiry) { toast('OTP đã hết hạn. Vui lòng gửi lại!', 'err'); return; }
+  if (entered !== pendingOtp) { toast('OTP không đúng. Vui lòng thử lại!', 'err'); return; }
+
+  const users = JSON.parse(localStorage.getItem('gt_users') || '[]');
+  const user = { id: 'U' + Date.now(), ...pendingRegData, createdAt: new Date().toISOString() };
   users.push(user);
   localStorage.setItem('gt_users', JSON.stringify(users));
   localStorage.setItem('gt_session', JSON.stringify(user));
+  pendingOtp = null; pendingRegData = null;
   toast('Đăng ký thành công!', 'ok');
-  setTimeout(() => {
-    location.href = regType === 'guide' ? 'hdv-register.html' : 'index.html';
-  }, 800);
+  setTimeout(() => { location.href = user.type === 'guide' ? 'hdv-register.html' : 'index.html'; }, 800);
+}
+
+// ===== FORGOT PASSWORD + OTP =====
+function sendForgotOtp() {
+  const email = document.getElementById('f-email').value.trim();
+  if (!email) { toast('Vui lòng nhập email!', 'err'); return; }
+  const users = JSON.parse(localStorage.getItem('gt_users') || '[]');
+  if (!users.find(u => u.email === email)) { toast('Email không tồn tại trong hệ thống!', 'err'); return; }
+
+  forgotEmail = email;
+  pendingOtp = genOtp();
+  otpExpiry = Date.now() + 5 * 60 * 1000;
+
+  document.getElementById('forgot-otp-display').textContent = pendingOtp;
+  document.getElementById('forgot-otp-sub').textContent = 'Mã OTP đã được gửi tới ' + email;
+  buildOtpInputs('forgot-otp-inputs');
+  showPanel('form-forgot-otp');
+  toast('OTP đã được gửi! (Giả lập — xem mã bên trên)', 'ok');
+}
+
+function verifyForgotOtp() {
+  const entered = getOtpValue('forgot-otp-inputs');
+  if (entered.length < 6) { toast('Vui lòng nhập đủ 6 chữ số!', 'err'); return; }
+  if (Date.now() > otpExpiry) { toast('OTP đã hết hạn. Vui lòng gửi lại!', 'err'); return; }
+  if (entered !== pendingOtp) { toast('OTP không đúng. Vui lòng thử lại!', 'err'); return; }
+
+  pendingOtp = null;
+  showPanel('form-new-pass');
+  toast('OTP hợp lệ! Hãy đặt mật khẩu mới.', 'ok');
+}
+
+function doResetPass() {
+  const pass  = document.getElementById('np-pass').value;
+  const pass2 = document.getElementById('np-pass2').value;
+  if (!pass || !pass2) { toast('Vui lòng nhập đầy đủ!', 'err'); return; }
+  if (pass.length < 6) { toast('Mật khẩu tối thiểu 6 ký tự!', 'err'); return; }
+  if (pass !== pass2) { toast('Mật khẩu xác nhận không khớp!', 'err'); return; }
+
+  const users = JSON.parse(localStorage.getItem('gt_users') || '[]');
+  const idx = users.findIndex(u => u.email === forgotEmail);
+  if (idx === -1) { toast('Có lỗi xảy ra. Vui lòng thử lại!', 'err'); return; }
+  users[idx].pass = pass;
+  localStorage.setItem('gt_users', JSON.stringify(users));
+
+  // Cập nhật session nếu đang đăng nhập tài khoản này
+  const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
+  if (session && session.email === forgotEmail) {
+    session.pass = pass;
+    localStorage.setItem('gt_session', JSON.stringify(session));
+  }
+
+  forgotEmail = null;
+  toast('Đặt lại mật khẩu thành công!', 'ok');
+  setTimeout(() => showLogin(), 1200);
 }
 
 // Auto-switch tab from URL

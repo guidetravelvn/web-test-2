@@ -235,6 +235,25 @@ const TRANS = {
     // REQUEST
     'req.all_guides':'Tất cả HDV phù hợp',
     'review.you':'Bạn',
+    // FAQ PAGE
+    'faq.nav_head':'Danh mục',
+    'faq.nav_general':'Tổng quan','faq.nav_booking':'Đặt tour','faq.nav_payment':'Thanh toán',
+    'faq.nav_cancel':'Hủy & Hoàn tiền','faq.nav_guide':'Dành cho HDV',
+    'faq.nav_foreign':'Khách nước ngoài','faq.nav_safety':'An toàn & Bảo mật',
+    'faq.page_h1':'Câu Hỏi Thường Gặp',
+    'faq.page_sub':'Tìm câu trả lời nhanh cho mọi thắc mắc về GuideTravel',
+    'faq.search_ph':'Tìm kiếm câu hỏi...',
+    'faq.results':'kết quả','faq.no_results':'Không tìm thấy',
+    'faq.cta_h':'Không tìm được câu trả lời?',
+    'faq.cta_p':'Đội ngũ hỗ trợ của chúng tôi luôn sẵn sàng giải đáp mọi thắc mắc.',
+    'faq.cta_btn1':'Gửi yêu cầu ngay',
+    'faq.breadcrumb':'FAQ',
+    // TOURIST DASHBOARD
+    'tdash.greeting':'Xin chào','tdash.sub':'Theo dõi yêu cầu tour và lịch sử chuyến đi',
+    // HDV REGISTER PAGE
+    'hdv_reg.breadcrumb':'Đăng ký HDV',
+    'hdv_reg.h1':'Trở Thành Hướng Dẫn Viên',
+    'hdv_reg.sub':'Chia sẻ tình yêu với quê hương — kiếm thêm thu nhập bằng đam mê dẫn tour',
     // FOOTER EXTRA
     'footer.terms':'Điều khoản dịch vụ',
     'footer.dest':'Điểm Đến',
@@ -656,6 +675,25 @@ const TRANS = {
     // REQUEST
     'req.all_guides':'All matching guides',
     'review.you':'You',
+    // FAQ PAGE
+    'faq.nav_head':'Categories',
+    'faq.nav_general':'Overview','faq.nav_booking':'Booking','faq.nav_payment':'Payment',
+    'faq.nav_cancel':'Cancellation','faq.nav_guide':'For Guides',
+    'faq.nav_foreign':'Foreign Tourists','faq.nav_safety':'Safety & Security',
+    'faq.page_h1':'Frequently Asked Questions',
+    'faq.page_sub':'Find quick answers to all your questions about GuideTravel',
+    'faq.search_ph':'Search questions...',
+    'faq.results':'results','faq.no_results':'No results found',
+    'faq.cta_h':'Can\'t find an answer?',
+    'faq.cta_p':'Our support team is always ready to help.',
+    'faq.cta_btn1':'Send a request now',
+    'faq.breadcrumb':'FAQ',
+    // TOURIST DASHBOARD
+    'tdash.greeting':'Hello','tdash.sub':'Track your tour requests and trip history',
+    // HDV REGISTER PAGE
+    'hdv_reg.breadcrumb':'Register as Guide',
+    'hdv_reg.h1':'Become a Tour Guide',
+    'hdv_reg.sub':'Share your love for your homeland — earn extra income doing what you love',
     // FOOTER EXTRA
     'footer.terms':'Terms of Service',
     'footer.dest':'Destinations',

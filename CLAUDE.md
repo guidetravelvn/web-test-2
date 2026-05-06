@@ -35,6 +35,7 @@ Pure HTML/CSS/JS — không framework, không build step.
 - Không hỏi giữa chừng, không báo cáo từng bước nhỏ — chỉ đưa kết quả cuối cùng
 - Sau mỗi task: trace qua luồng người dùng liên quan (vd: đăng ký → đăng nhập → dashboard) để phát hiện side effect
 - Khi viết fallback `|| someDefault`: dừng lại, kiểm tra xem fallback đó có gây hiển thị sai dữ liệu không
+- Khi người dùng hỏi ý kiến hoặc đề xuất → trả lời bằng lời trước, chờ xác nhận rồi mới thực thi — không tự ý sửa/thêm file khi chưa được cho phép
 
 ## Không được làm
 - Không thêm npm/framework/thư viện ngoài Font Awesome + Google Fonts
