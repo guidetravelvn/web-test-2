@@ -4,6 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FAQ - Câu Hỏi Thường Gặp - GuideTravel</title>
+  <meta name="description" content="Giải đáp mọi thắc mắc về GuideTravel: đặt tour, thanh toán, hủy tour, hoa hồng HDV và nhiều hơn nữa.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="FAQ — Câu Hỏi Thường Gặp | GuideTravel">
+  <meta property="og:description" content="Giải đáp mọi thắc mắc về đặt tour, thanh toán escrow, hủy & hoàn tiền, và trở thành HDV trên GuideTravel.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1200&h=630&fit=crop">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="FAQ — Câu Hỏi Thường Gặp | GuideTravel">
+  <meta name="twitter:description" content="Giải đáp mọi thắc mắc về GuideTravel.">
+  <meta name="twitter:image" content="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1200&h=630&fit=crop">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
@@ -78,9 +87,9 @@
 
 <div class="page-hd">
   <div class="container">
-    <div class="breadcrumb"><a href="index.html">Trang chủ</a><span>/</span><span style="color:white">FAQ</span></div>
-    <h1>Câu Hỏi Thường Gặp</h1>
-    <p>Tìm câu trả lời nhanh cho mọi thắc mắc về GuideTravel</p>
+    <div class="breadcrumb"><a href="index.html" data-i18n="nav.home">Trang chủ</a><span>/</span><span style="color:white" data-i18n="faq.breadcrumb">FAQ</span></div>
+    <h1 data-i18n="faq.page_h1">Câu Hỏi Thường Gặp</h1>
+    <p data-i18n="faq.page_sub">Tìm câu trả lời nhanh cho mọi thắc mắc về GuideTravel</p>
   </div>
 </div>
 
@@ -90,14 +99,14 @@
     <!-- SIDEBAR -->
     <div class="faq-sidebar">
       <nav class="faq-nav">
-        <div class="faq-nav-head">Danh mục</div>
-        <a href="#general" class="active" onclick="scrollTo('general')"><i class="fa-solid fa-circle-info"></i> Tổng quan</a>
-        <a href="#booking" onclick="scrollTo('booking')"><i class="fa-solid fa-calendar-check"></i> Đặt tour</a>
-        <a href="#payment" onclick="scrollTo('payment')"><i class="fa-solid fa-credit-card"></i> Thanh toán</a>
-        <a href="#cancel" onclick="scrollTo('cancel')"><i class="fa-solid fa-rotate-left"></i> Hủy & Hoàn tiền</a>
-        <a href="#guide" onclick="scrollTo('guide')"><i class="fa-solid fa-id-card"></i> Dành cho HDV</a>
-        <a href="#foreign" onclick="scrollTo('foreign')"><i class="fa-solid fa-earth-asia"></i> Khách nước ngoài</a>
-        <a href="#safety" onclick="scrollTo('safety')"><i class="fa-solid fa-shield-halved"></i> An toàn & Bảo mật</a>
+        <div class="faq-nav-head" data-i18n="faq.nav_head">Danh mục</div>
+        <a href="#general" class="active" onclick="scrollTo('general')"><i class="fa-solid fa-circle-info"></i> <span data-i18n="faq.nav_general">Tổng quan</span></a>
+        <a href="#booking" onclick="scrollTo('booking')"><i class="fa-solid fa-calendar-check"></i> <span data-i18n="faq.nav_booking">Đặt tour</span></a>
+        <a href="#payment" onclick="scrollTo('payment')"><i class="fa-solid fa-credit-card"></i> <span data-i18n="faq.nav_payment">Thanh toán</span></a>
+        <a href="#cancel" onclick="scrollTo('cancel')"><i class="fa-solid fa-rotate-left"></i> <span data-i18n="faq.nav_cancel">Hủy &amp; Hoàn tiền</span></a>
+        <a href="#guide" onclick="scrollTo('guide')"><i class="fa-solid fa-id-card"></i> <span data-i18n="faq.nav_guide">Dành cho HDV</span></a>
+        <a href="#foreign" onclick="scrollTo('foreign')"><i class="fa-solid fa-earth-asia"></i> <span data-i18n="faq.nav_foreign">Khách nước ngoài</span></a>
+        <a href="#safety" onclick="scrollTo('safety')"><i class="fa-solid fa-shield-halved"></i> <span data-i18n="faq.nav_safety">An toàn &amp; Bảo mật</span></a>
       </nav>
     </div>
 
@@ -106,7 +115,7 @@
       <!-- Search -->
       <div class="search-bar">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" id="faq-search" placeholder="Tìm kiếm câu hỏi..." oninput="searchFaq(this.value)">
+        <input type="text" id="faq-search" data-i18n="faq.search_ph" data-i18n-attr="placeholder" placeholder="Tìm kiếm câu hỏi..." oninput="searchFaq(this.value)">
         <span id="search-count" style="font-size:.8rem;color:var(--gray-2)"></span>
       </div>
 
@@ -116,36 +125,36 @@
         <div class="faq-section" id="general">
           <div class="faq-section-head">
             <div class="faq-section-icon" style="background:#EFF6FF;color:var(--blue)"><i class="fa-solid fa-circle-info"></i></div>
-            <h2>Tổng quan về GuideTravel</h2>
+            <h2 data-i18n="faq.sec_general">Tổng quan về GuideTravel</h2>
           </div>
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">GuideTravel là gì? Nền tảng này hoạt động như thế nào?</span>
+              <span class="faq-q-text" data-i18n="faq.q1">GuideTravel là gì? Nền tảng này hoạt động như thế nào?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a1">
               GuideTravel là nền tảng kết nối du khách với hướng dẫn viên (HDV) địa phương được xác minh. Thay vì mua tour cố định, bạn sẽ được HDV thiết kế lịch trình 100% theo sở thích và nhu cầu riêng của bạn.
-              <div class="info-box"><i class="fa-solid fa-lightbulb"></i> Quy trình đơn giản: Tìm HDV → Gửi yêu cầu → HDV liên hệ & lên lịch trình → Thanh toán → Khám phá!</div>
+              <div class="info-box"><i class="fa-solid fa-lightbulb"></i> Quy trình đơn giản: Tìm HDV → Gửi yêu cầu → HDV liên hệ &amp; lên lịch trình → Thanh toán → Khám phá!</div>
             </div>
           </div>
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">GuideTravel có thu phí không?</span>
+              <span class="faq-q-text" data-i18n="faq.q2">GuideTravel có thu phí không?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a2">
               <strong>Hoàn toàn miễn phí</strong> cho du khách khi gửi yêu cầu và duyệt hồ sơ HDV. Chúng tôi thu hoa hồng từ HDV (từ 15%) trên mỗi chuyến đã hoàn thành thành công. Bạn chỉ thanh toán cho HDV sau khi đã thống nhất lịch trình.
             </div>
           </div>
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">HDV trên GuideTravel có được xác minh không?</span>
+              <span class="faq-q-text" data-i18n="faq.q3">HDV trên GuideTravel có được xác minh không?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a3">
               Có. Tất cả HDV đều phải qua quy trình xác minh gồm:
               <ul>
                 <li>Xác minh CCCD/Hộ chiếu</li>
@@ -159,10 +168,10 @@
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Tôi có thể tin tưởng đánh giá trên GuideTravel không?</span>
+              <span class="faq-q-text" data-i18n="faq.q4">Tôi có thể tin tưởng đánh giá trên GuideTravel không?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a4">
               Tất cả đánh giá đều đến từ khách đã thực sự hoàn thành chuyến đi qua GuideTravel — chúng tôi không chấp nhận đánh giá từ bên ngoài hoặc tài khoản chưa đặt tour. Điều này đảm bảo tính xác thực 100%.
             </div>
           </div>
@@ -172,15 +181,15 @@
         <div class="faq-section" id="booking">
           <div class="faq-section-head">
             <div class="faq-section-icon" style="background:#F0FDF4;color:#16A34A"><i class="fa-solid fa-calendar-check"></i></div>
-            <h2>Đặt tour & Yêu cầu</h2>
+            <h2 data-i18n="faq.sec_booking">Đặt tour &amp; Yêu cầu</h2>
           </div>
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Tôi đặt tour bằng cách nào?</span>
+              <span class="faq-q-text" data-i18n="faq.q5">Tôi đặt tour bằng cách nào?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a5">
               Có 2 cách:
               <ul>
                 <li><strong>Chủ động:</strong> Vào <a href="guides.html">Tìm HDV</a>, chọn HDV phù hợp, bấm "Gửi Yêu Cầu" và điền thông tin chuyến đi.</li>
@@ -191,30 +200,30 @@
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Sau khi gửi yêu cầu, tôi chờ bao lâu?</span>
+              <span class="faq-q-text" data-i18n="faq.q6">Sau khi gửi yêu cầu, tôi chờ bao lâu?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a6">
               HDV cam kết phản hồi trong <strong>24 giờ</strong> kể từ khi nhận yêu cầu. Trong thực tế, phần lớn HDV phản hồi trong vòng 2–4 giờ. Nếu sau 24 giờ chưa có phản hồi, bạn sẽ được ưu tiên ghép với HDV khác.
             </div>
           </div>
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Lịch trình có được tùy chỉnh hoàn toàn không?</span>
+              <span class="faq-q-text" data-i18n="faq.q7">Lịch trình có được tùy chỉnh hoàn toàn không?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a7">
               Đây là điểm khác biệt lớn nhất của GuideTravel. Lịch trình được thiết kế <strong>100% theo yêu cầu của bạn</strong>: thời gian, địa điểm, phong cách du lịch, ẩm thực, ngân sách... Bạn có thể điều chỉnh nhiều lần trước khi chốt và thanh toán.
             </div>
           </div>
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Tôi có thể gửi yêu cầu cho nhiều HDV cùng lúc không?</span>
+              <span class="faq-q-text" data-i18n="faq.q8">Tôi có thể gửi yêu cầu cho nhiều HDV cùng lúc không?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a8">
               Có. Bạn có thể dùng tính năng <a href="request.html">Đăng yêu cầu công khai</a> — tất cả HDV phù hợp sẽ thấy yêu cầu của bạn và chủ động liên hệ. Bạn chọn HDV ưng ý nhất rồi mới thanh toán.
               <div class="warn-box"><i class="fa-solid fa-triangle-exclamation"></i> Chỉ thanh toán cho <strong>một HDV duy nhất</strong>. Không thanh toán trước cho nhiều HDV cùng lúc.</div>
             </div>
@@ -222,10 +231,10 @@
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Chi phí tour bao gồm những gì?</span>
+              <span class="faq-q-text" data-i18n="faq.q9">Chi phí tour bao gồm những gì?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a9">
               Giá hiển thị trên hồ sơ HDV là <strong>phí dịch vụ HDV / ngày</strong>. Chưa bao gồm:
               <ul>
                 <li>Vé tham quan, vé cáp treo, phí vào cửa</li>
@@ -242,15 +251,15 @@
         <div class="faq-section" id="payment">
           <div class="faq-section-head">
             <div class="faq-section-icon" style="background:#FFF7ED;color:#F97316"><i class="fa-solid fa-credit-card"></i></div>
-            <h2>Thanh toán</h2>
+            <h2 data-i18n="faq.sec_payment">Thanh toán</h2>
           </div>
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Các phương thức thanh toán được chấp nhận?</span>
+              <span class="faq-q-text" data-i18n="faq.q10">Các phương thức thanh toán được chấp nhận?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a10">
               <strong>Trong nước:</strong> VNPay, MoMo, ZaloPay, chuyển khoản ngân hàng (phí 0%).<br><br>
               <strong>Quốc tế:</strong> Visa/Mastercard qua Stripe, PayPal, Wise, USDT (phí 2.9–3.5%).
             </div>
@@ -258,10 +267,10 @@
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Hệ thống thanh toán ký quỹ (escrow) hoạt động thế nào?</span>
+              <span class="faq-q-text" data-i18n="faq.q11">Hệ thống thanh toán ký quỹ (escrow) hoạt động thế nào?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a11">
               Khi bạn thanh toán, tiền được giữ an toàn bởi GuideTravel — <strong>không chuyển ngay cho HDV</strong>. Sau khi tour hoàn thành và bạn xác nhận (hoặc sau 48 giờ tự động), tiền mới được giải phóng cho HDV.
               <div class="info-box"><i class="fa-solid fa-shield-halved"></i> Cơ chế này bảo vệ bạn: nếu HDV không thực hiện tour, bạn sẽ được hoàn tiền 100%.</div>
             </div>
@@ -269,20 +278,20 @@
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Tôi cần thanh toán khi nào?</span>
+              <span class="faq-q-text" data-i18n="faq.q12">Tôi cần thanh toán khi nào?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a12">
               Bạn chỉ cần thanh toán <strong>sau khi đã thống nhất lịch trình</strong> với HDV và hài lòng với kế hoạch. Gửi yêu cầu và trao đổi ban đầu hoàn toàn miễn phí.
             </div>
           </div>
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Thanh toán có an toàn không?</span>
+              <span class="faq-q-text" data-i18n="faq.q13">Thanh toán có an toàn không?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a13">
               Tất cả giao dịch được mã hóa SSL 256-bit. Chúng tôi không lưu thông tin thẻ — thanh toán thẻ quốc tế được xử lý qua Stripe (tiêu chuẩn PCI DSS cấp 1). Bạn sẽ nhận email xác nhận ngay sau khi thanh toán thành công.
             </div>
           </div>
@@ -292,15 +301,15 @@
         <div class="faq-section" id="cancel">
           <div class="faq-section-head">
             <div class="faq-section-icon" style="background:#FEF2F2;color:#DC2626"><i class="fa-solid fa-rotate-left"></i></div>
-            <h2>Hủy tour & Hoàn tiền</h2>
+            <h2 data-i18n="faq.sec_cancel">Hủy tour &amp; Hoàn tiền</h2>
           </div>
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Tôi có thể hủy tour không? Phí hủy là bao nhiêu?</span>
+              <span class="faq-q-text" data-i18n="faq.q14">Tôi có thể hủy tour không? Phí hủy là bao nhiêu?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a14">
               Có thể hủy. Mức hoàn tiền phụ thuộc vào thời điểm hủy:
               <ul>
                 <li><strong>Trước 7 ngày:</strong> Hoàn 100% — miễn phí hoàn toàn</li>
@@ -314,20 +323,20 @@
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Nếu HDV hủy tour thì sao?</span>
+              <span class="faq-q-text" data-i18n="faq.q15">Nếu HDV hủy tour thì sao?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a15">
               Nếu HDV là người hủy tour, bạn sẽ được <strong>hoàn tiền 100%</strong> bất kể thời điểm hủy. Ngoài ra, GuideTravel sẽ ưu tiên hỗ trợ bạn tìm HDV thay thế trong thời gian sớm nhất.
             </div>
           </div>
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Bất khả kháng (thiên tai, hủy chuyến bay...) có được hoàn tiền không?</span>
+              <span class="faq-q-text" data-i18n="faq.q16">Bất khả kháng (thiên tai, hủy chuyến bay...) có được hoàn tiền không?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a16">
               Có. GuideTravel hỗ trợ hoàn tiền 100% trong các trường hợp bất khả kháng có bằng chứng:
               <ul>
                 <li>Thiên tai, bão, lũ lụt tại điểm đến</li>
@@ -341,10 +350,10 @@
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Tiền hoàn về bao lâu?</span>
+              <span class="faq-q-text" data-i18n="faq.q17">Tiền hoàn về bao lâu?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a17">
               <ul>
                 <li>VNPay / MoMo / ZaloPay: <strong>1–3 ngày làm việc</strong></li>
                 <li>Chuyển khoản ngân hàng: <strong>1–5 ngày làm việc</strong></li>
@@ -359,15 +368,15 @@
         <div class="faq-section" id="guide">
           <div class="faq-section-head">
             <div class="faq-section-icon" style="background:#F5F3FF;color:#7C3AED"><i class="fa-solid fa-id-card"></i></div>
-            <h2>Dành cho Hướng dẫn viên</h2>
+            <h2 data-i18n="faq.sec_guide">Dành cho Hướng dẫn viên</h2>
           </div>
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Điều kiện để đăng ký làm HDV trên GuideTravel?</span>
+              <span class="faq-q-text" data-i18n="faq.q18">Điều kiện để đăng ký làm HDV trên GuideTravel?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a18">
               <ul>
                 <li>Từ 18 tuổi trở lên, có CCCD/hộ chiếu hợp lệ</li>
                 <li>Am hiểu khu vực muốn dẫn tour</li>
@@ -380,10 +389,10 @@
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Hoa hồng hoạt động như thế nào? Tôi nhận được bao nhiêu?</span>
+              <span class="faq-q-text" data-i18n="faq.q19">Hoa hồng hoạt động như thế nào? Tôi nhận được bao nhiêu?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a19">
               GuideTravel thu hoa hồng tối thiểu <strong>15%</strong> trên mỗi chuyến. Ví dụ giá dịch vụ 1.000.000đ/ngày, bạn nhận về 850.000đ/ngày (15% hoa hồng).<br><br>
               <strong>Bonus:</strong> HDV chọn hoa hồng cao hơn sẽ được ưu tiên hiển thị nổi bật hơn trong kết quả tìm kiếm:
               <ul>
@@ -396,30 +405,30 @@
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Tôi nhận tiền khi nào?</span>
+              <span class="faq-q-text" data-i18n="faq.q20">Tôi nhận tiền khi nào?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a20">
               Tiền được giải phóng <strong>48 giờ sau khi tour hoàn thành</strong> (hoặc ngay khi khách xác nhận). Thanh toán về tài khoản ngân hàng của bạn trong 1–3 ngày làm việc sau đó.
             </div>
           </div>
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Tôi có thể từ chối yêu cầu không phù hợp không?</span>
+              <span class="faq-q-text" data-i18n="faq.q21">Tôi có thể từ chối yêu cầu không phù hợp không?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a21">
               Có. Bạn hoàn toàn quyền từ chối yêu cầu nếu lịch trình không phù hợp với chuyên môn, lịch cá nhân hoặc khu vực của bạn. Tuy nhiên, tỷ lệ từ chối cao có thể ảnh hưởng đến thứ hạng hồ sơ.
             </div>
           </div>
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Làm sao để tôi xuất hiện cao hơn trong kết quả tìm kiếm?</span>
+              <span class="faq-q-text" data-i18n="faq.q22">Làm sao để tôi xuất hiện cao hơn trong kết quả tìm kiếm?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a22">
               Thứ hạng được tính theo:
               <ul>
                 <li><strong>Mức hoa hồng</strong> (yếu tố chính — càng cao càng nổi bật)</li>
@@ -435,35 +444,35 @@
         <div class="faq-section" id="foreign">
           <div class="faq-section-head">
             <div class="faq-section-icon" style="background:#F0FDF4;color:#16A34A"><i class="fa-solid fa-earth-asia"></i></div>
-            <h2>Khách du lịch nước ngoài</h2>
+            <h2 data-i18n="faq.sec_foreign">Khách du lịch nước ngoài</h2>
           </div>
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Tôi không nói tiếng Việt, có dùng được GuideTravel không?</span>
+              <span class="faq-q-text" data-i18n="faq.q23">Tôi không nói tiếng Việt, có dùng được GuideTravel không?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a23">
               Hoàn toàn được. Bạn có thể lọc HDV theo ngôn ngữ (English, Français, 中文...). Nhiều HDV của chúng tôi nói thành thạo tiếng Anh và các ngoại ngữ khác.
             </div>
           </div>
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Tôi thanh toán bằng đồng ngoại tệ được không?</span>
+              <span class="faq-q-text" data-i18n="faq.q24">Tôi thanh toán bằng đồng ngoại tệ được không?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a24">
               Có. Chúng tôi hỗ trợ thanh toán quốc tế qua Stripe (Visa/Mastercard), PayPal và Wise. Tiền tệ được quy đổi tự động theo tỷ giá thực tế. Phí chuyển đổi khoảng 2.9–3.5%.
             </div>
           </div>
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">HDV có thể hỗ trợ xin visa hoặc thủ tục nhập cảnh không?</span>
+              <span class="faq-q-text" data-i18n="faq.q25">HDV có thể hỗ trợ xin visa hoặc thủ tục nhập cảnh không?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a25">
               HDV có thể tư vấn thông tin chung về visa Việt Nam, nhưng <strong>không thể đảm bảo hoặc thay mặt bạn làm thủ tục</strong>. Bạn nên kiểm tra yêu cầu visa chính thức từ Đại sứ quán Việt Nam tại nước bạn.
             </div>
           </div>
@@ -473,15 +482,15 @@
         <div class="faq-section" id="safety">
           <div class="faq-section-head">
             <div class="faq-section-icon" style="background:#EFF6FF;color:var(--blue)"><i class="fa-solid fa-shield-halved"></i></div>
-            <h2>An toàn & Bảo mật</h2>
+            <h2 data-i18n="faq.sec_safety">An toàn &amp; Bảo mật</h2>
           </div>
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Nếu tôi gặp vấn đề trong chuyến đi, liên hệ ai?</span>
+              <span class="faq-q-text" data-i18n="faq.q26">Nếu tôi gặp vấn đề trong chuyến đi, liên hệ ai?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a26">
               GuideTravel có đội hỗ trợ 24/7 trong suốt chuyến đi:
               <ul>
                 <li>Hotline: <strong>1900 123 456</strong></li>
@@ -494,20 +503,20 @@
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Thông tin cá nhân của tôi có được bảo mật không?</span>
+              <span class="faq-q-text" data-i18n="faq.q27">Thông tin cá nhân của tôi có được bảo mật không?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a27">
               GuideTravel tuân thủ nghiêm ngặt quy định bảo mật dữ liệu. Thông tin cá nhân của bạn (số điện thoại, email) chỉ được chia sẻ với HDV <strong>sau khi bạn xác nhận đặt tour</strong>. Chúng tôi không bán dữ liệu cho bên thứ ba.
             </div>
           </div>
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggle(this)">
-              <span class="faq-q-text">Tôi có nên mua bảo hiểm du lịch không?</span>
+              <span class="faq-q-text" data-i18n="faq.q28">Tôi có nên mua bảo hiểm du lịch không?</span>
               <div class="faq-icon"><i class="fa-solid fa-plus"></i></div>
             </div>
-            <div class="faq-a">
+            <div class="faq-a" data-i18n="faq.a28">
               Chúng tôi <strong>khuyến nghị</strong> bạn mua bảo hiểm du lịch, đặc biệt khi tham gia các hoạt động mạo hiểm (leo núi, lặn biển...). Bảo hiểm giúp bạn được bồi thường trong trường hợp tai nạn, bệnh tật hoặc mất hành lý — những rủi ro nằm ngoài phạm vi bảo vệ của GuideTravel.
             </div>
           </div>
@@ -517,11 +526,11 @@
 
       <!-- CTA -->
       <div class="cta-box">
-        <h3>Không tìm được câu trả lời?</h3>
-        <p>Đội ngũ hỗ trợ của chúng tôi luôn sẵn sàng giải đáp mọi thắc mắc.</p>
+        <h3 data-i18n="faq.cta_h">Không tìm được câu trả lời?</h3>
+        <p data-i18n="faq.cta_p">Đội ngũ hỗ trợ của chúng tôi luôn sẵn sàng giải đáp mọi thắc mắc.</p>
         <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-          <a href="request.html" class="btn btn-orange"><i class="fa-solid fa-paper-plane"></i> Gửi yêu cầu ngay</a>
-          <a href="guides.html" class="btn" style="background:rgba(255,255,255,.12);color:white;border:1px solid rgba(255,255,255,.2)"><i class="fa-solid fa-users"></i> Tìm HDV</a>
+          <a href="request.html" class="btn btn-orange"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="faq.cta_btn1">Gửi yêu cầu ngay</span></a>
+          <a href="guides.html" class="btn" style="background:rgba(255,255,255,.12);color:white;border:1px solid rgba(255,255,255,.2)"><i class="fa-solid fa-users"></i> <span data-i18n="faq.cta_btn2">Tìm HDV</span></a>
         </div>
       </div>
     </div>
@@ -534,27 +543,34 @@
     <div class="footer-grid">
       <div class="footer-brand">
         <a href="index.html" class="logo"><div class="logo-mark"><i class="fa-solid fa-compass"></i></div> Guide<em style="color:var(--blue)">Travel</em></a>
-        <p>Kết nối du khách với hướng dẫn viên địa phương.</p>
+        <p data-i18n="footer.brand_sub">Kết nối du khách với hướng dẫn viên địa phương.</p>
       </div>
       <div class="footer-col">
-        <h4>Khám Phá</h4>
+        <h4 data-i18n="footer.explore">Khám Phá</h4>
         <ul>
-          <li><a href="guides.html">Tìm HDV</a></li>
-          <li><a href="request.html">Đăng yêu cầu</a></li>
-          <li><a href="faq.html">FAQ</a></li>
-          <li><a href="chinh-sach.html">Chính sách hoàn tiền</a></li>
+          <li><a href="guides.html" data-i18n="footer.find_guides">Tìm HDV</a></li>
+          <li><a href="request.html" data-i18n="footer.post_request">Đăng yêu cầu tour</a></li>
+          <li><a href="faq.html" data-i18n="footer.faq">FAQ</a></li>
+          <li><a href="chinh-sach.html" data-i18n="footer.refund">Chính sách hoàn tiền</a></li>
         </ul>
       </div>
-      <div class="footer-col"></div>
       <div class="footer-col">
-        <h4>Liên Hệ</h4>
+        <h4 data-i18n="footer.services">Dịch Vụ</h4>
+        <ul>
+          <li><a href="hdv-register.html" data-i18n="footer.become_guide">Đăng ký làm HDV</a></li>
+          <li><a href="chinh-sach.html" data-i18n="footer.refund">Chính sách hoàn tiền</a></li>
+          <li><a href="dieu-khoan.html" data-i18n="footer.terms">Điều khoản dịch vụ</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.contact">Liên Hệ</h4>
         <div class="footer-contact">
           <div class="fc-item"><i class="fa-solid fa-phone"></i><span>1900 123 456</span></div>
           <div class="fc-item"><i class="fa-solid fa-envelope"></i><span>hello@guidetravel.vn</span></div>
         </div>
       </div>
     </div>
-    <div class="footer-bottom"><p>© 2024 GuideTravel. Bảo lưu mọi quyền.</p></div>
+    <div class="footer-bottom"><p data-i18n="footer.copyright">© 2024 GuideTravel. Bảo lưu mọi quyền.</p></div>
   </div>
 </footer>
 
@@ -589,7 +605,7 @@ function searchFaq(q) {
     });
     sec.style.display = visible ? '' : 'none';
   });
-  document.getElementById('search-count').textContent = count ? count + ' kết quả' : 'Không tìm thấy';
+  document.getElementById('search-count').textContent = count ? count + ' ' + t('faq.results') : t('faq.no_results');
 }
 
 // Scroll spy
