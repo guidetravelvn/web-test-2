@@ -1,5 +1,26 @@
 'use strict';
 
+// ===== SEED DEMO ACCOUNTS =====
+(function seedDemo() {
+  const demos = [
+    { email:'khach@demo.vn', pass:'123456', name:'Nguyễn Thị Mai', type:'tourist', phone:'0912345678' },
+    { email:'khoa@guidetravel.vn', pass:'123456', name:'Nguyễn Minh Khoa', type:'guide', phone:'0901234567', verified:true }
+  ];
+  const demoEmails = demos.map(d => d.email);
+  let users = JSON.parse(localStorage.getItem('gt_users') || '[]');
+  users = users.filter(u => !demoEmails.includes(u.email));
+  users.push(...demos);
+  localStorage.setItem('gt_users', JSON.stringify(users));
+  // Fix gt_session if it's a corrupted demo account
+  const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
+  if (session && demoEmails.includes(session.email)) {
+    const correct = demos.find(d => d.email === session.email);
+    if (correct && session.type !== correct.type) {
+      localStorage.setItem('gt_session', JSON.stringify(correct));
+    }
+  }
+})();
+
 // ===== DỮ LIỆU HDV =====
 const GUIDES = [
   {
@@ -517,11 +538,14 @@ function initNav() {
       const dashLink = session.type === 'guide'
         ? `<a href="hdv-dashboard.html" class="btn btn-outline btn-sm" style="color:var(--dark);position:relative"><i class="fa-solid fa-gauge"></i> Dashboard${badge}</a>`
         : `<a href="tourist-dashboard.html" class="btn btn-outline btn-sm" style="color:var(--dark)"><i class="fa-solid fa-gauge"></i> Dashboard</a>`;
+      const notifCount = (JSON.parse(localStorage.getItem('gt_notifications')||'[]')).filter(n=>(n.targetType===session.type||n.targetType==='all')&&!n.read).length;
+      const notifBell = `<button id="nav-notif-btn" onclick="openNotifDropdown()" style="position:relative;display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:1px solid var(--border);color:var(--gray);background:white;cursor:pointer;transition:.15s;flex-shrink:0" title="Thông báo"><i class="fa-solid fa-bell" style="font-size:.9rem"></i>${notifCount>0?`<span style="position:absolute;top:-4px;right:-4px;background:#EF4444;color:white;font-size:.6rem;font-weight:800;min-width:16px;height:16px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 3px;border:2px solid white">${notifCount>9?'9+':notifCount}</span>`:''}</button>`;
       navRight.innerHTML = `
         ${langToggle}
         <span style="font-size:.85rem;color:var(--gray);font-weight:500"><i class="fa-solid fa-circle-user"></i> ${session.name}</span>
         ${dashLink}
-        <button class="btn btn-sm" style="background:#FEF2F2;color:#DC2626;border:1px solid #FECACA" onclick="Auth.logout()"><i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="nav.logout"></span></button>`;
+        <button class="btn btn-sm" style="background:#FEF2F2;color:#DC2626;border:1px solid #FECACA" onclick="Auth.logout()"><i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="nav.logout"></span></button>
+        ${notifBell}`;
     } else {
       navRight.innerHTML = `
         ${langToggle}
@@ -536,7 +560,59 @@ function initNav() {
     });
     // Translate newly injected data-i18n elements
     if (typeof applyLang === 'function') applyLang();
+    // Seed demo notifications
+    if (!localStorage.getItem('gt_notifications')) {
+      localStorage.setItem('gt_notifications', JSON.stringify([
+        { id:'N_PROMO1', type:'promo', title:'Ưu đãi hè 2024', body:'Đặt tour từ nay đến 30/6 giảm 10% phí dịch vụ. Áp dụng mọi điểm đến.', targetType:'all', time:new Date(Date.now()-86400000*2).toISOString(), read:false, actionUrl:null },
+        { id:'N_POL1', type:'policy', title:'Cập nhật chính sách hoàn tiền', body:'Chính sách hoàn tiền mới hiệu lực 01/05/2024. Hủy trước 48h được hoàn 100%.', targetType:'all', time:new Date(Date.now()-86400000*5).toISOString(), read:false, actionUrl:null },
+      ]));
+    }
   }
+}
+
+function openNotifDropdown() {
+  const existing = document.getElementById('notif-dropdown');
+  if (existing) { existing.remove(); return; }
+  const session = Auth.session();
+  if (!session) return;
+  const all = JSON.parse(localStorage.getItem('gt_notifications') || '[]');
+  const mine = all.filter(n => n.targetType === session.type || n.targetType === 'all');
+  all.forEach(n => { if (n.targetType === session.type || n.targetType === 'all') n.read = true; });
+  localStorage.setItem('gt_notifications', JSON.stringify(all));
+  const btn = document.getElementById('nav-notif-btn');
+  if (btn) { const sp = btn.querySelector('span'); if (sp) sp.remove(); }
+  if (typeof updateNotifBadge === 'function') updateNotifBadge();
+  const iconMap = { message:'fa-comment-dots', booking:'fa-calendar-check', promo:'fa-tag', policy:'fa-file-contract', system:'fa-bell' };
+  const colorMap = { message:'#DBEAFE;color:#2563EB', booking:'#D1FAE5;color:#059669', promo:'#FEF3C7;color:#D97706', policy:'#EDE9FE;color:#7C3AED', system:'#F1F5F9;color:#64748B' };
+  const items = mine.length ? mine.slice(0,15).map(n => {
+    const t = new Date(n.time);
+    const ts = t.toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    return `<div style="display:flex;gap:10px;padding:12px 16px;border-bottom:1px solid #F1F5F9;cursor:default">
+      <div style="width:34px;height:34px;border-radius:50%;background:${colorMap[n.type]||'#F1F5F9;color:#64748B'};display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0"><i class="fa-solid ${iconMap[n.type]||'fa-bell'}"></i></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.83rem;font-weight:600;color:#0F172A">${n.title}</div>
+        <div style="font-size:.75rem;color:#64748B;margin-top:2px">${n.body}</div>
+        <div style="font-size:.7rem;color:#94A3B8;margin-top:3px">${ts}</div>
+      </div>
+    </div>`;
+  }).join('') : '<div style="padding:36px;text-align:center;color:#94A3B8;font-size:.85rem"><i class="fa-solid fa-bell-slash" style="font-size:1.8rem;display:block;margin-bottom:10px"></i>Chưa có thông báo</div>';
+  const drop = document.createElement('div');
+  drop.id = 'notif-dropdown';
+  drop.style.cssText = 'position:fixed;right:16px;top:62px;width:340px;background:white;border:1px solid #E2E8F0;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.13);z-index:9999;overflow:hidden';
+  drop.innerHTML = `<div style="padding:13px 16px;border-bottom:1px solid #F1F5F9;display:flex;justify-content:space-between;align-items:center">
+    <span style="font-weight:700;font-size:.9rem;color:#0F172A"><i class="fa-solid fa-bell" style="color:var(--blue);margin-right:6px"></i>Thông báo</span>
+    <button onclick="document.getElementById('notif-dropdown').remove()" style="border:none;background:none;cursor:pointer;color:#94A3B8;font-size:1.2rem;line-height:1">&times;</button>
+  </div>
+  <div style="max-height:400px;overflow-y:auto">${items}</div>`;
+  document.body.appendChild(drop);
+  setTimeout(() => {
+    document.addEventListener('click', function close(e) {
+      const d = document.getElementById('notif-dropdown');
+      if (d && !d.contains(e.target) && !document.getElementById('nav-notif-btn')?.contains(e.target)) {
+        d.remove(); document.removeEventListener('click', close);
+      }
+    });
+  }, 10);
 }
 
 // ===== COMMISSION CONFIG =====
@@ -854,6 +930,14 @@ function initRequestPage() {
     // Pre-fill hidden fields
     const gid = $('req-guide-id'); if (gid) gid.value = guide.id;
     const gnf = $('req-guide-name-f'); if (gnf) gnf.value = guide.name;
+  }
+
+  // Pre-fill from session if logged in
+  const session = Auth.session();
+  if (session && session.type === 'tourist') {
+    const nameEl = $('req-name'); if (nameEl && !nameEl.value) nameEl.value = session.name || '';
+    const emailEl = $('req-email'); if (emailEl && !emailEl.value) emailEl.value = session.email || '';
+    const phoneEl = $('req-phone'); if (phoneEl && !phoneEl.value) phoneEl.value = session.phone || '';
   }
 
   // Pre-fill from params

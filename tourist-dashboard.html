@@ -53,6 +53,48 @@
     .bc-actions { display:flex; gap:8px; flex-wrap:wrap; }
     .empty-state { text-align:center; padding:52px 0; color:var(--gray-2); }
     .empty-state i { font-size:2.5rem; margin-bottom:14px; display:block; color:var(--border); }
+    /* Chat */
+    .chat-wrap { display:grid; grid-template-columns:220px 1fr; border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; min-height:420px; }
+    @media(max-width:600px){ .chat-wrap { grid-template-columns:1fr; } }
+    .chat-list { border-right:1px solid var(--border); overflow-y:auto; background:#FAFAFA; }
+    .chat-list-empty { padding:24px; text-align:center; font-size:.82rem; color:var(--gray-2); }
+    .chat-item { padding:12px 14px; cursor:pointer; border-bottom:1px solid var(--border); transition:.15s; }
+    .chat-item:hover { background:#F0F4F8; }
+    .chat-item.active { background:#EFF6FF; }
+    .chat-item-name { font-weight:700; font-size:.85rem; color:var(--dark); display:flex; justify-content:space-between; align-items:center; }
+    .chat-item-sub { font-size:.75rem; color:var(--gray-2); margin-top:2px; }
+    .chat-item-last { font-size:.76rem; color:var(--gray); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .chat-unread { background:#EF4444; color:white; font-size:.65rem; font-weight:800; min-width:16px; height:16px; border-radius:99px; display:inline-flex; align-items:center; justify-content:center; padding:0 4px; flex-shrink:0; }
+    .chat-panel { display:flex; flex-direction:column; }
+    .chat-panel-empty { flex:1; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:8px; color:var(--gray-2); font-size:.85rem; }
+    .chat-panel-header { padding:12px 16px; border-bottom:1px solid var(--border); background:#FAFAFA; }
+    .chat-panel-name { font-weight:700; font-size:.9rem; color:var(--dark); }
+    .chat-panel-sub { font-size:.75rem; color:var(--gray-2); margin-top:2px; }
+    .chat-msgs { flex:1; overflow-y:auto; padding:14px 16px; max-height:300px; display:flex; flex-direction:column; gap:8px; }
+    .msg-bubble { max-width:72%; }
+    .msg-bubble.mine { align-self:flex-end; }
+    .msg-bubble.theirs { align-self:flex-start; }
+    .msg-text { padding:8px 12px; border-radius:12px; font-size:.84rem; line-height:1.5; word-break:break-word; }
+    .msg-bubble.mine .msg-text { background:var(--blue); color:white; border-radius:12px 12px 2px 12px; }
+    .msg-bubble.theirs .msg-text { background:#F1F5F9; color:var(--dark); border-radius:12px 12px 12px 2px; }
+    .msg-time { font-size:.67rem; color:var(--gray-2); margin-top:2px; text-align:right; }
+    .chat-input-row { padding:10px 12px; border-top:1px solid var(--border); display:flex; gap:8px; align-items:flex-end; background:white; }
+    .chat-input-row textarea { flex:1; resize:none; border:1px solid var(--border); border-radius:8px; padding:7px 10px; font-size:.84rem; font-family:inherit; max-height:80px; }
+    .chat-input-row textarea:focus { outline:none; border-color:var(--blue); }
+    /* Notifications */
+    .notif-item { display:flex; gap:12px; padding:14px 0; border-bottom:1px solid var(--border); cursor:pointer; transition:.15s; }
+    .notif-item:last-child { border-bottom:none; }
+    .notif-item:hover,.notif-item.unread { background:#EFF6FF; margin:0 -8px; padding:14px 8px; }
+    .notif-icon-wrap { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.85rem; flex-shrink:0; }
+    .notif-icon-wrap.message { background:#DBEAFE; color:#2563EB; }
+    .notif-icon-wrap.booking { background:#D1FAE5; color:#059669; }
+    .notif-icon-wrap.promo { background:#FEF3C7; color:#D97706; }
+    .notif-icon-wrap.policy { background:#EDE9FE; color:#7C3AED; }
+    .notif-icon-wrap.system { background:#F1F5F9; color:#64748B; }
+    .notif-body { flex:1; min-width:0; }
+    .notif-title { font-size:.85rem; font-weight:600; color:var(--dark); }
+    .notif-text { font-size:.78rem; color:var(--gray); margin-top:2px; }
+    .notif-time { font-size:.72rem; color:var(--gray-2); margin-top:4px; }
     /* Review modal */
     .modal-overlay { position:fixed; inset:0; background:rgba(15,23,42,.5); z-index:1000; display:flex; align-items:center; justify-content:center; padding:20px; }
     .modal-box { background:white; border-radius:var(--radius-lg); padding:28px; max-width:460px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,.2); }
@@ -113,6 +155,7 @@
         <a href="#reviews" onclick="showSec('reviews',this)"><i class="fa-solid fa-star"></i> Đánh giá của tôi</a>
         <a href="guides.html"><i class="fa-solid fa-magnifying-glass"></i> Tìm HDV mới</a>
         <a href="request.html"><i class="fa-solid fa-paper-plane"></i> Đăng yêu cầu mới</a>
+        <a href="#messages" onclick="return showSec('messages',this)" id="nav-messages"><i class="fa-solid fa-comment-dots"></i> Tin nhắn <span id="msg-badge-nav" style="background:#EF4444;color:white;font-size:.65rem;font-weight:800;min-width:16px;height:16px;border-radius:99px;display:none;align-items:center;justify-content:center;padding:0 4px;margin-left:auto"></span></a>
         <a href="chinh-sach.html"><i class="fa-solid fa-file-contract"></i> Chính sách hoàn tiền</a>
       </nav>
     </div>
@@ -166,6 +209,20 @@
       <div class="section-card" id="sec-reviews" style="display:none">
         <h3><i class="fa-solid fa-star" style="color:#F59E0B"></i> Đánh giá của tôi</h3>
         <div id="review-list"></div>
+      </div>
+
+      <!-- MESSAGES SECTION -->
+      <div class="section-card" id="sec-messages" style="display:none">
+        <h3><i class="fa-solid fa-comment-dots" style="color:var(--blue)"></i> Tin nhắn</h3>
+        <div class="chat-wrap">
+          <div class="chat-list" id="chat-list"></div>
+          <div class="chat-panel" id="chat-panel">
+            <div class="chat-panel-empty">
+              <i class="fa-solid fa-comment-dots" style="font-size:2rem;color:var(--border)"></i>
+              <span>Chọn cuộc trò chuyện để bắt đầu</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -249,14 +306,21 @@ function doLogout() {
 }
 
 function showSec(name, el) {
-  ['bookings','history','reviews'].forEach(s => {
+  ['bookings','history','reviews','messages'].forEach(s => {
     document.getElementById('sec-' + s).style.display = s === name ? 'block' : 'none';
   });
   document.querySelectorAll('.dash-nav a').forEach(a => a.classList.remove('active'));
   if (el) el.classList.add('active');
   if (name === 'history') renderHistory();
   if (name === 'reviews') renderMyReviews();
+  if (name === 'messages') renderChatList();
   return false;
+}
+
+
+function gotoChat(requestId) {
+  showSec('messages', document.getElementById('nav-messages'));
+  openChat(requestId);
 }
 
 function filterBookings(f, el) {
@@ -331,7 +395,7 @@ function renderBookings() {
       <div class="bc-actions">
         ${guide ? `<a href="guide-profile.html?id=${guide.id}" class="btn btn-sm btn-outline"><i class="fa-solid fa-user"></i> Xem HDV</a>` : ''}
         ${isPending ? `<button class="btn btn-sm" style="background:#FEF2F2;color:#DC2626;border:1px solid #FECACA" onclick="cancelRequest('${r.id}')"><i class="fa-solid fa-xmark"></i> Hủy yêu cầu</button>` : ''}
-        ${isAccepted ? `<button class="btn btn-sm btn-primary" onclick="contactGuide('${guide?.id}')"><i class="fa-solid fa-phone"></i> Liên hệ HDV</button>` : ''}
+        ${isAccepted ? `<button class="btn btn-sm btn-primary" onclick="gotoChat('${r.id}')"><i class="fa-solid fa-comment-dots"></i> Nhắn tin HDV</button>` : ''}
         ${(isAccepted || isDone) && !alreadyReviewed ? `<button class="btn btn-sm" style="background:#FFF7ED;color:#F97316;border:1px solid #FED7AA" onclick="openReview('${r.id}','${r.guideName}','${r.destination}')"><i class="fa-solid fa-star"></i> Đánh giá</button>` : ''}
         ${alreadyReviewed ? `<span style="font-size:.78rem;color:#16A34A"><i class="fa-solid fa-circle-check"></i> Đã đánh giá</span>` : ''}
       </div>
@@ -466,33 +530,183 @@ function updateStats() {
 function initTouristDash() {
   const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
   if (!session) { location.href = 'login.html?redirect=tourist-dashboard.html'; return; }
+  if (session.type === 'guide') { location.href = 'hdv-dashboard.html'; return; }
 
   document.getElementById('greeting').textContent = t('tdash.greeting') + ', ' + session.name + '!';
   document.getElementById('u-name').textContent = session.name;
   document.getElementById('u-email').textContent = session.email || '';
   document.getElementById('u-avatar').textContent = (session.name || 'K')[0].toUpperCase();
 
-  // Load requests — in demo show all, in real filter by email
+  // Load requests filtered by tourist's email
   const stored = JSON.parse(localStorage.getItem('gt_requests') || '[]');
+  const myReqs = stored.filter(r => r.email === session.email);
 
-  if (!stored.length) {
-    // Insert demo requests for tourist
+  if (!myReqs.length) {
+    // No bookings for this tourist yet — insert demo data (append, not replace)
     const demo = [
       { id:'GT10000001', guideId:1, guideName:'Nguyễn Minh Khoa', name:session.name, phone:session.phone||'', email:session.email||'', destination:'Nha Trang', date:'2024-06-15', days:3, people:2, budget:'5-10 triệu', interests:['Biển đảo','Ẩm thực'], notes:'Thích chỗ ít người, không cần guide đi theo suốt.', status:'accepted', createdAt:new Date().toISOString() },
       { id:'GT10000002', guideId:2, guideName:'Trần Thị Lan Anh', name:session.name, phone:session.phone||'', email:session.email||'', destination:'Hội An', date:'2024-07-20', days:2, people:2, budget:'< 5 triệu', interests:['Văn hóa','Chụp ảnh'], notes:'', status:'pending', createdAt:new Date().toISOString() },
       { id:'GT10000003', guideId:3, guideName:'Phạm Văn Đức', name:session.name, phone:session.phone||'', email:session.email||'', destination:'Sapa', date:'2024-05-01', days:4, people:4, budget:'10-20 triệu', interests:['Leo núi','Bản làng'], notes:'', status:'done', createdAt:new Date().toISOString() },
     ];
-    localStorage.setItem('gt_requests', JSON.stringify(demo));
+    // Filter out duplicate IDs then append
+    const existing = stored.filter(r => !['GT10000001','GT10000002','GT10000003'].includes(r.id));
+    localStorage.setItem('gt_requests', JSON.stringify([...existing, ...demo]));
     allBookings = demo;
   } else {
-    allBookings = stored;
+    allBookings = myReqs;
   }
 
   renderBookings();
   updateStats();
+  updateMsgBadge();
+  updateNotifBadge();
 }
 
 document.addEventListener('DOMContentLoaded', initTouristDash);
+
+// ===== NOTIFICATIONS =====
+function getNotifs() { return JSON.parse(localStorage.getItem('gt_notifications') || '[]'); }
+function saveNotifs(n) { localStorage.setItem('gt_notifications', JSON.stringify(n)); }
+
+function addNotif(type, title, body, targetType, actionUrl) {
+  const n = getNotifs();
+  n.unshift({ id:'N_'+Date.now(), type, title, body, targetType:targetType||'all', time:new Date().toISOString(), read:false, actionUrl:actionUrl||null });
+  saveNotifs(n);
+}
+
+function updateNotifBadge() {
+  const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
+  if (!session) return;
+  const count = getNotifs().filter(n => (n.targetType === session.type || n.targetType === 'all') && !n.read).length;
+  const badge = document.getElementById('notif-badge-nav');
+  if (badge) { badge.textContent = count > 0 ? count : ''; badge.style.display = count > 0 ? 'inline-flex' : 'none'; }
+  // Cập nhật chuông trên navbar top
+  const btn = document.getElementById('nav-notif-btn');
+  if (btn) {
+    const old = btn.querySelector('span');
+    if (old) old.remove();
+    if (count > 0) btn.insertAdjacentHTML('beforeend', `<span style="position:absolute;top:-4px;right:-4px;background:#EF4444;color:white;font-size:.6rem;font-weight:800;min-width:16px;height:16px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 3px;border:2px solid white">${count>9?'9+':count}</span>`);
+  }
+}
+
+// ===== CHAT =====
+let currentChatReqId = null;
+
+function getMessages() { return JSON.parse(localStorage.getItem('gt_messages') || '[]'); }
+function saveMessages(msgs) { localStorage.setItem('gt_messages', JSON.stringify(msgs)); }
+
+function updateMsgBadge() {
+  const msgs = getMessages();
+  const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
+  const myEmail = session ? session.email : '';
+  const reqs = DB.requests().filter(r => r.email === myEmail);
+  const n = msgs.filter(m => {
+    const r = reqs.find(b => b.id === m.requestId);
+    return r && m.fromType === 'guide' && !m.read;
+  }).length;
+  const badge = document.getElementById('msg-badge-nav');
+  if (!badge) return;
+  badge.textContent = n > 0 ? n : '';
+  badge.style.display = n > 0 ? 'inline-flex' : 'none';
+}
+
+function renderChatList() {
+  const msgs = getMessages();
+  const el = document.getElementById('chat-list');
+  const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
+  const myEmail = session ? session.email : '';
+  const convos = DB.requests().filter(r => (r.status === 'accepted' || r.status === 'pending') && r.email === myEmail);
+  if (!convos.length) {
+    el.innerHTML = '<div class="chat-list-empty"><i class="fa-solid fa-comment-slash" style="font-size:1.5rem;display:block;margin-bottom:8px;color:var(--border)"></i>Chưa có cuộc hội thoại</div>';
+    return;
+  }
+  el.innerHTML = convos.map(r => {
+    const rMsgs = msgs.filter(m => m.requestId === r.id);
+    const unread = rMsgs.filter(m => m.fromType === 'guide' && !m.read).length;
+    const lastMsg = rMsgs[rMsgs.length - 1];
+    return `<div class="chat-item${currentChatReqId === r.id ? ' active' : ''}" onclick="openChat('${r.id}')">
+      <div class="chat-item-name">
+        <span>${r.guideName || 'HDV'}</span>
+        ${unread > 0 ? `<span class="chat-unread">${unread}</span>` : ''}
+      </div>
+      <div class="chat-item-sub"><i class="fa-solid fa-location-dot" style="font-size:.68rem"></i> ${r.destination}</div>
+      <div class="chat-item-last">${lastMsg ? (lastMsg.fromType === 'tourist' ? 'Bạn: ' : '') + lastMsg.text : '<em>Bắt đầu cuộc trò chuyện</em>'}</div>
+    </div>`;
+  }).join('');
+}
+
+function openChat(requestId) {
+  currentChatReqId = requestId;
+  const msgs = getMessages();
+  msgs.forEach(m => { if (m.requestId === requestId && m.fromType === 'guide') m.read = true; });
+  saveMessages(msgs);
+  renderChatList();
+  updateMsgBadge();
+
+  const r = DB.requests().find(b => b.id === requestId);
+  const rMsgs = msgs.filter(m => m.requestId === requestId);
+  const panel = document.getElementById('chat-panel');
+
+  panel.innerHTML = `
+    <div class="chat-panel-header">
+      <div class="chat-panel-name"><i class="fa-solid fa-user-tie"></i> ${r.guideName}</div>
+      <div class="chat-panel-sub"><i class="fa-solid fa-location-dot"></i> ${r.destination} · ${r.date}</div>
+    </div>
+    <div class="chat-msgs" id="chat-msgs-box">
+      ${rMsgs.length ? rMsgs.map(m => {
+        const mine = m.fromType === 'tourist';
+        const t = new Date(m.time);
+        return `<div class="msg-bubble ${mine ? 'mine' : 'theirs'}">
+          <div class="msg-text">${m.text}</div>
+          <div class="msg-time">${t.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})} ${t.toLocaleDateString('vi-VN')}</div>
+        </div>`;
+      }).join('') : '<div style="text-align:center;color:var(--gray-2);font-size:.82rem;padding:20px 0">Chưa có tin nhắn. Hãy bắt đầu cuộc trò chuyện!</div>'}
+    </div>
+    <div class="chat-input-row">
+      <textarea id="chat-input" placeholder="Nhập tin nhắn..." rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"></textarea>
+      <button class="btn btn-primary btn-sm" onclick="sendMsg()" style="flex-shrink:0;height:fit-content"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>`;
+
+  const box = document.getElementById('chat-msgs-box');
+  if (box) box.scrollTop = box.scrollHeight;
+}
+
+function sendMsg() {
+  const input = document.getElementById('chat-input');
+  const text = input?.value.trim();
+  if (!text || !currentChatReqId) return;
+  const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
+  const msgs = getMessages();
+  msgs.push({ id:'MSG_'+Date.now(), requestId:currentChatReqId, fromEmail:session.email, fromType:'tourist', fromName:session.name, text, time:new Date().toISOString(), read:false });
+  saveMessages(msgs);
+  addNotif('message', 'Tin nhắn mới từ ' + session.name, text.slice(0,60), 'guide', 'messages');
+  input.value = '';
+  openChat(currentChatReqId);
+}
+
+// Polling: cập nhật badge và chat mỗi 3 giây
+setInterval(() => {
+  updateMsgBadge();
+  updateNotifBadge();
+  const msgSec = document.getElementById('sec-messages');
+  if (!msgSec || msgSec.style.display === 'none') return;
+  renderChatList();
+  if (!currentChatReqId) return;
+  const msgs = getMessages();
+  let changed = false;
+  msgs.forEach(m => { if (m.requestId === currentChatReqId && m.fromType === 'guide' && !m.read) { m.read = true; changed = true; } });
+  if (changed) { saveMessages(msgs); updateMsgBadge(); }
+  const box = document.getElementById('chat-msgs-box');
+  if (!box) return;
+  const rMsgs = msgs.filter(m => m.requestId === currentChatReqId);
+  const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 60;
+  box.innerHTML = rMsgs.length ? rMsgs.map(m => {
+    const mine = m.fromType === 'tourist';
+    const ts = new Date(m.time);
+    return `<div class="msg-bubble ${mine ? 'mine' : 'theirs'}"><div class="msg-text">${m.text}</div><div class="msg-time">${ts.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})} ${ts.toLocaleDateString('vi-VN')}</div></div>`;
+  }).join('') : '<div style="text-align:center;color:var(--gray-2);font-size:.82rem;padding:20px 0">Chưa có tin nhắn. Hãy bắt đầu cuộc trò chuyện!</div>';
+  if (atBottom) box.scrollTop = box.scrollHeight;
+}, 3000);
 </script>
 </body>
 </html>

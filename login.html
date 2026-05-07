@@ -342,6 +342,11 @@ function doLogin() {
   const users = JSON.parse(localStorage.getItem('gt_users') || '[]');
   const user = users.find(u => u.email === email && u.pass === pass);
   if (!user) { toast('Email hoặc mật khẩu không đúng!', 'err'); return; }
+  if (user.type !== loginType) {
+    const correct = user.type === 'guide' ? 'Hướng dẫn viên' : 'Du khách';
+    toast('Tài khoản này là ' + correct + '. Vui lòng chọn đúng loại tài khoản!', 'err');
+    return;
+  }
   localStorage.setItem('gt_session', JSON.stringify(user));
   toast('Đăng nhập thành công!', 'ok');
   const rd = new URLSearchParams(location.search).get('redirect');
