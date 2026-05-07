@@ -480,6 +480,22 @@ function initNav() {
   close?.addEventListener('click', () => mob?.classList.remove('open'));
   mob?.addEventListener('click', e => { if (e.target === mob) mob.classList.remove('open'); });
 
+  // Lang switcher in navbar (mobile only, next to hamburger)
+  if (ham && !document.querySelector('.mob-lang-nav')) {
+    const cur = localStorage.getItem('gt_lang') || 'vi';
+    const mobLangNav = document.createElement('div');
+    mobLangNav.className = 'mob-lang-nav';
+    mobLangNav.style.cssText = 'display:none;gap:2px;align-items:center';
+    mobLangNav.innerHTML = `
+      <button onclick="setLang('vi')" data-lang="vi" style="padding:4px 7px;font-size:.72rem;font-weight:700;border:1px solid var(--border);border-radius:6px 0 0 6px;cursor:pointer;background:${cur==='vi'?'var(--blue)':'white'};color:${cur==='vi'?'white':'var(--gray-2)'}">VI</button>
+      <button onclick="setLang('en')" data-lang="en" style="padding:4px 7px;font-size:.72rem;font-weight:700;border:1px solid var(--border);border-left:none;border-radius:0 6px 6px 0;cursor:pointer;background:${cur==='en'?'var(--blue)':'white'};color:${cur==='en'?'white':'var(--gray-2)'}">EN</button>`;
+    ham.parentNode.insertBefore(mobLangNav, ham);
+    // Show only on mobile
+    const showMobLang = () => { mobLangNav.style.display = window.innerWidth <= 768 ? 'flex' : 'none'; };
+    showMobLang();
+    window.addEventListener('resize', showMobLang);
+  }
+
   // Auth buttons in nav-right (only on pages that don't have custom nav-right)
   const navRight = document.querySelector('.nav-right');
   if (navRight && !navRight.id) {
