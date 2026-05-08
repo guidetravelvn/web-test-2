@@ -558,6 +558,28 @@ function initNav() {
     navRight.querySelectorAll('.lang-btn').forEach(b => {
       b.classList.toggle('active-lang', b.dataset.lang === cur);
     });
+    // Inject auth buttons into mob-panel
+    const mobPanel = document.querySelector('.mob-panel');
+    if (mobPanel && !mobPanel.querySelector('.mob-auth-area')) {
+      const authArea = document.createElement('div');
+      authArea.className = 'mob-auth-area';
+      authArea.style.cssText = 'margin-top:8px;display:flex;flex-direction:column;gap:8px;padding:12px 0 0';
+      const divEl = document.createElement('div');
+      divEl.className = 'mob-divider';
+      if (session) {
+        authArea.innerHTML = `
+          <div style="padding:10px 14px;font-size:.88rem;color:var(--gray);display:flex;align-items:center;gap:8px"><i class="fa-solid fa-circle-user"></i> ${session.name}</div>
+          <a href="${session.type==='guide'?'hdv-dashboard.html':'tourist-dashboard.html'}" style="padding:11px 14px;border-radius:var(--radius-sm);font-size:.95rem;font-weight:500;color:var(--dark);display:flex;align-items:center;gap:10px"><i class="fa-solid fa-gauge" style="width:18px;text-align:center"></i> Dashboard</a>
+          <button onclick="Auth.logout()" style="padding:11px 14px;border-radius:var(--radius-sm);font-size:.95rem;font-weight:500;color:#DC2626;display:flex;align-items:center;gap:10px;background:none;border:none;cursor:pointer;text-align:left;width:100%"><i class="fa-solid fa-right-from-bracket" style="width:18px;text-align:center"></i> Đăng xuất</button>`;
+      } else {
+        authArea.innerHTML = `
+          <a href="login.html" style="padding:11px 14px;border-radius:var(--radius-sm);font-size:.95rem;font-weight:500;color:var(--dark);display:flex;align-items:center;gap:10px"><i class="fa-solid fa-right-to-bracket" style="width:18px;text-align:center"></i> Đăng nhập</a>
+          <a href="hdv-register.html" style="padding:11px 14px;border-radius:var(--radius-sm);font-size:.95rem;font-weight:500;color:var(--dark);display:flex;align-items:center;gap:10px"><i class="fa-solid fa-id-card" style="width:18px;text-align:center"></i> Làm HDV</a>
+          <a href="request.html" style="padding:10px 14px;border-radius:var(--radius-sm);font-size:.95rem;font-weight:600;color:white;background:var(--orange);display:flex;align-items:center;gap:10px"><i class="fa-solid fa-paper-plane" style="width:18px;text-align:center"></i> Đăng yêu cầu</a>`;
+      }
+      mobPanel.appendChild(divEl);
+      mobPanel.appendChild(authArea);
+    }
     // Translate newly injected data-i18n elements
     if (typeof applyLang === 'function') applyLang();
     // Seed demo notifications

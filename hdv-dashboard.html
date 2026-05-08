@@ -98,6 +98,21 @@
     .notif-title { font-size:.85rem; font-weight:600; color:var(--dark); }
     .notif-text { font-size:.78rem; color:var(--gray); margin-top:2px; }
     .notif-time { font-size:.72rem; color:var(--gray-2); margin-top:4px; }
+    /* Mobile bottom nav */
+    .mob-bottom-nav { display:none; position:fixed; bottom:0; left:0; right:0; z-index:998; background:white; border-top:1px solid var(--border); grid-template-columns:repeat(4,1fr); }
+    @media(max-width:900px){ .mob-bottom-nav { display:grid; } .dash-wrap { padding-bottom:72px; } }
+    .mob-nav-item { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 4px 8px; gap:3px; font-size:.6rem; font-weight:600; color:var(--gray-2); cursor:pointer; transition:.15s; background:none; border:none; width:100%; position:relative; }
+    .mob-nav-item.active { color:var(--blue); }
+    .mob-nav-item i { font-size:1.1rem; }
+    .mob-nav-badge { position:absolute; top:6px; right:calc(50% - 18px); background:#EF4444; color:white; font-size:.55rem; font-weight:800; min-width:14px; height:14px; border-radius:99px; display:none; align-items:center; justify-content:center; padding:0 3px; }
+    /* Earnings grid mobile */
+    @media(max-width:480px){ #sec-earnings .earn-grid { grid-template-columns:1fr !important; } }
+    /* Chat mobile fix */
+    @media(max-width:600px){
+      .chat-wrap { min-height:0 !important; }
+      .chat-list.mob-chat-hidden, .chat-panel.mob-chat-hidden { display:none !important; }
+      .chat-msgs { max-height:calc(60vh - 60px) !important; }
+    }
   </style>
 </head>
 <body>
@@ -200,7 +215,7 @@
       <!-- EARNINGS SECTION -->
       <div class="section-card" id="sec-earnings" style="display:none">
         <h3><i class="fa-solid fa-chart-line" style="color:var(--blue)"></i> Thu nhập</h3>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+        <div class="earn-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
           <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--radius);padding:18px;text-align:center">
             <div style="font-size:.8rem;color:#16A34A;font-weight:600;margin-bottom:4px">Tháng này</div>
             <div style="font-size:1.6rem;font-weight:800;color:#15803D" id="earn-month">0đ</div>
@@ -241,6 +256,23 @@
   </div>
 </div>
 
+<!-- Mobile Bottom Nav -->
+<nav class="mob-bottom-nav" id="mob-bottom-nav">
+  <button class="mob-nav-item active" id="mobnav-requests" onclick="showSection('requests',null,'requests')">
+    <i class="fa-solid fa-inbox"></i>Yêu cầu
+  </button>
+  <button class="mob-nav-item" id="mobnav-earnings" onclick="showSection('earnings',null,'earnings')">
+    <i class="fa-solid fa-chart-line"></i>Thu nhập
+  </button>
+  <button class="mob-nav-item" id="mobnav-messages" onclick="showSection('messages',null,'messages')">
+    <i class="fa-solid fa-comment-dots"></i>Tin nhắn
+    <span class="mob-nav-badge" id="mob-msg-badge"></span>
+  </button>
+  <button class="mob-nav-item" id="mobnav-profile" onclick="showSection('profile',null,'profile')">
+    <i class="fa-solid fa-user"></i>Hồ sơ
+  </button>
+</nav>
+
 <!-- FOOTER -->
 <footer class="footer">
   <div class="container">
@@ -274,9 +306,14 @@ function logout() {
   location.href = 'login.html';
 }
 
-function showSection(name, el) {
+function showSection(name, el, mobKey) {
   ['requests','earnings','profile','messages'].forEach(s => {
     document.getElementById('sec-' + s).style.display = s === name ? 'block' : 'none';
+  });
+  // Update mobile bottom nav active state
+  ['requests','earnings','messages','profile'].forEach(s => {
+    const btn = document.getElementById('mobnav-' + s);
+    if (btn) btn.classList.toggle('active', s === (mobKey || name));
   });
   document.querySelectorAll('.dash-nav a').forEach(a => a.classList.remove('active'));
   if (el) el.classList.add('active');
@@ -559,9 +596,9 @@ function updateMsgBadge() {
     return r && m.fromType === 'tourist' && !m.read;
   }).length;
   const badge = document.getElementById('msg-badge-nav');
-  if (!badge) return;
-  badge.textContent = n > 0 ? n : '';
-  badge.style.display = n > 0 ? 'inline-flex' : 'none';
+  if (badge) { badge.textContent = n > 0 ? n : ''; badge.style.display = n > 0 ? 'inline-flex' : 'none'; }
+  const mobBadge = document.getElementById('mob-msg-badge');
+  if (mobBadge) { mobBadge.textContent = n > 0 ? (n > 9 ? '9+' : n) : ''; mobBadge.style.display = n > 0 ? 'inline-flex' : 'none'; }
 }
 
 function renderChatList() {
@@ -599,10 +636,19 @@ function openChat(requestId) {
   const rMsgs = msgs.filter(m => m.requestId === requestId);
   const panel = document.getElementById('chat-panel');
 
+  const isMobile = window.innerWidth <= 600;
+  if (isMobile) {
+    document.getElementById('chat-list').classList.add('mob-chat-hidden');
+    document.getElementById('chat-panel').classList.remove('mob-chat-hidden');
+  }
+
   panel.innerHTML = `
-    <div class="chat-panel-header">
-      <div class="chat-panel-name"><i class="fa-solid fa-user"></i> ${r.name || 'Khách'}</div>
-      <div class="chat-panel-sub"><i class="fa-solid fa-location-dot"></i> ${r.destination} · ${r.date}</div>
+    <div class="chat-panel-header" style="display:flex;align-items:center;gap:10px">
+      <button onclick="closeChatMobile()" style="display:none;background:none;border:none;color:var(--gray);cursor:pointer;font-size:1rem;flex-shrink:0" id="chat-back-btn"><i class="fa-solid fa-arrow-left"></i></button>
+      <div style="flex:1;min-width:0">
+        <div class="chat-panel-name"><i class="fa-solid fa-user"></i> ${r.name || 'Khách'}</div>
+        <div class="chat-panel-sub"><i class="fa-solid fa-location-dot"></i> ${r.destination} · ${r.date}</div>
+      </div>
     </div>
     <div class="chat-msgs" id="chat-msgs-box">
       ${rMsgs.length ? rMsgs.map(m => {
@@ -619,8 +665,16 @@ function openChat(requestId) {
       <button class="btn btn-primary btn-sm" onclick="sendMsg()" style="flex-shrink:0;height:fit-content"><i class="fa-solid fa-paper-plane"></i></button>
     </div>`;
 
+  const backBtn = document.getElementById('chat-back-btn');
+  if (backBtn && window.innerWidth <= 600) backBtn.style.display = 'block';
   const box = document.getElementById('chat-msgs-box');
   if (box) box.scrollTop = box.scrollHeight;
+}
+
+function closeChatMobile() {
+  currentChatReqId = null;
+  document.getElementById('chat-list').classList.remove('mob-chat-hidden');
+  document.getElementById('chat-panel').classList.add('mob-chat-hidden');
 }
 
 function sendMsg() {
