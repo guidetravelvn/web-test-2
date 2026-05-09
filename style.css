@@ -106,7 +106,7 @@ p { color: var(--gray); line-height: 1.7; }
 /* ===== HERO ===== */
 .hero {
   padding: 130px 0 100px;
-  background: linear-gradient(170deg, rgba(12,35,64,.85) 0%, rgba(3,105,161,.75) 100%),
+  background: linear-gradient(170deg, rgba(12,35,64,.92) 0%, rgba(3,105,161,.85) 100%),
               url('https://images.unsplash.com/photo-1559494007-9f5847c49d94?w=1600&q=80') center/cover no-repeat;
   text-align: center; position: relative; overflow: hidden;
 }
@@ -123,7 +123,7 @@ p { color: var(--gray); line-height: 1.7; }
 .hero-tag { margin-bottom: 20px; }
 .hero h1 { margin-bottom: 20px; color: white; text-shadow: 0 2px 16px rgba(0,0,0,.25); }
 .hero h1 span { color: #7DD3FC; }
-.hero > div > p { font-size: 1.15rem; color: white; font-weight: 600; max-width: 520px; margin: 0 auto 38px; text-shadow: 0 2px 12px rgba(0,0,0,.7); }
+.hero > div > p { font-size: 1.35rem; color: #fff; font-weight: 800; max-width: 580px; margin: 0 auto 38px; text-shadow: 0 2px 8px rgba(0,0,0,.6); }
 
 /* Search bar */
 .search-bar {

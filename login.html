@@ -138,6 +138,13 @@
         <label data-i18n="login.phone_lbl">Số điện thoại</label>
         <input type="tel" id="r-phone" data-i18n="login.phone_ph" data-i18n-attr="placeholder" placeholder="0912 345 678">
       </div>
+      <div class="fg" style="margin-top:12px">
+        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-weight:400;font-size:.85rem;color:var(--gray)">
+          <input type="checkbox" id="r-terms" style="margin-top:2px;flex-shrink:0;width:16px;height:16px;accent-color:var(--blue)">
+          <span>Tôi đã đọc và đồng ý với <a href="dieu-khoan.html" target="_blank" style="color:var(--blue);font-weight:600">Điều khoản dịch vụ</a> và <a href="chinh-sach.html" target="_blank" style="color:var(--blue);font-weight:600">Chính sách hoàn tiền</a> của GuideTravel.</span>
+        </label>
+        <div id="err-terms" class="err-msg" style="margin-top:6px"></div>
+      </div>
       <button class="btn btn-orange btn-block btn-lg" style="margin-top:8px" onclick="sendRegOtp()">
         <i class="fa-solid fa-paper-plane"></i> Gửi OTP xác nhận
       </button>
@@ -149,76 +156,76 @@
 
     <!-- REGISTER — Step 2: Nhập OTP -->
     <div class="auth-body" id="form-reg-otp" style="display:none">
-      <div class="step-back" onclick="switchTab('register')"><i class="fa-solid fa-arrow-left"></i> Quay lại</div>
-      <div class="step-title">Xác nhận OTP</div>
-      <div class="step-sub" id="reg-otp-sub">Mã OTP đã được gửi tới email của bạn</div>
-      <div class="otp-sim-box">
+      <div class="step-back" onclick="switchTab('register')"><i class="fa-solid fa-arrow-left"></i> <span data-i18n="login.back">Quay lại</span></div>
+      <div class="step-title" data-i18n="login.otp_title">Xác nhận OTP</div>
+      <div class="step-sub" id="reg-otp-sub" data-i18n="login.otp_sent_sub">Mã OTP đã được gửi tới email của bạn</div>
+      <div class="otp-sim-box" id="reg-otp-sim" style="display:none">
         <div class="otp-label"><i class="fa-solid fa-flask"></i> Giả lập — OTP của bạn là:</div>
         <div class="otp-code" id="reg-otp-display">------</div>
-        <div class="otp-expire">Hết hạn sau 5 phút</div>
+        <div class="otp-expire" data-i18n="login.otp_expire">Hết hạn sau 5 phút</div>
       </div>
       <div class="fg">
-        <label>Nhập mã OTP (6 chữ số)</label>
-        <div class="otp-input-wrap" id="reg-otp-inputs"></div>
+        <label data-i18n="login.otp_label">Nhập mã OTP từ email</label>
+        <input type="text" id="reg-otp-input" inputmode="numeric" maxlength="10" data-i18n="login.otp_ph" data-i18n-attr="placeholder" placeholder="Nhập mã OTP..." autocomplete="one-time-code" style="font-size:1.4rem;letter-spacing:6px;text-align:center;font-weight:700;font-family:monospace">
       </div>
       <button class="btn btn-orange btn-block btn-lg" onclick="verifyRegOtp()">
-        <i class="fa-solid fa-check"></i> Xác nhận & Tạo tài khoản
+        <i class="fa-solid fa-check"></i> <span data-i18n="login.otp_confirm_btn">Xác nhận & Tạo tài khoản</span>
       </button>
       <div class="auth-footer" style="margin-top:12px">
-        <a onclick="sendRegOtp()" style="cursor:pointer">Gửi lại OTP</a>
+        <a onclick="sendRegOtp()" style="cursor:pointer" data-i18n="login.otp_resend">Gửi lại OTP</a>
       </div>
     </div>
 
     <!-- FORGOT — Step 1: Nhập email -->
     <div class="auth-body" id="form-forgot" style="display:none">
-      <div class="step-back" onclick="showLogin()"><i class="fa-solid fa-arrow-left"></i> Quay lại đăng nhập</div>
-      <div class="step-title">Quên mật khẩu</div>
-      <div class="step-sub">Nhập email tài khoản để nhận mã OTP đặt lại mật khẩu</div>
+      <div class="step-back" onclick="showLogin()"><i class="fa-solid fa-arrow-left"></i> <span data-i18n="login.back_login">Quay lại đăng nhập</span></div>
+      <div class="step-title" data-i18n="login.forgot_title">Quên mật khẩu</div>
+      <div class="step-sub" data-i18n="login.forgot_sub">Nhập email tài khoản để nhận mã OTP đặt lại mật khẩu</div>
       <div class="fg">
-        <label>Email</label>
+        <label data-i18n="req.email">Email</label>
         <input type="email" id="f-email" placeholder="email@example.com">
       </div>
       <button class="btn btn-orange btn-block btn-lg" onclick="sendForgotOtp()">
-        <i class="fa-solid fa-paper-plane"></i> Gửi OTP
+        <i class="fa-solid fa-paper-plane"></i> <span data-i18n="login.forgot_send_btn">Gửi OTP</span>
       </button>
     </div>
 
     <!-- FORGOT — Step 2: Nhập OTP -->
     <div class="auth-body" id="form-forgot-otp" style="display:none">
-      <div class="step-back" onclick="showForgot()"><i class="fa-solid fa-arrow-left"></i> Quay lại</div>
-      <div class="step-title">Nhập mã OTP</div>
-      <div class="step-sub" id="forgot-otp-sub">Mã OTP đã được gửi tới email của bạn</div>
+      <div class="step-back" onclick="showForgot()"><i class="fa-solid fa-arrow-left"></i> <span data-i18n="login.back">Quay lại</span></div>
+      <div class="step-title" data-i18n="login.forgot_otp_title">Nhập mã OTP</div>
+      <div class="step-sub" id="forgot-otp-sub" data-i18n="login.otp_sent_sub">Mã OTP đã được gửi tới email của bạn</div>
       <div class="otp-sim-box">
         <div class="otp-label"><i class="fa-solid fa-flask"></i> Giả lập — OTP của bạn là:</div>
         <div class="otp-code" id="forgot-otp-display">------</div>
-        <div class="otp-expire">Hết hạn sau 5 phút</div>
+        <div class="otp-expire" data-i18n="login.otp_expire">Hết hạn sau 5 phút</div>
       </div>
       <div class="fg">
-        <label>Nhập mã OTP (6 chữ số)</label>
+        <label data-i18n="login.forgot_otp_label">Nhập mã OTP (6 chữ số)</label>
         <div class="otp-input-wrap" id="forgot-otp-inputs"></div>
       </div>
       <button class="btn btn-orange btn-block btn-lg" onclick="verifyForgotOtp()">
-        <i class="fa-solid fa-check"></i> Xác nhận OTP
+        <i class="fa-solid fa-check"></i> <span data-i18n="login.forgot_otp_btn">Xác nhận OTP</span>
       </button>
       <div class="auth-footer" style="margin-top:12px">
-        <a onclick="sendForgotOtp()" style="cursor:pointer">Gửi lại OTP</a>
+        <a onclick="sendForgotOtp()" style="cursor:pointer" data-i18n="login.otp_resend">Gửi lại OTP</a>
       </div>
     </div>
 
     <!-- FORGOT — Step 3: Đặt mật khẩu mới -->
     <div class="auth-body" id="form-new-pass" style="display:none">
-      <div class="step-title">Đặt mật khẩu mới</div>
-      <div class="step-sub">Nhập mật khẩu mới cho tài khoản của bạn</div>
+      <div class="step-title" data-i18n="login.newpass_title">Đặt mật khẩu mới</div>
+      <div class="step-sub" data-i18n="login.newpass_sub">Nhập mật khẩu mới cho tài khoản của bạn</div>
       <div class="fg">
-        <label>Mật khẩu mới</label>
-        <input type="password" id="np-pass" placeholder="Tối thiểu 6 ký tự">
+        <label data-i18n="login.newpass_lbl">Mật khẩu mới</label>
+        <input type="password" id="np-pass" data-i18n="login.pass_ph2" data-i18n-attr="placeholder" placeholder="Tối thiểu 6 ký tự">
       </div>
       <div class="fg">
-        <label>Xác nhận mật khẩu</label>
-        <input type="password" id="np-pass2" placeholder="Nhập lại mật khẩu">
+        <label data-i18n="login.newpass_confirm_lbl">Xác nhận mật khẩu</label>
+        <input type="password" id="np-pass2" data-i18n="login.newpass_confirm_ph" data-i18n-attr="placeholder" placeholder="Nhập lại mật khẩu">
       </div>
       <button class="btn btn-orange btn-block btn-lg" style="margin-top:8px" onclick="doResetPass()">
-        <i class="fa-solid fa-lock"></i> Đặt lại mật khẩu
+        <i class="fa-solid fa-lock"></i> <span data-i18n="login.newpass_btn">Đặt lại mật khẩu</span>
       </button>
     </div>
 
@@ -261,6 +268,8 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 <script src="lang.js"></script>
 <script src="app.js"></script>
 <script>
@@ -335,10 +344,31 @@ function setRegType(t) {
 }
 
 // ===== LOGIN =====
-function doLogin() {
+async function doLogin() {
   const email = document.getElementById('l-email').value.trim();
   const pass = document.getElementById('l-pass').value;
   if (!email || !pass) { toast('Vui lòng nhập đầy đủ thông tin!', 'err'); return; }
+
+  // Thử Supabase Auth trước
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if (!error && data.user) {
+    // Lấy profile từ Supabase
+    const { data: profile } = await sb.from('profiles').select('*').eq('id', data.user.id).single();
+    if (profile && profile.type !== loginType) {
+      const correct = profile.type === 'guide' ? 'Hướng dẫn viên' : 'Du khách';
+      toast('Tài khoản này là ' + correct + '. Vui lòng chọn đúng loại tài khoản!', 'err');
+      await sb.auth.signOut();
+      return;
+    }
+    const session = { id: data.user.id, email, name: profile?.name || '', phone: profile?.phone || '', type: profile?.type || loginType };
+    localStorage.setItem('gt_session', JSON.stringify(session));
+    toast('Đăng nhập thành công!', 'ok');
+    const rd = new URLSearchParams(location.search).get('redirect');
+    setTimeout(() => { location.href = rd || (session.type === 'guide' ? 'hdv-dashboard.html' : 'index.html'); }, 800);
+    return;
+  }
+
+  // Fallback: localStorage (tài khoản cũ chưa migrate)
   const users = JSON.parse(localStorage.getItem('gt_users') || '[]');
   const user = users.find(u => u.email === email && u.pass === pass);
   if (!user) { toast('Email hoặc mật khẩu không đúng!', 'err'); return; }
@@ -354,43 +384,73 @@ function doLogin() {
 }
 
 // ===== REGISTER + OTP =====
-function sendRegOtp() {
+async function sendRegOtp() {
   const name  = document.getElementById('r-name').value.trim();
   const email = document.getElementById('r-email').value.trim();
   const pass  = document.getElementById('r-pass').value;
   const phone = document.getElementById('r-phone').value.trim();
+  const termsEl = document.getElementById('r-terms');
+  const termsErr = document.getElementById('err-terms');
+  if (termsEl && !termsEl.checked) {
+    if (termsErr) { termsErr.textContent = t('login.err.terms'); termsErr.classList.add('show'); }
+    return;
+  }
+  if (termsErr) termsErr.classList.remove('show');
   if (!name || !email || !pass) { toast('Vui lòng điền đầy đủ thông tin!', 'err'); return; }
   if (pass.length < 6) { toast('Mật khẩu tối thiểu 6 ký tự!', 'err'); return; }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast('Email không hợp lệ!', 'err'); return; }
-  const users = JSON.parse(localStorage.getItem('gt_users') || '[]');
-  if (users.find(u => u.email === email)) { toast('Email đã được sử dụng!', 'err'); return; }
 
-  pendingOtp = genOtp();
-  otpExpiry = Date.now() + 5 * 60 * 1000;
   pendingRegData = { name, email, pass, phone, type: regType };
 
-  document.getElementById('reg-otp-display').textContent = pendingOtp;
-  document.getElementById('reg-otp-sub').textContent = 'Mã OTP đã được gửi tới ' + email;
+  const { error } = await sb.auth.signUp({
+    email, password: pass,
+    options: { data: { name, phone, type: regType } }
+  });
+  if (error) {
+    if (error.message && error.message.toLowerCase().includes('already registered')) {
+      toast(t('login.err.email_taken'), 'err');
+    } else {
+      toast(error.message || t('login.err.otp_send_fail'), 'err');
+    }
+    return;
+  }
+
+  document.getElementById('reg-otp-sub').textContent = t('login.otp_sent_sub').replace('email của bạn', email).replace('your email', email);
   document.getElementById('auth-tabs').style.display = 'none';
-  buildOtpInputs('reg-otp-inputs');
+  const otpInp = document.getElementById('reg-otp-input');
+  if (otpInp) otpInp.value = '';
   showPanel('form-reg-otp');
-  toast('OTP đã được gửi! (Giả lập — xem mã bên trên)', 'ok');
+  setTimeout(() => { if (otpInp) otpInp.focus(); }, 100);
+  toast(t('login.otp_sent'), 'ok');
 }
 
-function verifyRegOtp() {
-  const entered = getOtpValue('reg-otp-inputs');
-  if (entered.length < 6) { toast('Vui lòng nhập đủ 6 chữ số!', 'err'); return; }
-  if (Date.now() > otpExpiry) { toast('OTP đã hết hạn. Vui lòng gửi lại!', 'err'); return; }
-  if (entered !== pendingOtp) { toast('OTP không đúng. Vui lòng thử lại!', 'err'); return; }
+async function verifyRegOtp() {
+  const entered = (document.getElementById('reg-otp-input')?.value || '').trim();
+  if (entered.length < 6) { toast(t('login.err.otp_empty'), 'err'); return; }
+  if (!pendingRegData) { toast(t('login.err.session_expired'), 'err'); switchTab('register'); return; }
 
+  const { name, email, pass, phone, type } = pendingRegData;
+
+  const { data, error } = await sb.auth.verifyOtp({ email, token: entered, type: 'signup' });
+  if (error) {
+    toast(t('login.err.otp_invalid'), 'err');
+    return;
+  }
+
+  // Lưu profile vào Supabase
+  const userId = data.user.id;
+  await sb.from('profiles').upsert({ id: userId, name, phone, type });
+
+  // Lưu session localStorage để các trang khác dùng được
+  const session = { id: userId, name, email, phone, type, createdAt: new Date().toISOString() };
   const users = JSON.parse(localStorage.getItem('gt_users') || '[]');
-  const user = { id: 'U' + Date.now(), ...pendingRegData, createdAt: new Date().toISOString() };
-  users.push(user);
+  if (!users.find(u => u.email === email)) users.push({ ...session, pass });
   localStorage.setItem('gt_users', JSON.stringify(users));
-  localStorage.setItem('gt_session', JSON.stringify(user));
-  pendingOtp = null; pendingRegData = null;
-  toast('Đăng ký thành công!', 'ok');
-  setTimeout(() => { location.href = user.type === 'guide' ? 'hdv-register.html' : 'index.html'; }, 800);
+  localStorage.setItem('gt_session', JSON.stringify(session));
+
+  pendingRegData = null;
+  toast(t('login.register_success'), 'ok');
+  setTimeout(() => { location.href = type === 'guide' ? 'hdv-register.html' : 'index.html'; }, 800);
 }
 
 // ===== FORGOT PASSWORD + OTP =====
@@ -425,9 +485,9 @@ function verifyForgotOtp() {
 function doResetPass() {
   const pass  = document.getElementById('np-pass').value;
   const pass2 = document.getElementById('np-pass2').value;
-  if (!pass || !pass2) { toast('Vui lòng nhập đầy đủ!', 'err'); return; }
-  if (pass.length < 6) { toast('Mật khẩu tối thiểu 6 ký tự!', 'err'); return; }
-  if (pass !== pass2) { toast('Mật khẩu xác nhận không khớp!', 'err'); return; }
+  if (!pass || !pass2) { toast(t('err.fill_all') || 'Vui lòng nhập đầy đủ!', 'err'); return; }
+  if (pass.length < 6) { toast(t('err.pass_min') || 'Mật khẩu tối thiểu 6 ký tự!', 'err'); return; }
+  if (pass !== pass2) { toast(t('login.err.pass_mismatch'), 'err'); return; }
 
   const users = JSON.parse(localStorage.getItem('gt_users') || '[]');
   const idx = users.findIndex(u => u.email === forgotEmail);
@@ -443,7 +503,7 @@ function doResetPass() {
   }
 
   forgotEmail = null;
-  toast('Đặt lại mật khẩu thành công!', 'ok');
+  toast(t('login.err.reset_success'), 'ok');
   setTimeout(() => showLogin(), 1200);
 }
 

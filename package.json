@@ -1,0 +1,25 @@
+{
+  "name": "web-test-2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "dev": "serve . -p 3000",
+    "start": "serve . -p 3000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guidetravelvn/web-test-2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/guidetravelvn/web-test-2/issues"
+  },
+  "homepage": "https://github.com/guidetravelvn/web-test-2#readme",
+  "devDependencies": {
+    "serve": "^14.2.6"
+  }
+}

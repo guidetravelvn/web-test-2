@@ -107,6 +107,26 @@
     .mob-nav-badge { position:absolute; top:6px; right:calc(50% - 18px); background:#EF4444; color:white; font-size:.55rem; font-weight:800; min-width:14px; height:14px; border-radius:99px; display:none; align-items:center; justify-content:center; padding:0 3px; }
     /* Earnings grid mobile */
     @media(max-width:480px){ #sec-earnings .earn-grid { grid-template-columns:1fr !important; } }
+    /* Calendar */
+    .cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+    .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+    .cal-dow { text-align:center; font-size:.7rem; font-weight:700; color:var(--gray-2); padding:6px 0; }
+    .cal-day { position:relative; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:8px; font-size:.85rem; cursor:pointer; transition:.15s; user-select:none; }
+    .cal-day:hover { background:var(--bg); }
+    .cal-day.today { background:var(--blue); color:white; font-weight:700; }
+    .cal-day.has-booking { font-weight:700; color:var(--dark); }
+    .cal-day.selected:not(.today) { background:var(--blue-light); color:var(--blue); }
+    .cal-day.other-month { color:var(--border); pointer-events:none; }
+    .cal-dot { width:5px; height:5px; background:var(--orange); border-radius:50%; position:absolute; bottom:3px; }
+    .cal-day.today .cal-dot { background:white; }
+    /* Complete modal */
+    .complete-modal { position:fixed; inset:0; background:rgba(15,23,42,.5); z-index:1000; display:flex; align-items:center; justify-content:center; padding:20px; }
+    .complete-box { background:white; border-radius:var(--radius-lg); padding:28px; max-width:440px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,.2); }
+    .photo-upload-area { border:2px dashed var(--border); border-radius:var(--radius); padding:24px; text-align:center; cursor:pointer; transition:.2s; margin-bottom:16px; }
+    .photo-upload-area:hover { border-color:var(--blue); background:var(--blue-light); }
+    .photo-preview { width:100%; max-height:200px; object-fit:cover; border-radius:var(--radius); margin-bottom:8px; display:none; }
+    /* 5-item mobile nav */
+    @media(max-width:900px){ .mob-bottom-nav { grid-template-columns:repeat(5,1fr); } .mob-nav-item { font-size:.55rem; } }
     /* Chat mobile fix */
     @media(max-width:600px){
       .chat-wrap { min-height:0 !important; }
@@ -169,6 +189,7 @@
         <a href="#earnings" onclick="showSection('earnings',this)"><i class="fa-solid fa-chart-line"></i> Thu nhập</a>
         <a href="#profile" onclick="showSection('profile',this)"><i class="fa-solid fa-user"></i> Hồ sơ của tôi</a>
         <a href="guide-profile.html" id="d-profile-link"><i class="fa-solid fa-eye"></i> Xem hồ sơ công khai</a>
+        <a href="#calendar" onclick="showSection('calendar',this)"><i class="fa-solid fa-calendar-days"></i> Lịch hẹn tour</a>
         <a href="#messages" onclick="return showSection('messages',this)" id="nav-messages"><i class="fa-solid fa-comment-dots"></i> Tin nhắn <span id="msg-badge-nav" style="background:#EF4444;color:white;font-size:.65rem;font-weight:800;min-width:16px;height:16px;border-radius:99px;display:none;align-items:center;justify-content:center;padding:0 4px;margin-left:auto"></span></a>
         <a href="chinh-sach.html"><i class="fa-solid fa-file-contract"></i> Chính sách hoàn tiền</a>
       </nav>
@@ -229,6 +250,13 @@
         <div id="earn-list"><div class="empty-state"><i class="fa-solid fa-receipt"></i><p>Chưa có giao dịch</p></div></div>
       </div>
 
+      <!-- CALENDAR SECTION -->
+      <div class="section-card" id="sec-calendar" style="display:none">
+        <h3><i class="fa-solid fa-calendar-days" style="color:var(--blue)"></i> Lịch hẹn tour</h3>
+        <div id="calendar-wrap"></div>
+        <div id="calendar-day-detail"></div>
+      </div>
+
       <!-- MESSAGES SECTION -->
       <div class="section-card" id="sec-messages" style="display:none">
         <h3><i class="fa-solid fa-comment-dots" style="color:var(--blue)"></i> Tin nhắn</h3>
@@ -268,10 +296,35 @@
     <i class="fa-solid fa-comment-dots"></i>Tin nhắn
     <span class="mob-nav-badge" id="mob-msg-badge"></span>
   </button>
+  <button class="mob-nav-item" id="mobnav-calendar" onclick="showSection('calendar',null,'calendar')">
+    <i class="fa-solid fa-calendar-days"></i>Lịch
+  </button>
   <button class="mob-nav-item" id="mobnav-profile" onclick="showSection('profile',null,'profile')">
     <i class="fa-solid fa-user"></i>Hồ sơ
   </button>
 </nav>
+
+<!-- Complete Modal -->
+<div class="complete-modal" id="complete-modal" style="display:none" onclick="if(event.target===this)closeCompleteModal()">
+  <div class="complete-box" onclick="event.stopPropagation()">
+    <h3 style="margin-bottom:6px"><i class="fa-solid fa-flag-checkered" style="color:var(--green)"></i> Xác nhận hoàn thành tour</h3>
+    <p style="font-size:.85rem;color:var(--gray);margin-bottom:20px">Chụp ảnh lưu niệm cùng khách làm bằng chứng tour đã diễn ra. Ảnh sẽ được lưu lại để bảo vệ bạn nếu có tranh chấp.</p>
+    <div class="photo-upload-area" onclick="document.getElementById('complete-photo-input').click()">
+      <img id="complete-photo-preview" class="photo-preview" src="" alt="">
+      <div id="complete-upload-hint">
+        <i class="fa-solid fa-camera" style="font-size:1.6rem;color:var(--gray-2);margin-bottom:8px;display:block"></i>
+        <div style="font-size:.85rem;color:var(--gray);font-weight:600">Chụp/chọn ảnh cùng khách (tuỳ chọn)</div>
+        <div style="font-size:.75rem;color:var(--gray-2);margin-top:4px">Nhấn để chọn ảnh từ thiết bị</div>
+      </div>
+    </div>
+    <input type="file" id="complete-photo-input" accept="image/*" style="display:none" onchange="previewCompletePhoto(this)">
+    <input type="hidden" id="complete-req-id">
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-primary btn-block" onclick="submitCompletion()"><i class="fa-solid fa-circle-check"></i> Xác nhận hoàn thành</button>
+      <button class="btn btn-outline" onclick="closeCompleteModal()" style="white-space:nowrap">Huỷ</button>
+    </div>
+  </div>
+</div>
 
 <!-- FOOTER -->
 <footer class="footer">
@@ -307,11 +360,12 @@ function logout() {
 }
 
 function showSection(name, el, mobKey) {
-  ['requests','earnings','profile','messages'].forEach(s => {
+  ['requests','earnings','profile','messages','calendar'].forEach(s => {
     document.getElementById('sec-' + s).style.display = s === name ? 'block' : 'none';
   });
+  if (name === 'calendar') renderCalendar();
   // Update mobile bottom nav active state
-  ['requests','earnings','messages','profile'].forEach(s => {
+  ['requests','earnings','messages','calendar','profile'].forEach(s => {
     const btn = document.getElementById('mobnav-' + s);
     if (btn) btn.classList.toggle('active', s === (mobKey || name));
   });
@@ -383,6 +437,8 @@ function renderReqs() {
         <button class="btn btn-sm btn-outline" onclick="gotoChat('${r.id}')"><i class="fa-solid fa-comment-dots"></i> Nhắn tin</button>
       </div>` : `
       <div class="req-actions">
+        ${r.status === 'accepted' ? `<button class="btn btn-sm" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="openCompleteModal('${r.id}')"><i class="fa-solid fa-flag-checkered"></i> Hoàn thành</button>` : ''}
+        ${r.status === 'done' && r.completionPhoto ? `<button class="btn btn-sm btn-outline" onclick="viewCompletionPhoto('${r.id}')"><i class="fa-solid fa-image"></i> Xem ảnh</button>` : ''}
         <button class="btn btn-sm btn-outline" onclick="gotoChat('${r.id}')"><i class="fa-solid fa-comment-dots"></i> Nhắn tin</button>
       </div>`}
     </div>`;
@@ -688,6 +744,133 @@ function sendMsg() {
   addNotif('message', 'HDV ' + session.name + ' vừa nhắn tin', text.slice(0,60), 'tourist', 'messages');
   input.value = '';
   openChat(currentChatReqId);
+}
+
+// ===== CALENDAR =====
+let calYear, calMonth, calSelectedDate;
+const CAL_MONTHS = ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
+const CAL_DOWS = ['CN','T2','T3','T4','T5','T6','T7'];
+
+function renderCalendar() {
+  const wrap = document.getElementById('calendar-wrap');
+  if (!wrap) return;
+  const now = new Date();
+  if (calYear === undefined) { calYear = now.getFullYear(); calMonth = now.getMonth(); }
+  const reqs = DB.requests().filter(r => r.status === 'accepted' || r.status === 'done');
+  const byDate = {};
+  reqs.forEach(r => { if (r.date) { if (!byDate[r.date]) byDate[r.date] = []; byDate[r.date].push(r); } });
+  const todayStr = now.toISOString().slice(0,10);
+  const firstDow = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  let cells = CAL_DOWS.map(d => `<div class="cal-dow">${d}</div>`).join('');
+  for (let i = 0; i < firstDow; i++) cells += `<div class="cal-day other-month"></div>`;
+  for (let d = 1; d <= daysInMonth; d++) {
+    const ds = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = ds === todayStr, isSel = ds === calSelectedDate, hasBk = !!byDate[ds];
+    cells += `<div class="cal-day${isToday?' today':''}${isSel&&!isToday?' selected':''}${hasBk?' has-booking':''}" onclick="calSelectDay('${ds}')">${d}${hasBk?'<span class="cal-dot"></span>':''}</div>`;
+  }
+  wrap.innerHTML = `
+    <div class="cal-header">
+      <button onclick="calNav(-1)" class="btn btn-sm btn-outline"><i class="fa-solid fa-chevron-left"></i></button>
+      <strong style="font-size:.95rem;color:var(--dark)">${CAL_MONTHS[calMonth]} ${calYear}</strong>
+      <button onclick="calNav(1)" class="btn btn-sm btn-outline"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+    <div class="cal-grid">${cells}</div>`;
+  renderCalDayDetail(calSelectedDate ? (byDate[calSelectedDate] || []) : null);
+}
+
+function calNav(dir) {
+  calMonth += dir;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
+}
+
+function calSelectDay(ds) {
+  calSelectedDate = calSelectedDate === ds ? null : ds;
+  renderCalendar();
+}
+
+function renderCalDayDetail(bookings) {
+  const el = document.getElementById('calendar-day-detail');
+  if (!el) return;
+  if (!bookings) { el.innerHTML = ''; return; }
+  if (!bookings.length) {
+    el.innerHTML = `<div style="font-size:.85rem;color:var(--gray-2);text-align:center;padding:16px;border-top:1px solid var(--border);margin-top:16px">Không có tour trong ngày này</div>`;
+    return;
+  }
+  el.innerHTML = `<div style="margin-top:16px;border-top:1px solid var(--border);padding-top:16px">
+    <div style="font-size:.85rem;font-weight:700;color:var(--dark);margin-bottom:10px">${bookings.length} tour ngày ${calSelectedDate}</div>
+    ${bookings.map(r => `<div class="req-card" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <div>
+          <div style="font-weight:700;font-size:.9rem;color:var(--dark)">${r.name || 'Khách'}</div>
+          <div style="font-size:.78rem;color:var(--gray-2);margin-top:2px"><i class="fa-solid fa-location-dot"></i> ${r.destination} &nbsp;·&nbsp; ${r.days||1} ngày &nbsp;·&nbsp; ${r.people||1} người</div>
+          ${r.phone ? `<div style="font-size:.78rem;color:var(--gray-2);margin-top:2px"><i class="fa-solid fa-phone"></i> ${r.phone}</div>` : ''}
+        </div>
+        <span class="req-status ${r.status==='done'?'st-done':'st-accepted'}">${r.status==='done'?'Hoàn thành':'Đã xác nhận'}</span>
+      </div>
+      ${r.status==='accepted'?`<div style="margin-top:10px"><button class="btn btn-sm" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="openCompleteModal('${r.id}')"><i class="fa-solid fa-flag-checkered"></i> Đánh dấu hoàn thành</button></div>`:''}
+    </div>`).join('')}
+  </div>`;
+}
+
+// ===== TOUR COMPLETION =====
+function openCompleteModal(reqId) {
+  document.getElementById('complete-req-id').value = reqId;
+  document.getElementById('complete-photo-preview').style.display = 'none';
+  document.getElementById('complete-upload-hint').style.display = 'block';
+  document.getElementById('complete-photo-input').value = '';
+  document.getElementById('complete-modal').style.display = 'flex';
+}
+
+function closeCompleteModal() {
+  document.getElementById('complete-modal').style.display = 'none';
+}
+
+function previewCompletePhoto(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  if (file.size > 3 * 1024 * 1024) { toast('Ảnh quá lớn, chọn ảnh dưới 3MB', 'err'); input.value = ''; return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const preview = document.getElementById('complete-photo-preview');
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+    document.getElementById('complete-upload-hint').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function submitCompletion() {
+  const reqId = document.getElementById('complete-req-id').value;
+  const photoSrc = document.getElementById('complete-photo-preview').src;
+  const hasPhoto = document.getElementById('complete-photo-preview').style.display !== 'none';
+  const reqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
+  const idx = reqs.findIndex(r => r.id === reqId);
+  if (idx < 0) { toast('Không tìm thấy yêu cầu', 'err'); return; }
+  reqs[idx].status = 'done';
+  reqs[idx].completedAt = new Date().toISOString();
+  reqs[idx].completedBy = 'guide';
+  if (hasPhoto) reqs[idx].completionPhoto = photoSrc;
+  localStorage.setItem('gt_requests', JSON.stringify(reqs));
+  const req = reqs[idx];
+  addNotif('booking', 'Tour đã hoàn thành!', 'HDV đã xác nhận tour ' + (req.destination||'') + ' hoàn thành. Hãy để lại đánh giá!', 'tourist', 'bookings');
+  closeCompleteModal();
+  toast('Đã xác nhận tour hoàn thành!', 'ok');
+  allReqs = DB.requests();
+  renderReqs();
+  renderDashStats();
+}
+
+function viewCompletionPhoto(reqId) {
+  const req = DB.requests().find(r => r.id === reqId);
+  if (!req || !req.completionPhoto) return;
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:2000;display:flex;align-items:center;justify-content:center;cursor:pointer';
+  overlay.innerHTML = `<img src="${req.completionPhoto}" style="max-width:90vw;max-height:90vh;border-radius:12px;object-fit:contain">`;
+  overlay.onclick = () => overlay.remove();
+  document.body.appendChild(overlay);
 }
 
 // Polling: cập nhật badge và chat mỗi 3 giây

@@ -692,7 +692,7 @@ function guideCard(g) {
 function initHome() {
   // Featured guides
   const grid = $('featured-guides');
-  if (grid) grid.innerHTML = GUIDES.slice(0, 3).map(guideCard).join('');
+  if (grid) grid.innerHTML = GUIDES.slice(0, 4).map(guideCard).join('');
   // Search
   const form = $('hero-search');
   form?.addEventListener('submit', e => {
@@ -825,8 +825,13 @@ function fmtResponseTime(str) {
 
 function initProfile() {
   const params = new URLSearchParams(location.search);
-  const id = parseInt(params.get('id'));
-  const g = GUIDES.find(x => x.id === id);
+  const idRaw = params.get('id');
+  const idNum = parseInt(idRaw);
+  let g = GUIDES.find(x => x.id === idNum);
+  if (!g) {
+    const localProfiles = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+    g = localProfiles.find(p => p.id === idRaw);
+  }
   if (!g) { location.href = 'guides.html'; return; }
   renderProfile(g);
   initBookingForm(g);
@@ -852,12 +857,12 @@ function renderProfile(g) {
   const ava = $('p-avatar'); if (ava) { ava.src = g.avatar; ava.alt = g.name; }
   const cover = $('p-cover'); if (cover) { cover.src = g.coverImg; cover.alt = g.name; }
 
-  setHTML('p-langs', g.languages.map(l => `<span class="tag tag-blue">${l}</span>`).join(''));
-  setHTML('p-specs', g.specialties.map(s => `<span class="tag tag-gray">${t('spec.' + s) || s}</span>`).join(''));
+  setHTML('p-langs', (g.languages || []).map(l => `<span class="tag tag-blue">${l}</span>`).join(''));
+  setHTML('p-specs', (g.specialties || []).map(s => `<span class="tag tag-gray">${t('spec.' + s) || s}</span>`).join(''));
   setHTML('p-verified', g.verified ? `<span class="tag tag-green"><i class="fa-solid fa-circle-check"></i> ${t('card.verified')}</span>` : '');
 
   // Itineraries
-  setHTML('p-itineraries', g.sampleItineraries.map(it => {
+  setHTML('p-itineraries', (g.sampleItineraries || []).map(it => {
     const itTitle = (lang === 'en' && it.titleEn) ? it.titleEn : it.title;
     const itDesc  = (lang === 'en' && it.descEn)  ? it.descEn  : it.desc;
     return `
@@ -882,7 +887,7 @@ function renderProfile(g) {
       stars: rv.stars,
       text: rv.text || ''
     }));
-  const allReviews = [...userReviews, ...g.reviewList];
+  const allReviews = [...userReviews, ...(g.reviewList || [])];
   setHTML('p-reviews', allReviews.map(r => `
     <div class="review-item">
       <div class="review-top">
@@ -919,12 +924,38 @@ function initBookingForm(g) {
   window.addEventListener('langchange', updateTotal);
   form.addEventListener('submit', e => {
     e.preventDefault();
+    const termsCheck = form.querySelector('#bf-terms');
+    if (termsCheck && !termsCheck.checked) { toast('Vui lòng đồng ý với điều khoản trước khi đặt tour!', 'err'); return; }
     const date = form.querySelector('#bf-date')?.value;
     if (!date) { toast(t('err.select_date'), 'err'); return; }
+    const session = Auth.session();
+    if (!session || session.type !== 'tourist') {
+      toast(t('err.login_required') || 'Vui lòng đăng nhập để đặt tour!', 'err');
+      setTimeout(() => { location.href = 'login.html'; }, 1500);
+      return;
+    }
     const d = parseInt(days?.value || 1);
     const p = parseInt(ppl?.value || 1);
-    const params = new URLSearchParams({ guideId: g.id, date, days: d, people: p });
-    location.href = `payment.html?${params}`;
+    const req = {
+      id: 'GT' + Date.now().toString().slice(-8),
+      guideId: g.id,
+      guideName: g.name,
+      userId: session.id || null,
+      name: session.name || '',
+      phone: session.phone || '',
+      email: session.email || '',
+      destination: g.area || '',
+      date, days: d, people: p,
+      notes: '',
+      totalAmount: g.pricePerDay * d,
+      status: 'pending',
+      createdAt: new Date().toISOString()
+    };
+    const reqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
+    reqs.unshift(req);
+    localStorage.setItem('gt_requests', JSON.stringify(reqs));
+    toast(t('booking.sent') || 'Đã gửi yêu cầu! HDV sẽ phản hồi trong 24h.', 'ok');
+    setTimeout(() => { location.href = 'tourist-dashboard.html'; }, 1500);
   });
 }
 
@@ -933,8 +964,13 @@ let selectedInterests = [];
 
 function initRequestPage() {
   const params = new URLSearchParams(location.search);
-  const guideId = parseInt(params.get('guideId'));
-  const guide = GUIDES.find(g => g.id === guideId);
+  const guideIdRaw = params.get('guideId');
+  const guideIdNum = parseInt(guideIdRaw);
+  let guide = GUIDES.find(g => g.id === guideIdNum);
+  if (!guide && guideIdRaw) {
+    const localProfiles = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+    guide = localProfiles.find(p => p.id === guideIdRaw);
+  }
 
   // Render guide mini card
   if (guide) {
@@ -1026,6 +1062,7 @@ function submitRequest(e) {
     id: 'GT' + Date.now().toString().slice(-8),
     guideId: $('req-guide-id')?.value || null,
     guideName: $('req-guide-name-f')?.value || t('req.all_guides'),
+    userId: Auth.session()?.id || null,
     name: $('req-name').value,
     phone: $('req-phone').value,
     email: $('req-email').value,

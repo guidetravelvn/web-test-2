@@ -166,14 +166,15 @@
               <div style="font-size:.76rem;color:var(--gray-2);margin-top:5px">Có thẻ HDV sẽ được hiển thị badge "Đã xác minh" trên hồ sơ</div>
             </div>
             <div class="fg" style="margin-bottom:0">
-              <label>Upload CCCD / Thẻ HDV (ảnh chụp rõ 2 mặt)</label>
-              <div class="upload-box" onclick="document.getElementById('file-id').click()">
+              <label>Upload CCCD / Thẻ HDV (ảnh chụp rõ 2 mặt) <span style="color:var(--red)">*</span></label>
+              <div class="upload-box" id="upload-id-box" onclick="document.getElementById('file-id').click()">
                 <i class="fa-solid fa-cloud-arrow-up"></i>
                 <p><strong>Nhấn để chọn ảnh</strong> hoặc kéo thả vào đây</p>
                 <p style="margin-top:4px;font-size:.76rem">JPG, PNG — tối đa 5MB mỗi file</p>
               </div>
-              <input type="file" id="file-id" accept="image/*" multiple style="display:none" onchange="previewFiles(this,'preview-id')">
+              <input type="file" id="file-id" accept="image/*" multiple style="display:none" onchange="previewFiles(this,'preview-id');clearIdErr()">
               <div id="preview-id" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"></div>
+              <div class="err-msg" id="err-hdv-file">Vui lòng upload ảnh CCCD để xác minh danh tính</div>
             </div>
           </div>
 
@@ -221,6 +222,7 @@
             <h3><i class="fa-solid fa-star" style="color:var(--yellow)"></i> Chuyên Môn</h3>
             <div style="margin-bottom:20px">
               <label style="font-size:.85rem;font-weight:600;color:var(--dark);display:block;margin-bottom:12px">Bạn giỏi dẫn tour loại nào? <span style="font-weight:400;color:var(--gray-2)">(chọn nhiều)</span></label>
+              <div id="err-hdv-specs" class="err-msg" style="margin-bottom:8px">Vui lòng chọn ít nhất 1 chuyên môn</div>
               <div class="spec-grid">
                 <button type="button" class="spec-btn" data-val="bien"><div class="ico">🏖️</div>Biển đảo</button>
                 <button type="button" class="spec-btn" data-val="trekking"><div class="ico">🥾</div>Trekking</button>
@@ -274,8 +276,9 @@
                   <p style="margin-top:8px"><strong>Upload ảnh</strong></p>
                   <p style="font-size:.76rem">Ảnh rõ mặt, nền sáng</p>
                 </div>
-                <input type="file" id="file-avatar" accept="image/*" style="display:none" onchange="previewSingle(this,'prev-avatar')">
+                <input type="file" id="file-avatar" accept="image/*" style="display:none" onchange="previewSingle(this,'prev-avatar');document.getElementById('err-hdv-avatar').classList.remove('show')">
                 <div id="prev-avatar" style="margin-top:8px"></div>
+                <div class="err-msg" id="err-hdv-avatar">Vui lòng upload ảnh đại diện</div>
               </div>
               <div class="fg" style="margin-bottom:0">
                 <label>Ảnh bìa (ảnh đang đi tour)</label>
@@ -607,25 +610,55 @@ function validateStep(s) {
       if (err) err.classList.toggle('show', !valid);
       if (!valid) ok = false;
     });
+    // Validate CCCD file upload
+    const fileInput = document.getElementById('file-id');
+    const fileErr = document.getElementById('err-hdv-file');
+    const uploadBox = document.getElementById('upload-id-box');
+    const hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
+    if (fileErr) fileErr.classList.toggle('show', !hasFile);
+    if (uploadBox) uploadBox.style.borderColor = hasFile ? '' : 'var(--red)';
+    if (!hasFile) ok = false;
     return ok;
   }
   if (s === 2) {
+    let ok = true;
     const r = document.getElementById('hdv-region');
     const err = document.getElementById('err-hdv-region');
-    const ok = r && r.value !== '';
-    if (r) r.classList.toggle('err', !ok);
-    if (err) err.classList.toggle('show', !ok);
+    const regionOk = r && r.value !== '';
+    if (r) r.classList.toggle('err', !regionOk);
+    if (err) err.classList.toggle('show', !regionOk);
+    if (!regionOk) ok = false;
+    // Validate ít nhất 1 chuyên môn
+    const specErr = document.getElementById('err-hdv-specs');
+    const specOk = selectedSpecs.length > 0;
+    if (specErr) specErr.classList.toggle('show', !specOk);
+    if (!specOk) ok = false;
     return ok;
   }
   if (s === 3) {
+    let ok = true;
     const bio = document.getElementById('hdv-bio');
-    const err = document.getElementById('err-hdv-bio');
-    const ok = bio && bio.value.trim().length >= 50;
-    if (bio) bio.classList.toggle('err', !ok);
-    if (err) err.classList.toggle('show', !ok);
+    const bioErr = document.getElementById('err-hdv-bio');
+    const bioOk = bio && bio.value.trim().length >= 50;
+    if (bio) bio.classList.toggle('err', !bioOk);
+    if (bioErr) bioErr.classList.toggle('show', !bioOk);
+    if (!bioOk) ok = false;
+    // Validate ảnh đại diện
+    const avatarFile = document.getElementById('file-avatar');
+    const avatarErr = document.getElementById('err-hdv-avatar');
+    const avatarOk = avatarFile && avatarFile.files && avatarFile.files.length > 0;
+    if (avatarErr) avatarErr.classList.toggle('show', !avatarOk);
+    if (!avatarOk) ok = false;
     return ok;
   }
   return true;
+}
+
+function clearIdErr() {
+  const fileErr = document.getElementById('err-hdv-file');
+  const uploadBox = document.getElementById('upload-id-box');
+  if (fileErr) fileErr.classList.remove('show');
+  if (uploadBox) uploadBox.style.borderColor = '';
 }
 
 // Specialties
@@ -774,6 +807,7 @@ function submitRegistration() {
     trips: 0,
     reviewList: [],
     itineraries: [],
+    sampleItineraries: [],
     avatar: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(hdvName) + '&size=200&background=0284C7&color=fff',
     coverImg: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=800&q=80',
     verified: true,

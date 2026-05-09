@@ -98,6 +98,12 @@
     /* Review modal */
     .modal-overlay { position:fixed; inset:0; background:rgba(15,23,42,.5); z-index:1000; display:flex; align-items:center; justify-content:center; padding:20px; }
     .modal-box { background:white; border-radius:var(--radius-lg); padding:28px; max-width:460px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,.2); }
+    /* Complete modal */
+    .complete-modal { position:fixed; inset:0; background:rgba(15,23,42,.5); z-index:1000; display:flex; align-items:center; justify-content:center; padding:20px; }
+    .complete-box { background:white; border-radius:var(--radius-lg); padding:28px; max-width:440px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,.2); }
+    .photo-upload-area { border:2px dashed var(--border); border-radius:var(--radius); padding:24px; text-align:center; cursor:pointer; transition:.2s; margin-bottom:16px; }
+    .photo-upload-area:hover { border-color:var(--blue); background:var(--blue-light); }
+    .photo-preview { width:100%; max-height:200px; object-fit:cover; border-radius:var(--radius); margin-bottom:8px; display:none; }
     .modal-box h3 { font-size:1.05rem; font-weight:700; margin-bottom:18px; }
     .stars-input { display:flex; gap:6px; margin-bottom:16px; }
     .star-btn { font-size:1.6rem; cursor:pointer; color:#E2E8F0; transition:.15s; background:none; border:none; padding:2px; }
@@ -257,6 +263,28 @@
     <i class="fa-solid fa-star"></i>Đánh giá
   </button>
 </nav>
+
+<!-- Complete Modal -->
+<div class="complete-modal" id="complete-modal" style="display:none" onclick="if(event.target===this)closeCompleteModal()">
+  <div class="complete-box" onclick="event.stopPropagation()">
+    <h3 style="margin-bottom:6px"><i class="fa-solid fa-flag-checkered" style="color:var(--green)"></i> Xác nhận đã đi tour</h3>
+    <p style="font-size:.85rem;color:var(--gray);margin-bottom:20px">Chụp ảnh kỷ niệm cùng HDV để xác nhận tour đã diễn ra. Ảnh giúp bảo vệ quyền lợi của bạn.</p>
+    <div class="photo-upload-area" onclick="document.getElementById('complete-photo-input').click()">
+      <img id="complete-photo-preview" class="photo-preview" src="" alt="">
+      <div id="complete-upload-hint">
+        <i class="fa-solid fa-camera" style="font-size:1.6rem;color:var(--gray-2);margin-bottom:8px;display:block"></i>
+        <div style="font-size:.85rem;color:var(--gray);font-weight:600">Chụp/chọn ảnh cùng HDV (tuỳ chọn)</div>
+        <div style="font-size:.75rem;color:var(--gray-2);margin-top:4px">Nhấn để chọn ảnh từ thiết bị</div>
+      </div>
+    </div>
+    <input type="file" id="complete-photo-input" accept="image/*" style="display:none" onchange="previewCompletePhoto(this)">
+    <input type="hidden" id="complete-req-id">
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-primary btn-block" onclick="submitCompletion()"><i class="fa-solid fa-circle-check"></i> Xác nhận đã đi</button>
+      <button class="btn btn-outline" onclick="closeCompleteModal()" style="white-space:nowrap">Huỷ</button>
+    </div>
+  </div>
+</div>
 
 <!-- Review Modal -->
 <div class="modal-overlay" id="review-modal" style="display:none" onclick="closeReviewModal(event)">
@@ -431,6 +459,8 @@ function renderBookings() {
         ${guide ? `<a href="guide-profile.html?id=${guide.id}" class="btn btn-sm btn-outline"><i class="fa-solid fa-user"></i> Xem HDV</a>` : ''}
         ${isPending ? `<button class="btn btn-sm" style="background:#FEF2F2;color:#DC2626;border:1px solid #FECACA" onclick="cancelRequest('${r.id}')"><i class="fa-solid fa-xmark"></i> Hủy yêu cầu</button>` : ''}
         ${isAccepted ? `<button class="btn btn-sm btn-primary" onclick="gotoChat('${r.id}')"><i class="fa-solid fa-comment-dots"></i> Nhắn tin HDV</button>` : ''}
+        ${isAccepted ? `<button class="btn btn-sm" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="openCompleteModal('${r.id}')"><i class="fa-solid fa-flag-checkered"></i> Đã đi xong</button>` : ''}
+        ${isDone && r.completionPhoto ? `<button class="btn btn-sm btn-outline" onclick="viewCompletionPhoto('${r.id}')"><i class="fa-solid fa-image"></i> Xem ảnh</button>` : ''}
         ${(isAccepted || isDone) && !alreadyReviewed ? `<button class="btn btn-sm" style="background:#FFF7ED;color:#F97316;border:1px solid #FED7AA" onclick="openReview('${r.id}','${r.guideName}','${r.destination}')"><i class="fa-solid fa-star"></i> Đánh giá</button>` : ''}
         ${alreadyReviewed ? `<span style="font-size:.78rem;color:#16A34A"><i class="fa-solid fa-circle-check"></i> Đã đánh giá</span>` : ''}
       </div>
@@ -572,9 +602,12 @@ function initTouristDash() {
   document.getElementById('u-email').textContent = session.email || '';
   document.getElementById('u-avatar').textContent = (session.name || 'K')[0].toUpperCase();
 
-  // Load requests filtered by tourist's email
+  // Load requests filtered by tourist's email or userId
   const stored = JSON.parse(localStorage.getItem('gt_requests') || '[]');
-  const myReqs = stored.filter(r => r.email === session.email);
+  const myReqs = stored.filter(r =>
+    (session.email && r.email === session.email) ||
+    (session.id && r.userId === session.id)
+  );
 
   if (!myReqs.length) {
     // No bookings for this tourist yet — insert demo data (append, not replace)
@@ -634,7 +667,8 @@ function updateMsgBadge() {
   const msgs = getMessages();
   const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
   const myEmail = session ? session.email : '';
-  const reqs = DB.requests().filter(r => r.email === myEmail);
+  const myId = session ? session.id : null;
+  const reqs = DB.requests().filter(r => (myEmail && r.email === myEmail) || (myId && r.userId === myId));
   const n = msgs.filter(m => {
     const r = reqs.find(b => b.id === m.requestId);
     return r && m.fromType === 'guide' && !m.read;
@@ -650,7 +684,8 @@ function renderChatList() {
   const el = document.getElementById('chat-list');
   const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
   const myEmail = session ? session.email : '';
-  const convos = DB.requests().filter(r => (r.status === 'accepted' || r.status === 'pending') && r.email === myEmail);
+  const myId = session ? session.id : null;
+  const convos = DB.requests().filter(r => (r.status === 'accepted' || r.status === 'pending') && ((myEmail && r.email === myEmail) || (myId && r.userId === myId)));
   if (!convos.length) {
     el.innerHTML = '<div class="chat-list-empty"><i class="fa-solid fa-comment-slash" style="font-size:1.5rem;display:block;margin-bottom:8px;color:var(--border)"></i>Chưa có cuộc hội thoại</div>';
     return;
@@ -734,6 +769,65 @@ function sendMsg() {
   addNotif('message', 'Tin nhắn mới từ ' + session.name, text.slice(0,60), 'guide', 'messages');
   input.value = '';
   openChat(currentChatReqId);
+}
+
+// ===== TOUR COMPLETION =====
+function openCompleteModal(reqId) {
+  document.getElementById('complete-req-id').value = reqId;
+  document.getElementById('complete-photo-preview').style.display = 'none';
+  document.getElementById('complete-upload-hint').style.display = 'block';
+  document.getElementById('complete-photo-input').value = '';
+  document.getElementById('complete-modal').style.display = 'flex';
+}
+
+function closeCompleteModal() {
+  document.getElementById('complete-modal').style.display = 'none';
+}
+
+function previewCompletePhoto(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  if (file.size > 3 * 1024 * 1024) { toast('Ảnh quá lớn, chọn ảnh dưới 3MB', 'err'); input.value = ''; return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const preview = document.getElementById('complete-photo-preview');
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+    document.getElementById('complete-upload-hint').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function submitCompletion() {
+  const reqId = document.getElementById('complete-req-id').value;
+  const hasPhoto = document.getElementById('complete-photo-preview').style.display !== 'none';
+  const photoSrc = document.getElementById('complete-photo-preview').src;
+  const reqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
+  const idx = reqs.findIndex(r => r.id === reqId);
+  if (idx < 0) { toast('Không tìm thấy yêu cầu', 'err'); return; }
+  reqs[idx].status = 'done';
+  reqs[idx].completedAt = new Date().toISOString();
+  reqs[idx].completedBy = 'tourist';
+  if (hasPhoto) reqs[idx].completionPhoto = photoSrc;
+  localStorage.setItem('gt_requests', JSON.stringify(reqs));
+  addNotif('booking', 'Khách xác nhận tour hoàn thành', 'Khách ' + (reqs[idx].name||'') + ' đã xác nhận tour ' + (reqs[idx].destination||'') + ' hoàn thành.', 'guide', null);
+  closeCompleteModal();
+  toast('Đã xác nhận tour hoàn thành!', 'ok');
+  const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
+  const _sc = session;
+  allBookings = DB.requests().filter(r => (_sc?.email && r.email === _sc.email) || (_sc?.id && r.userId === _sc.id));
+  renderBookings();
+  updateStats();
+}
+
+function viewCompletionPhoto(reqId) {
+  const req = DB.requests().find(r => r.id === reqId);
+  if (!req || !req.completionPhoto) return;
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:2000;display:flex;align-items:center;justify-content:center;cursor:pointer';
+  overlay.innerHTML = `<img src="${req.completionPhoto}" style="max-width:90vw;max-height:90vh;border-radius:12px;object-fit:contain">`;
+  overlay.onclick = () => overlay.remove();
+  document.body.appendChild(overlay);
 }
 
 // Polling: cập nhật badge và chat mỗi 3 giây

@@ -313,10 +313,12 @@ function doPayment() {
   if (!name || !phone || !email) { toast('Vui lòng điền đầy đủ thông tin liên hệ!', 'err'); return; }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast('Email không hợp lệ!', 'err'); return; }
 
+  const _paySession = JSON.parse(localStorage.getItem('gt_session') || 'null');
   const req = {
     id: 'GT' + Date.now().toString().slice(-8),
     guideId: orderData.guideId,
     guideName: orderData.guideName,
+    userId: _paySession?.id || null,
     name, phone, email,
     destination: orderData.destination || '',
     date: orderData.date,
@@ -340,8 +342,13 @@ function doPayment() {
 
 function initPayment() {
   const params = new URLSearchParams(location.search);
-  const guideId = parseInt(params.get('guideId'));
-  const guide = GUIDES.find(g => g.id === guideId);
+  const guideIdRaw = params.get('guideId');
+  const guideIdNum = parseInt(guideIdRaw);
+  let guide = GUIDES.find(g => g.id === guideIdNum);
+  if (!guide && guideIdRaw) {
+    const localProfiles = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+    guide = localProfiles.find(p => p.id === guideIdRaw);
+  }
 
   if (!guide) { location.href = 'guides.html'; return; }
 

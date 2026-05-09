@@ -104,7 +104,7 @@ const TRANS = {
     'footer.find_guides':'Tìm HDV','footer.post_request':'Đăng yêu cầu tour',
     'footer.all_dest':'Tất cả điểm đến','footer.become_guide':'Đăng ký làm HDV',
     'footer.refund':'Chính sách hoàn tiền','footer.faq':'FAQ',
-    'footer.copyright':'© 2024 GuideTravel. Bảo lưu mọi quyền.',
+    'footer.copyright':'© 2026 GuideTravel. Bảo lưu mọi quyền.',
     'footer.brand_tagline':'Nền tảng kết nối du lịch cá nhân hóa',
     // DESTINATIONS
     'dest.beach':'Biển đảo','dest.culture':'Văn hóa','dest.trekking':'Trekking',
@@ -162,6 +162,31 @@ const TRANS = {
     'login.pass_lbl':'Mật khẩu','login.name_lbl':'Họ và tên',
     'login.phone_lbl':'Số điện thoại',
     'login.login_btn_text':'Đăng nhập','login.create_text':'Tạo tài khoản',
+    // OTP & FORGOT PASSWORD
+    'login.back':'Quay lại','login.back_login':'Quay lại đăng nhập',
+    'login.otp_title':'Xác nhận OTP','login.otp_sent_sub':'Mã OTP đã được gửi tới email của bạn',
+    'login.otp_label':'Nhập mã OTP từ email','login.otp_ph':'Nhập mã OTP...',
+    'login.otp_expire':'Hết hạn sau 5 phút',
+    'login.otp_confirm_btn':'Xác nhận & Tạo tài khoản','login.otp_resend':'Gửi lại OTP',
+    'login.forgot_title':'Quên mật khẩu',
+    'login.forgot_sub':'Nhập email tài khoản để nhận mã OTP đặt lại mật khẩu',
+    'login.forgot_send_btn':'Gửi OTP',
+    'login.forgot_otp_title':'Nhập mã OTP','login.forgot_otp_label':'Nhập mã OTP (6 chữ số)',
+    'login.forgot_otp_btn':'Xác nhận OTP',
+    'login.newpass_title':'Đặt mật khẩu mới',
+    'login.newpass_sub':'Nhập mật khẩu mới cho tài khoản của bạn',
+    'login.newpass_lbl':'Mật khẩu mới','login.newpass_confirm_lbl':'Xác nhận mật khẩu',
+    'login.newpass_confirm_ph':'Nhập lại mật khẩu','login.newpass_btn':'Đặt lại mật khẩu',
+    'login.otp_sent':'OTP đã gửi! Kiểm tra hộp thư email của bạn.',
+    'login.register_success':'Đăng ký thành công!',
+    'login.err.terms':'Vui lòng đồng ý với điều khoản để tiếp tục.',
+    'login.err.email_taken':'Email này đã được đăng ký. Vui lòng đăng nhập!',
+    'login.err.otp_send_fail':'Không thể gửi OTP. Vui lòng thử lại!',
+    'login.err.otp_empty':'Vui lòng nhập mã OTP!',
+    'login.err.session_expired':'Phiên đăng ký hết hạn. Vui lòng thử lại!',
+    'login.err.otp_invalid':'OTP không đúng hoặc đã hết hạn. Vui lòng thử lại!',
+    'login.err.reset_success':'Đặt lại mật khẩu thành công!',
+    'login.err.pass_mismatch':'Mật khẩu xác nhận không khớp!',
     // UNITS
     'unit.days':'ngày','unit.hours':'giờ','unit.people':'người',
     // SPECIALTIES
@@ -230,6 +255,7 @@ const TRANS = {
     // TOAST / VALIDATION
     'err.select_date':'Vui lòng chọn ngày bắt đầu!',
     'err.fill_form':'Vui lòng điền đầy đủ thông tin!',
+    'booking.sent':'Đã gửi yêu cầu! HDV sẽ phản hồi trong 24h.',
     // COMMISSION TIERS
     'tier.top':'🏆 Nổi bật #1','tier.featured':'⭐ Đề xuất','tier.priority':'👍 Ưu tiên',
     // REQUEST
@@ -604,7 +630,7 @@ const TRANS = {
     'footer.find_guides':'Find Guides','footer.post_request':'Post a request',
     'footer.all_dest':'All destinations','footer.become_guide':'Become a Guide',
     'footer.refund':'Refund Policy','footer.faq':'FAQ',
-    'footer.copyright':'© 2024 GuideTravel. All rights reserved.',
+    'footer.copyright':'© 2026 GuideTravel. All rights reserved.',
     'footer.brand_tagline':'Personalized travel connection platform',
     // DESTINATIONS
     'dest.beach':'Beach & Islands','dest.culture':'Culture','dest.trekking':'Trekking',
@@ -662,6 +688,31 @@ const TRANS = {
     'login.pass_lbl':'Password','login.name_lbl':'Full name',
     'login.phone_lbl':'Phone number',
     'login.login_btn_text':'Login','login.create_text':'Create Account',
+    // OTP & FORGOT PASSWORD
+    'login.back':'Go back','login.back_login':'Back to login',
+    'login.otp_title':'Verify OTP','login.otp_sent_sub':'An OTP has been sent to your email',
+    'login.otp_label':'Enter OTP from email','login.otp_ph':'Enter OTP...',
+    'login.otp_expire':'Expires in 5 minutes',
+    'login.otp_confirm_btn':'Confirm & Create Account','login.otp_resend':'Resend OTP',
+    'login.forgot_title':'Forgot Password',
+    'login.forgot_sub':'Enter your account email to receive a password reset OTP',
+    'login.forgot_send_btn':'Send OTP',
+    'login.forgot_otp_title':'Enter OTP','login.forgot_otp_label':'Enter OTP (6 digits)',
+    'login.forgot_otp_btn':'Verify OTP',
+    'login.newpass_title':'Set New Password',
+    'login.newpass_sub':'Enter a new password for your account',
+    'login.newpass_lbl':'New Password','login.newpass_confirm_lbl':'Confirm Password',
+    'login.newpass_confirm_ph':'Re-enter password','login.newpass_btn':'Reset Password',
+    'login.otp_sent':'OTP sent! Please check your email inbox.',
+    'login.register_success':'Registration successful!',
+    'login.err.terms':'Please agree to the terms to continue.',
+    'login.err.email_taken':'This email is already registered. Please log in!',
+    'login.err.otp_send_fail':'Unable to send OTP. Please try again!',
+    'login.err.otp_empty':'Please enter the OTP!',
+    'login.err.session_expired':'Registration session expired. Please try again!',
+    'login.err.otp_invalid':'Invalid or expired OTP. Please try again!',
+    'login.err.reset_success':'Password reset successful!',
+    'login.err.pass_mismatch':'Passwords do not match!',
     // UNITS
     'unit.days':'days','unit.hours':'hours','unit.people':'people',
     // SPECIALTIES
@@ -730,6 +781,7 @@ const TRANS = {
     // TOAST / VALIDATION
     'err.select_date':'Please select a start date!',
     'err.fill_form':'Please fill in all required fields!',
+    'booking.sent':'Request sent! The guide will respond within 24h.',
     // COMMISSION TIERS
     'tier.top':'🏆 Top #1','tier.featured':'⭐ Featured','tier.priority':'👍 Priority',
     // REQUEST
