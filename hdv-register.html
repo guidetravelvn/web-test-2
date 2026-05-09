@@ -572,6 +572,8 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 <script src="lang.js"></script>
 <script src="app.js"></script>
 <script>
@@ -761,7 +763,7 @@ function previewSingle(input, previewId) {
 }
 
 // Submit
-function submitRegistration() {
+async function submitRegistration() {
   if (!validateStep(4)) return;
   if (!document.getElementById('agree-terms').checked) {
     toast('Vui lòng đồng ý với điều khoản dịch vụ!', 'err');
@@ -819,6 +821,17 @@ function submitRegistration() {
   if (existIdx > -1) profiles[existIdx] = { ...profiles[existIdx], ...profile };
   else profiles.push(profile);
   localStorage.setItem('gt_hdv_profiles', JSON.stringify(profiles));
+
+  // Save to Supabase
+  if (typeof sb !== 'undefined') {
+    await sb.from('hdv_profiles').upsert({
+      id: profile.id,
+      user_id: session ? session.id : null,
+      email: profile.email,
+      status: profile.status,
+      data: profile
+    });
+  }
 
   // Mark session as verified
   if (session && session.type === 'guide') {

@@ -333,6 +333,8 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 <script src="lang.js"></script>
 <script src="app.js"></script>
 <script>
@@ -485,7 +487,7 @@ function updateStats() {
   if (badge) badge.textContent = pending || '';
 }
 
-function initDash() {
+async function initDash() {
   let session = JSON.parse(localStorage.getItem('gt_session') || 'null');
   if (!session || session.type !== 'guide') {
     location.href = 'login.html?redirect=hdv-dashboard.html';
@@ -519,11 +521,23 @@ function initDash() {
     localStorage.setItem('gt_session', JSON.stringify(session));
   }
 
-  // Find guide data: check GUIDES[] first, then gt_hdv_profiles
-  const localProfiles = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
-  const guide = GUIDES.find(g => g.email === session.email)
-    || localProfiles.find(p => p.email === session.email)
-    || null;
+  // Find guide data: GUIDES[] → Supabase → localStorage
+  let guide = GUIDES.find(g => g.email === session.email) || null;
+  if (!guide && typeof sb !== 'undefined' && session.id) {
+    const { data: sbRow } = await sb.from('hdv_profiles').select('data, status').eq('user_id', session.id).maybeSingle();
+    if (sbRow) {
+      guide = sbRow.data;
+      // Sync to localStorage for offline/other features
+      const lp = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+      const ei = lp.findIndex(p => p.email === guide.email);
+      if (ei > -1) lp[ei] = guide; else lp.push(guide);
+      localStorage.setItem('gt_hdv_profiles', JSON.stringify(lp));
+    }
+  }
+  if (!guide) {
+    const lp = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+    guide = lp.find(p => p.email === session.email) || null;
+  }
 
   if (!guide) {
     document.getElementById('dash-greeting').textContent = 'Xin chào, ' + session.name + '!';
