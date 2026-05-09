@@ -36,6 +36,12 @@ Pure HTML/CSS/JS — không framework, không build step.
 - Sau mỗi task: trace qua luồng người dùng liên quan (vd: đăng ký → đăng nhập → dashboard) để phát hiện side effect
 - Khi viết fallback `|| someDefault`: dừng lại, kiểm tra xem fallback đó có gây hiển thị sai dữ liệu không
 - Khi người dùng hỏi ý kiến hoặc đề xuất → trả lời bằng lời trước, chờ xác nhận rồi mới thực thi — không tự ý sửa/thêm file khi chưa được cho phép
+- Khi tính năng không hoạt động: **kiểm tra Console (F12) trước tiên** — lỗi JS trên trang sẽ làm toàn bộ code phía dưới không chạy được, debug localStorage hay network là vô nghĩa nếu trang đã crash
+
+## Profile HDV tự đăng ký (gt_hdv_profiles)
+- Chỉ có các trường cơ bản từ form — KHÔNG có `sampleItineraries`, `reviewList`, v.v. như HDV mẫu hardcode
+- Khi render profile: luôn dùng `(g.field || []).map(...)` thay vì `g.field.map(...)`
+- Khi lưu profile mới trong hdv-register.html: đảm bảo có đủ các trường mảng với giá trị mặc định `[]`
 
 ## Không được làm
 - Không thêm npm/framework/thư viện ngoài Font Awesome + Google Fonts

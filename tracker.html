@@ -72,7 +72,7 @@
 
 <script>
 const DATA = {
-  lastUpdate: '2026-05-07 (mục Thông báo riêng: tin nhắn, chấp nhận/từ chối tour, khuyến mãi, chính sách + polling badge)',
+  lastUpdate: '2026-05-09 (migrate gt_requests + gt_messages + gt_my_reviews + gt_notifications lên Supabase; Realtime chat)',
   sections: [
     {
       title: '📄 Trang HTML',
@@ -99,7 +99,7 @@ const DATA = {
       items: [
         { name: 'Dữ liệu HDV (6 người)', file: 'app.js', status: 'done', priority: 'high', note: 'Avatar, cover, rating, commission, reviews, lịch trình mẫu' },
         { name: 'Hệ thống hoa hồng', file: 'app.js', status: 'done', priority: 'high', note: '15/20/25/30% — badge và ưu tiên hiển thị trong danh sách' },
-        { name: 'Lưu yêu cầu localStorage', file: 'app.js', status: 'done', priority: 'high', note: 'gt_requests, gt_session, gt_users' },
+        { name: 'Lưu yêu cầu localStorage', file: 'app.js', status: 'done', priority: 'high', note: 'gt_requests sync lên Supabase (requests table) — cross-device, SB helper + DB.addRequest fire-and-forget' },
         { name: 'Auth (đăng nhập/đăng ký)', file: 'app.js', status: 'done', priority: 'high', note: 'Session check, auto navbar, route guard dashboard' },
         { name: 'Filter & Sort HDV', file: 'app.js', status: 'done', priority: 'med', note: 'Khu vực, giá, đánh giá, sắp xếp' },
         { name: 'Form đặt tour → Thanh toán', file: 'app.js', status: 'done', priority: 'high', note: 'Redirect đúng từ guide-profile → payment.html' },
@@ -117,7 +117,7 @@ const DATA = {
       color: 'linear-gradient(90deg,#7C3AED,#A855F7)',
       items: [
         { name: 'Design system (CSS variables)', file: 'style.css', status: 'done', priority: 'high', note: 'Colors, spacing, typography, components' },
-        { name: 'Responsive mobile', file: 'style.css', status: 'done', priority: 'high', note: 'Navbar hamburger, grid stacking, filter mobile' },
+        { name: 'Responsive mobile', file: 'style.css + dashboards', status: 'done', priority: 'high', note: 'Mobile bottom nav, chat toggle, badge, grid fix' },
         { name: 'Toast notifications', file: 'app.js', status: 'done', priority: 'med', note: 'Toàn trang dùng chung' },
         { name: 'Loading states', file: 'style.css', status: 'done', priority: 'low', note: 'Skeleton shimmer + fadeUp animation cho guide cards' },
         { name: 'Ảnh placeholder đẹp', file: '—', status: 'done', priority: 'low', note: 'Unsplash CDN cho avatar và cover' },
@@ -139,11 +139,12 @@ const DATA = {
         { name: 'i18n FAQ đầy đủ', file: 'faq.html', status: 'done', priority: 'med', note: '28 Q&A + 7 section headings đầy đủ VI/EN, sidebar, CTA, footer' },
         { name: 'SEO meta tags', file: '—', status: 'done', priority: 'med', note: 'og:title, og:description, og:image, twitter:card cho tất cả 12 trang HTML' },
         { name: 'OTP đăng ký tài khoản', file: 'login.html', status: 'done', priority: 'high', note: 'Giả lập OTP 6 số hiển thị trực tiếp trên màn hình, hết hạn 5 phút. Thay bằng EmailJS khi ra mắt thật' },
-        { name: 'Quên mật khẩu + OTP reset', file: 'login.html', status: 'done', priority: 'high', note: 'Flow đầy đủ: nhập email → OTP giả lập → đặt mật khẩu mới' },
+        { name: 'Quên mật khẩu + OTP reset', file: 'login.html', status: 'done', priority: 'high', note: 'Supabase resetPasswordForEmail thật: nhập email → link gửi email thật → click link → đặt mật khẩu mới (updateUser)' },
         { name: 'Guard đăng nhập sai loại tài khoản', file: 'login.html', status: 'done', priority: 'high', note: 'Báo lỗi rõ nếu khách đăng nhập tab HDV hoặc ngược lại' },
-        { name: 'Tin nhắn khách ↔ HDV', file: 'tourist-dashboard.html, hdv-dashboard.html', status: 'done', priority: 'high', note: 'Chat trong dashboard, lưu gt_messages localStorage, badge unread sidebar' },
-        { name: 'Lịch hẹn / Calendar HDV', file: '—', status: 'todo', priority: 'med', note: 'HDV chặn ngày bận, khách thấy ngày trống khi đặt tour' },
-        { name: 'Thông báo real-time', file: '—', status: 'todo', priority: 'low', note: 'Badge đỏ cho cả khách lẫn HDV khi có cập nhật yêu cầu mới' },
+        { name: 'Tin nhắn khách ↔ HDV', file: 'tourist-dashboard.html, hdv-dashboard.html', status: 'done', priority: 'high', note: 'Chat 2 chiều, polling 3s, DB.requests() fresh, filter booking theo email, prefill form từ session' },
+        { name: 'Thông báo real-time', file: 'app.js, tourist-dashboard.html, hdv-dashboard.html', status: 'done', priority: 'low', note: 'Dropdown chuông trên navbar, badge đỏ unread, polling 3s. Loại: tin nhắn, đặt tour, khuyến mãi, chính sách' },
+        { name: 'Lịch hẹn / Calendar HDV', file: 'hdv-dashboard.html', status: 'done', priority: 'med', note: 'Calendar tháng trong HDV dashboard, highlight ngày có tour, click xem chi tiết' },
+        { name: 'Xác nhận hoàn thành tour + ảnh bằng chứng', file: 'tourist-dashboard.html, hdv-dashboard.html', status: 'done', priority: 'med', note: 'Nút Hoàn thành trên accepted bookings, upload ảnh selfie, lưu base64, chống chargeback' },
       ]
     }
   ]

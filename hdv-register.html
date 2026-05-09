@@ -823,14 +823,14 @@ async function submitRegistration() {
   localStorage.setItem('gt_hdv_profiles', JSON.stringify(profiles));
 
   // Save to Supabase
-  if (typeof sb !== 'undefined') {
-    await sb.from('hdv_profiles').upsert({
-      id: profile.id,
-      user_id: session ? session.id : null,
+  if (typeof sb !== 'undefined' && session?.id) {
+    const { error: sbErr } = await sb.from('hdv_profiles').upsert({
+      user_id: session.id,
       email: profile.email,
       status: profile.status,
       data: profile
     });
+    if (sbErr) console.error('hdv_profiles upsert:', sbErr.message);
   }
 
   // Mark session as verified
