@@ -484,7 +484,26 @@ function toast(msg, type = 'ok') {
 // ===== STORAGE =====
 const DB = {
   requests: () => JSON.parse(localStorage.getItem('gt_requests') || '[]'),
-  addRequest: r => { const a = DB.requests(); a.unshift(r); localStorage.setItem('gt_requests', JSON.stringify(a)); },
+  addRequest: r => { const a = DB.requests(); a.unshift(r); localStorage.setItem('gt_requests', JSON.stringify(a)); SB.saveReq(r); },
+};
+
+const SB = {
+  async saveReq(req) {
+    if (typeof sb === 'undefined') return;
+    try { await sb.from('requests').upsert({ id: req.id, tourist_email: req.email||'', tourist_id: req.userId||null, guide_id: String(req.guideId||''), status: req.status||'pending', data: req }); } catch(e) {}
+  },
+  async updateReq(id, fields) {
+    if (typeof sb === 'undefined') return;
+    try { await sb.from('requests').update(fields).eq('id', id); } catch(e) {}
+  },
+  async getByEmail(email) {
+    if (typeof sb === 'undefined') return null;
+    try { const { data } = await sb.from('requests').select('data').eq('tourist_email', email); return data ? data.map(r => r.data) : []; } catch(e) { return null; }
+  },
+  async getAll() {
+    if (typeof sb === 'undefined') return null;
+    try { const { data } = await sb.from('requests').select('data'); return data ? data.map(r => r.data) : []; } catch(e) { return null; }
+  }
 };
 
 // ===== AUTH =====
@@ -967,9 +986,7 @@ function initBookingForm(g) {
       status: 'pending',
       createdAt: new Date().toISOString()
     };
-    const reqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
-    reqs.unshift(req);
-    localStorage.setItem('gt_requests', JSON.stringify(reqs));
+    DB.addRequest(req);
     toast(t('booking.sent') || 'Đã gửi yêu cầu! HDV sẽ phản hồi trong 24h.', 'ok');
     setTimeout(() => { location.href = 'tourist-dashboard.html'; }, 1500);
   });

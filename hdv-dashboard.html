@@ -450,7 +450,7 @@ function renderReqs() {
 function acceptReq(id) {
   const reqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
   const idx = reqs.findIndex(r => r.id === id);
-  if (idx > -1) { reqs[idx].status = 'accepted'; localStorage.setItem('gt_requests', JSON.stringify(reqs)); }
+  if (idx > -1) { reqs[idx].status = 'accepted'; localStorage.setItem('gt_requests', JSON.stringify(reqs)); SB.updateReq(id, {status:'accepted', data: reqs[idx]}); }
   const req = allReqs.find(r => r.id === id);
   allReqs = allReqs.map(r => r.id === id ? {...r, status:'accepted'} : r);
   renderReqs();
@@ -463,7 +463,7 @@ function acceptReq(id) {
 function declineReq(id) {
   const reqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
   const idx = reqs.findIndex(r => r.id === id);
-  if (idx > -1) { reqs[idx].status = 'declined'; localStorage.setItem('gt_requests', JSON.stringify(reqs)); }
+  if (idx > -1) { reqs[idx].status = 'declined'; localStorage.setItem('gt_requests', JSON.stringify(reqs)); SB.updateReq(id, {status:'declined', data: reqs[idx]}); }
   const req = allReqs.find(r => r.id === id);
   allReqs = allReqs.map(r => r.id === id ? {...r, status:'declined'} : r);
   renderReqs();
@@ -588,6 +588,21 @@ async function initDash() {
   renderReqs();
   updateStats();
   updateNavBadge();
+
+  // Sync from Supabase and re-render if new data
+  if (typeof sb !== 'undefined') {
+    const sbReqs = await SB.getAll();
+    if (sbReqs && sbReqs.length) {
+      const sbMap = Object.fromEntries(sbReqs.map(r => [r.id, r]));
+      const merged = allReqs.map(r => sbMap[r.id] ? sbMap[r.id] : r);
+      sbReqs.forEach(r => { if (!merged.find(m => m.id === r.id)) merged.unshift(r); });
+      allReqs = merged;
+      localStorage.setItem('gt_requests', JSON.stringify(merged));
+      renderReqs();
+      updateStats();
+      updateNavBadge();
+    }
+  }
   updateMsgBadge();
   updateNotifBadge();
 
@@ -868,6 +883,7 @@ function submitCompletion() {
   reqs[idx].completedBy = 'guide';
   if (hasPhoto) reqs[idx].completionPhoto = photoSrc;
   localStorage.setItem('gt_requests', JSON.stringify(reqs));
+  SB.updateReq(reqId, {status:'done', data: reqs[idx]});
   const req = reqs[idx];
   addNotif('booking', 'Tour đã hoàn thành!', 'HDV đã xác nhận tour ' + (req.destination||'') + ' hoàn thành. Hãy để lại đánh giá!', 'tourist', 'bookings');
   closeCompleteModal();

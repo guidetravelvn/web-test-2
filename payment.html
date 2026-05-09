@@ -285,6 +285,8 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 <script src="lang.js"></script>
 <script src="app.js"></script>
 <script>
@@ -330,9 +332,7 @@ function doPayment() {
     status: 'pending',
     createdAt: new Date().toISOString()
   };
-  const reqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
-  reqs.unshift(req);
-  localStorage.setItem('gt_requests', JSON.stringify(reqs));
+  DB.addRequest(req);
 
   document.getElementById('pay-content').style.display = 'none';
   document.getElementById('pay-success').style.display = 'block';

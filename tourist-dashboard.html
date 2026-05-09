@@ -572,7 +572,7 @@ function cancelRequest(id) {
   if (!confirm('Bạn có chắc muốn hủy yêu cầu này?')) return;
   const reqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
   const idx = reqs.findIndex(r => r.id === id);
-  if (idx > -1) { reqs[idx].status = 'declined'; localStorage.setItem('gt_requests', JSON.stringify(reqs)); }
+  if (idx > -1) { reqs[idx].status = 'declined'; localStorage.setItem('gt_requests', JSON.stringify(reqs)); SB.updateReq(id, {status:'declined', data: reqs[idx]}); }
   allBookings = allBookings.map(r => r.id === id ? {...r, status:'declined'} : r);
   renderBookings();
   updateStats();
@@ -623,7 +623,7 @@ function submitReview() {
   // Mark request as done
   const reqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
   const idx = reqs.findIndex(r => r.id === reviewingId);
-  if (idx > -1) { reqs[idx].status = 'done'; localStorage.setItem('gt_requests', JSON.stringify(reqs)); }
+  if (idx > -1) { reqs[idx].status = 'done'; localStorage.setItem('gt_requests', JSON.stringify(reqs)); SB.updateReq(reviewingId, {status:'done', data: reqs[idx]}); }
   allBookings = allBookings.map(r => r.id === reviewingId ? {...r, status:'done'} : r);
   document.getElementById('review-modal').style.display = 'none';
   renderBookings();
@@ -737,7 +737,7 @@ async function saveNewPassword() {
   toast(t('tdash.profile.pass_changed'), 'ok');
 }
 
-function initTouristDash() {
+async function initTouristDash() {
   const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
   if (!session) { location.href = 'login.html?redirect=tourist-dashboard.html'; return; }
   if (session.type === 'guide') { location.href = 'hdv-dashboard.html'; return; }
@@ -746,6 +746,18 @@ function initTouristDash() {
   document.getElementById('u-name').textContent = session.name;
   document.getElementById('u-email').textContent = session.email || '';
   setAvatarDisplay(session);
+
+  // Sync from Supabase
+  if (typeof sb !== 'undefined' && session.email) {
+    const sbReqs = await SB.getByEmail(session.email);
+    if (sbReqs && sbReqs.length) {
+      const local = JSON.parse(localStorage.getItem('gt_requests') || '[]');
+      const sbMap = Object.fromEntries(sbReqs.map(r => [r.id, r]));
+      const merged = local.map(r => sbMap[r.id] ? sbMap[r.id] : r);
+      sbReqs.forEach(r => { if (!merged.find(m => m.id === r.id)) merged.unshift(r); });
+      localStorage.setItem('gt_requests', JSON.stringify(merged));
+    }
+  }
 
   // Load requests filtered by tourist's email or userId
   const stored = JSON.parse(localStorage.getItem('gt_requests') || '[]');
@@ -942,6 +954,7 @@ function submitCompletion() {
   reqs[idx].completedBy = 'tourist';
   if (hasPhoto) reqs[idx].completionPhoto = photoSrc;
   localStorage.setItem('gt_requests', JSON.stringify(reqs));
+  SB.updateReq(reqId, {status:'done', data: reqs[idx]});
   addNotif('booking', 'Khách xác nhận tour hoàn thành', 'Khách ' + (reqs[idx].name||'') + ' đã xác nhận tour ' + (reqs[idx].destination||'') + ' hoàn thành.', 'guide', null);
   closeCompleteModal();
   toast('Đã xác nhận tour hoàn thành!', 'ok');
