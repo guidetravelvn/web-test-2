@@ -1,5 +1,13 @@
 'use strict';
 
+// Redirect Supabase password recovery link to login.html if landed on wrong page
+(function() {
+  const h = location.hash;
+  if (!h.includes('type=recovery')) return;
+  const pg = location.pathname.split('/').pop() || 'index';
+  if (pg !== 'login.html' && pg !== 'login') location.replace('login.html' + h);
+})();
+
 // ===== SEED DEMO ACCOUNTS =====
 (function seedDemo() {
   const demos = [

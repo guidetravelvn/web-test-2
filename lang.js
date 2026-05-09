@@ -158,7 +158,7 @@ const TRANS = {
     'profile.est_lbl':'Dự kiến','profile.req_btn':'Gửi Yêu Cầu',
     'profile.g1':'Miễn phí gửi yêu cầu','profile.g2':'HDV phản hồi trong 24h',
     'profile.g3':'Thanh toán sau khi chốt lịch trình',
-    'profile.share_h':'Chia sẻ hồ sơ này',
+    'profile.share_h':'Chia sẻ hồ sơ này','profile.link_copied':'Đã sao chép link!',
     // LOGIN EXTRA
     'login.pass_lbl':'Mật khẩu','login.name_lbl':'Họ và tên',
     'login.phone_lbl':'Số điện thoại',
@@ -724,7 +724,7 @@ const TRANS = {
     'profile.est_lbl':'Estimated','profile.req_btn':'Send Request',
     'profile.g1':'Free to send a request','profile.g2':'Guide responds within 24h',
     'profile.g3':'Pay after finalizing itinerary',
-    'profile.share_h':'Share this profile',
+    'profile.share_h':'Share this profile','profile.link_copied':'Link copied!',
     // LOGIN EXTRA
     'login.pass_lbl':'Password','login.name_lbl':'Full name',
     'login.phone_lbl':'Phone number',

@@ -241,10 +241,11 @@
 document.getElementById('bf-date').min = new Date().toISOString().split('T')[0];
 function shareProfile(p) {
   const url = encodeURIComponent(location.href);
-  if (p === 'fb') window.open('https://www.facebook.com/sharer/sharer.php?u=' + url);
+  if (p === 'fb') window.open('https://www.facebook.com/sharer/sharer.php?u=' + url, '_blank', 'width=600,height=400');
+  if (p === 'zalo') window.open('https://zalo.me/share?u=' + url, '_blank', 'width=600,height=500');
 }
 function copyProfileLink() {
-  navigator.clipboard.writeText(location.href).then(() => toast('Đã sao chép link!', 'ok'));
+  navigator.clipboard.writeText(location.href).then(() => toast(t('profile.link_copied'), 'ok'));
 }
 </script>
 </body>
