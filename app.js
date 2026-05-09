@@ -461,7 +461,7 @@ const DESTINATIONS = [
 // ===== UTILS =====
 const $ = id => document.getElementById(id);
 const fmt = n => new Intl.NumberFormat('vi-VN').format(n) + 'đ';
-const page = () => location.pathname.split('/').pop() || 'index.html';
+const page = () => { const seg = location.pathname.split('/').pop() || 'index'; return seg.endsWith('.html') ? seg : seg + '.html'; };
 
 function toast(msg, type = 'ok') {
   let c = $('toast-container');
@@ -540,9 +540,13 @@ function initNav() {
         : `<a href="tourist-dashboard.html" class="btn btn-outline btn-sm" style="color:var(--dark)"><i class="fa-solid fa-gauge"></i> Dashboard</a>`;
       const notifCount = (JSON.parse(localStorage.getItem('gt_notifications')||'[]')).filter(n=>(n.targetType===session.type||n.targetType==='all')&&!n.read).length;
       const notifBell = `<button id="nav-notif-btn" onclick="openNotifDropdown()" style="position:relative;display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:1px solid var(--border);color:var(--gray);background:white;cursor:pointer;transition:.15s;flex-shrink:0" title="Thông báo"><i class="fa-solid fa-bell" style="font-size:.9rem"></i>${notifCount>0?`<span style="position:absolute;top:-4px;right:-4px;background:#EF4444;color:white;font-size:.6rem;font-weight:800;min-width:16px;height:16px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 3px;border:2px solid white">${notifCount>9?'9+':notifCount}</span>`:''}</button>`;
+      const roleLabel = session.type === 'guide' ? t('nav.guide_label') : t('nav.customer');
+      const avatarHtml = session.avatar
+        ? `<img src="${session.avatar}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid var(--border);flex-shrink:0">`
+        : `<span style="width:32px;height:32px;border-radius:50%;background:var(--blue);color:white;font-weight:800;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid var(--border)">${(session.name||'?')[0].toUpperCase()}</span>`;
       navRight.innerHTML = `
         ${langToggle}
-        <span style="font-size:.85rem;color:var(--gray);font-weight:500"><i class="fa-solid fa-circle-user"></i> ${session.name}</span>
+        <span style="display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--gray);font-weight:500">${avatarHtml}<span><span style="display:block;font-size:.7rem;color:var(--gray-2);font-weight:400;line-height:1.2">${roleLabel}</span>${session.name}</span></span>
         ${dashLink}
         <button class="btn btn-sm" style="background:#FEF2F2;color:#DC2626;border:1px solid #FECACA" onclick="Auth.logout()"><i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="nav.logout"></span></button>
         ${notifBell}`;
@@ -567,8 +571,12 @@ function initNav() {
       const divEl = document.createElement('div');
       divEl.className = 'mob-divider';
       if (session) {
+        const mobRoleLabel = session.type === 'guide' ? t('nav.guide_label') : t('nav.customer');
+        const mobAvatarHtml = session.avatar
+          ? `<img src="${session.avatar}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--border)">`
+          : `<span style="width:36px;height:36px;border-radius:50%;background:var(--blue);color:white;font-weight:800;font-size:.9rem;display:flex;align-items:center;justify-content:center">${(session.name||'?')[0].toUpperCase()}</span>`;
         authArea.innerHTML = `
-          <div style="padding:10px 14px;font-size:.88rem;color:var(--gray);display:flex;align-items:center;gap:8px"><i class="fa-solid fa-circle-user"></i> ${session.name}</div>
+          <div style="padding:10px 14px;font-size:.88rem;color:var(--gray);display:flex;align-items:center;gap:10px">${mobAvatarHtml}<span><span style="display:block;font-size:.72rem;color:var(--gray-2);font-weight:400;line-height:1.2">${mobRoleLabel}</span>${session.name}</span></div>
           <a href="${session.type==='guide'?'hdv-dashboard.html':'tourist-dashboard.html'}" style="padding:11px 14px;border-radius:var(--radius-sm);font-size:.95rem;font-weight:500;color:var(--dark);display:flex;align-items:center;gap:10px"><i class="fa-solid fa-gauge" style="width:18px;text-align:center"></i> Dashboard</a>
           <button onclick="Auth.logout()" style="padding:11px 14px;border-radius:var(--radius-sm);font-size:.95rem;font-weight:500;color:#DC2626;display:flex;align-items:center;gap:10px;background:none;border:none;cursor:pointer;text-align:left;width:100%"><i class="fa-solid fa-right-from-bracket" style="width:18px;text-align:center"></i> Đăng xuất</button>`;
       } else {

@@ -190,25 +190,17 @@
       </button>
     </div>
 
-    <!-- FORGOT — Step 2: Nhập OTP -->
+    <!-- FORGOT — Step 2: Email đã gửi -->
     <div class="auth-body" id="form-forgot-otp" style="display:none">
       <div class="step-back" onclick="showForgot()"><i class="fa-solid fa-arrow-left"></i> <span data-i18n="login.back">Quay lại</span></div>
-      <div class="step-title" data-i18n="login.forgot_otp_title">Nhập mã OTP</div>
-      <div class="step-sub" id="forgot-otp-sub" data-i18n="login.otp_sent_sub">Mã OTP đã được gửi tới email của bạn</div>
-      <div class="otp-sim-box">
-        <div class="otp-label"><i class="fa-solid fa-flask"></i> Giả lập — OTP của bạn là:</div>
-        <div class="otp-code" id="forgot-otp-display">------</div>
-        <div class="otp-expire" data-i18n="login.otp_expire">Hết hạn sau 5 phút</div>
+      <div class="step-title" data-i18n="login.forgot_otp_title">Kiểm tra email của bạn</div>
+      <div style="text-align:center;padding:24px 0 16px">
+        <i class="fa-solid fa-envelope-circle-check" style="font-size:3.2rem;color:var(--blue)"></i>
+        <div id="forgot-sent-email" style="font-weight:700;color:var(--dark);margin-top:12px;font-size:1rem"></div>
+        <div style="font-size:.84rem;color:var(--gray);margin-top:8px;line-height:1.6" data-i18n="login.forgot_sent_desc">Nhấp vào link trong email để đặt lại mật khẩu. Kiểm tra cả hộp thư rác nếu không thấy.</div>
       </div>
-      <div class="fg">
-        <label data-i18n="login.forgot_otp_label">Nhập mã OTP (6 chữ số)</label>
-        <div class="otp-input-wrap" id="forgot-otp-inputs"></div>
-      </div>
-      <button class="btn btn-orange btn-block btn-lg" onclick="verifyForgotOtp()">
-        <i class="fa-solid fa-check"></i> <span data-i18n="login.forgot_otp_btn">Xác nhận OTP</span>
-      </button>
-      <div class="auth-footer" style="margin-top:12px">
-        <a onclick="sendForgotOtp()" style="cursor:pointer" data-i18n="login.otp_resend">Gửi lại OTP</a>
+      <div class="auth-footer" style="margin-top:4px">
+        <a onclick="sendForgotOtp()" style="cursor:pointer" data-i18n="login.otp_resend">Gửi lại</a>
       </div>
     </div>
 
@@ -275,14 +267,10 @@
 <script>
 let loginType = 'tourist';
 let regType = 'tourist';
-let pendingOtp = null;
-let otpExpiry = null;
 let pendingRegData = null;
 let forgotEmail = null;
 
 // ===== HELPERS =====
-function genOtp() { return String(Math.floor(100000 + Math.random() * 900000)); }
-
 function buildOtpInputs(containerId) {
   const wrap = document.getElementById(containerId);
   wrap.innerHTML = '';
@@ -360,7 +348,9 @@ async function doLogin() {
       await sb.auth.signOut();
       return;
     }
-    const session = { id: data.user.id, email, name: profile?.name || '', phone: profile?.phone || '', type: profile?.type || loginType };
+    const localUsers = JSON.parse(localStorage.getItem('gt_users') || '[]');
+    const localUser = localUsers.find(u => u.email === email);
+    const session = { id: data.user.id, email, name: profile?.name || '', phone: profile?.phone || '', type: profile?.type || loginType, avatar: localUser?.avatar || null };
     localStorage.setItem('gt_session', JSON.stringify(session));
     toast('Đăng nhập thành công!', 'ok');
     const rd = new URLSearchParams(location.search).get('redirect');
@@ -415,7 +405,8 @@ async function sendRegOtp() {
     return;
   }
 
-  document.getElementById('reg-otp-sub').textContent = t('login.otp_sent_sub').replace('email của bạn', email).replace('your email', email);
+  document.getElementById('reg-otp-sub').removeAttribute('data-i18n');
+  document.getElementById('reg-otp-sub').textContent = t('login.otp_sent_to').replace('{email}', email);
   document.getElementById('auth-tabs').style.display = 'none';
   const otpInp = document.getElementById('reg-otp-input');
   if (otpInp) otpInp.value = '';
@@ -453,59 +444,44 @@ async function verifyRegOtp() {
   setTimeout(() => { location.href = type === 'guide' ? 'hdv-register.html' : 'index.html'; }, 800);
 }
 
-// ===== FORGOT PASSWORD + OTP =====
-function sendForgotOtp() {
+// ===== FORGOT PASSWORD =====
+async function sendForgotOtp() {
   const email = document.getElementById('f-email').value.trim();
-  if (!email) { toast('Vui lòng nhập email!', 'err'); return; }
-  const users = JSON.parse(localStorage.getItem('gt_users') || '[]');
-  if (!users.find(u => u.email === email)) { toast('Email không tồn tại trong hệ thống!', 'err'); return; }
+  if (!email) { toast(t('login.err.otp_empty'), 'err'); return; }
+
+  const redirectTo = location.protocol !== 'file:' ? location.origin + '/login.html' : undefined;
+  const opts = redirectTo ? { redirectTo } : {};
+  const { error } = await sb.auth.resetPasswordForEmail(email, opts);
+  if (error) { toast(error.message || t('login.err.otp_send_fail'), 'err'); return; }
 
   forgotEmail = email;
-  pendingOtp = genOtp();
-  otpExpiry = Date.now() + 5 * 60 * 1000;
-
-  document.getElementById('forgot-otp-display').textContent = pendingOtp;
-  document.getElementById('forgot-otp-sub').textContent = 'Mã OTP đã được gửi tới ' + email;
-  buildOtpInputs('forgot-otp-inputs');
+  document.getElementById('forgot-sent-email').textContent = email;
   showPanel('form-forgot-otp');
-  toast('OTP đã được gửi! (Giả lập — xem mã bên trên)', 'ok');
+  toast(t('login.otp_sent'), 'ok');
 }
 
-function verifyForgotOtp() {
-  const entered = getOtpValue('forgot-otp-inputs');
-  if (entered.length < 6) { toast('Vui lòng nhập đủ 6 chữ số!', 'err'); return; }
-  if (Date.now() > otpExpiry) { toast('OTP đã hết hạn. Vui lòng gửi lại!', 'err'); return; }
-  if (entered !== pendingOtp) { toast('OTP không đúng. Vui lòng thử lại!', 'err'); return; }
-
-  pendingOtp = null;
-  showPanel('form-new-pass');
-  toast('OTP hợp lệ! Hãy đặt mật khẩu mới.', 'ok');
-}
-
-function doResetPass() {
+async function doResetPass() {
   const pass  = document.getElementById('np-pass').value;
   const pass2 = document.getElementById('np-pass2').value;
-  if (!pass || !pass2) { toast(t('err.fill_all') || 'Vui lòng nhập đầy đủ!', 'err'); return; }
-  if (pass.length < 6) { toast(t('err.pass_min') || 'Mật khẩu tối thiểu 6 ký tự!', 'err'); return; }
+  if (!pass || !pass2) { toast(t('login.err.otp_empty'), 'err'); return; }
+  if (pass.length < 6) { toast('Mật khẩu tối thiểu 6 ký tự!', 'err'); return; }
   if (pass !== pass2) { toast(t('login.err.pass_mismatch'), 'err'); return; }
 
-  const users = JSON.parse(localStorage.getItem('gt_users') || '[]');
-  const idx = users.findIndex(u => u.email === forgotEmail);
-  if (idx === -1) { toast('Có lỗi xảy ra. Vui lòng thử lại!', 'err'); return; }
-  users[idx].pass = pass;
-  localStorage.setItem('gt_users', JSON.stringify(users));
+  const { error } = await sb.auth.updateUser({ password: pass });
+  if (error) { toast(error.message || 'Có lỗi xảy ra!', 'err'); return; }
 
-  // Cập nhật session nếu đang đăng nhập tài khoản này
-  const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
-  if (session && session.email === forgotEmail) {
-    session.pass = pass;
-    localStorage.setItem('gt_session', JSON.stringify(session));
-  }
-
-  forgotEmail = null;
+  await sb.auth.signOut();
   toast(t('login.err.reset_success'), 'ok');
   setTimeout(() => showLogin(), 1200);
 }
+
+// Detect password recovery redirect from email link
+sb.auth.onAuthStateChange((event) => {
+  if (event === 'PASSWORD_RECOVERY') {
+    document.getElementById('auth-tabs').style.display = 'none';
+    showPanel('form-new-pass');
+  }
+});
 
 // Auto-switch tab from URL
 const urlTab = new URLSearchParams(location.search).get('tab');

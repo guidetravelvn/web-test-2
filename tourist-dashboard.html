@@ -10,7 +10,9 @@
     .dash-wrap { display:grid; grid-template-columns:260px 1fr; gap:28px; padding:32px 0 60px; }
     @media(max-width:860px){ .dash-wrap { grid-template-columns:1fr; } .dash-sidebar { display:none; } }
     .user-card { background:linear-gradient(135deg,#0F172A,#1E3A5F); border-radius:var(--radius-lg); padding:24px; color:white; margin-bottom:16px; }
-    .uc-avatar { width:64px; height:64px; border-radius:50%; background:var(--blue); display:flex; align-items:center; justify-content:center; font-size:1.6rem; font-weight:800; color:white; margin-bottom:12px; border:3px solid rgba(255,255,255,.2); }
+    .uc-avatar { width:64px; height:64px; border-radius:50%; background:var(--blue); display:flex; align-items:center; justify-content:center; font-size:1.6rem; font-weight:800; color:white; margin-bottom:12px; border:3px solid rgba(255,255,255,.2); cursor:pointer; position:relative; overflow:hidden; }
+    .uc-avatar:hover::after { content:'\f030'; font-family:'Font Awesome 6 Free'; font-weight:900; position:absolute; inset:0; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; font-size:1.2rem; border-radius:50%; }
+    .uc-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
     .uc-name { font-size:1.05rem; font-weight:700; }
     .uc-email { font-size:.78rem; color:rgba(255,255,255,.55); margin-top:2px; }
     .uc-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; }
@@ -160,22 +162,23 @@
     <!-- SIDEBAR -->
     <div class="dash-sidebar">
       <div class="user-card">
-        <div class="uc-avatar" id="u-avatar">K</div>
+        <div class="uc-avatar" id="u-avatar" onclick="document.getElementById('avatar-file').click()" title="Đổi ảnh đại diện">K</div>
+        <input type="file" id="avatar-file" accept="image/*" style="display:none" onchange="uploadAvatar(this)">
         <div class="uc-name" id="u-name">Đang tải...</div>
         <div class="uc-email" id="u-email"></div>
         <div class="uc-stats">
-          <div class="uc-stat"><strong id="u-total">0</strong><span>Tổng yêu cầu</span></div>
-          <div class="uc-stat"><strong id="u-done">0</strong><span>Chuyến xong</span></div>
+          <div class="uc-stat"><strong id="u-total">0</strong><span data-i18n="tdash.total_req">Tổng yêu cầu</span></div>
+          <div class="uc-stat"><strong id="u-done">0</strong><span data-i18n="tdash.trips_done">Chuyến xong</span></div>
         </div>
       </div>
       <nav class="dash-nav">
-        <a href="#bookings" class="active" onclick="showSec('bookings',this)"><i class="fa-solid fa-suitcase"></i> Yêu cầu của tôi</a>
-        <a href="#history" onclick="showSec('history',this)"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử chuyến đi</a>
-        <a href="#reviews" onclick="showSec('reviews',this)"><i class="fa-solid fa-star"></i> Đánh giá của tôi</a>
-        <a href="guides.html"><i class="fa-solid fa-magnifying-glass"></i> Tìm HDV mới</a>
-        <a href="request.html"><i class="fa-solid fa-paper-plane"></i> Đăng yêu cầu mới</a>
-        <a href="#messages" onclick="return showSec('messages',this)" id="nav-messages"><i class="fa-solid fa-comment-dots"></i> Tin nhắn <span id="msg-badge-nav" style="background:#EF4444;color:white;font-size:.65rem;font-weight:800;min-width:16px;height:16px;border-radius:99px;display:none;align-items:center;justify-content:center;padding:0 4px;margin-left:auto"></span></a>
-        <a href="chinh-sach.html"><i class="fa-solid fa-file-contract"></i> Chính sách hoàn tiền</a>
+        <a href="#bookings" class="active" onclick="showSec('bookings',this)"><i class="fa-solid fa-suitcase"></i> <span data-i18n="tdash.nav.bookings">Yêu cầu của tôi</span></a>
+        <a href="#history" onclick="showSec('history',this)"><i class="fa-solid fa-clock-rotate-left"></i> <span data-i18n="tdash.nav.history">Lịch sử chuyến đi</span></a>
+        <a href="#reviews" onclick="showSec('reviews',this)"><i class="fa-solid fa-star"></i> <span data-i18n="tdash.nav.reviews">Đánh giá của tôi</span></a>
+        <a href="guides.html"><i class="fa-solid fa-magnifying-glass"></i> <span data-i18n="tdash.nav.find">Tìm HDV mới</span></a>
+        <a href="request.html"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="tdash.nav.new_req">Đăng yêu cầu mới</span></a>
+        <a href="#messages" onclick="return showSec('messages',this)" id="nav-messages"><i class="fa-solid fa-comment-dots"></i> <span data-i18n="tdash.nav.messages">Tin nhắn</span> <span id="msg-badge-nav" style="background:#EF4444;color:white;font-size:.65rem;font-weight:800;min-width:16px;height:16px;border-radius:99px;display:none;align-items:center;justify-content:center;padding:0 4px;margin-left:auto"></span></a>
+        <a href="chinh-sach.html"><i class="fa-solid fa-file-contract"></i> <span data-i18n="tdash.nav.policy">Chính sách hoàn tiền</span></a>
       </nav>
     </div>
 
@@ -186,59 +189,59 @@
         <div class="dstat">
           <div class="dstat-icon" style="background:#FFF7ED;color:#F97316"><i class="fa-solid fa-hourglass-half"></i></div>
           <div class="dstat-val" id="st-pending">0</div>
-          <div class="dstat-lbl">Đang chờ HDV</div>
+          <div class="dstat-lbl" data-i18n="tdash.stat.pending">Đang chờ HDV</div>
         </div>
         <div class="dstat">
           <div class="dstat-icon" style="background:#F0FDF4;color:#16A34A"><i class="fa-solid fa-circle-check"></i></div>
           <div class="dstat-val" id="st-accepted">0</div>
-          <div class="dstat-lbl">HDV đã xác nhận</div>
+          <div class="dstat-lbl" data-i18n="tdash.stat.accepted">HDV đã xác nhận</div>
         </div>
         <div class="dstat">
           <div class="dstat-icon" style="background:#EFF6FF;color:var(--blue)"><i class="fa-solid fa-map-location-dot"></i></div>
           <div class="dstat-val" id="st-done">0</div>
-          <div class="dstat-lbl">Chuyến đã hoàn thành</div>
+          <div class="dstat-lbl" data-i18n="tdash.stat.done">Chuyến đã hoàn thành</div>
         </div>
         <div class="dstat">
           <div class="dstat-icon" style="background:#F5F3FF;color:#7C3AED"><i class="fa-solid fa-wallet"></i></div>
           <div class="dstat-val" id="st-spent">0đ</div>
-          <div class="dstat-lbl">Tổng chi tiêu</div>
+          <div class="dstat-lbl" data-i18n="tdash.stat.spent">Tổng chi tiêu</div>
         </div>
       </div>
 
       <!-- BOOKINGS SECTION -->
       <div class="section-card" id="sec-bookings">
-        <h3><i class="fa-solid fa-suitcase" style="color:var(--blue)"></i> Yêu cầu của tôi</h3>
+        <h3><i class="fa-solid fa-suitcase" style="color:var(--blue)"></i> <span data-i18n="tdash.nav.bookings">Yêu cầu của tôi</span></h3>
         <div class="filter-tabs">
-          <div class="filter-tab active" onclick="filterBookings('all',this)">Tất cả</div>
-          <div class="filter-tab" onclick="filterBookings('pending',this)">Chờ phản hồi <span id="badge-p" style="background:#FFF7ED;color:#F97316;border-radius:99px;padding:1px 7px;font-size:.7rem;margin-left:3px"></span></div>
-          <div class="filter-tab" onclick="filterBookings('accepted',this)">Đã xác nhận</div>
-          <div class="filter-tab" onclick="filterBookings('done',this)">Hoàn thành</div>
-          <div class="filter-tab" onclick="filterBookings('declined',this)">Bị từ chối</div>
+          <div class="filter-tab active" onclick="filterBookings('all',this)" data-i18n="tdash.filter.all">Tất cả</div>
+          <div class="filter-tab" onclick="filterBookings('pending',this)"><span data-i18n="tdash.filter.pending">Chờ phản hồi</span> <span id="badge-p" style="background:#FFF7ED;color:#F97316;border-radius:99px;padding:1px 7px;font-size:.7rem;margin-left:3px"></span></div>
+          <div class="filter-tab" onclick="filterBookings('accepted',this)" data-i18n="tdash.filter.accepted">Đã xác nhận</div>
+          <div class="filter-tab" onclick="filterBookings('done',this)" data-i18n="tdash.filter.done">Hoàn thành</div>
+          <div class="filter-tab" onclick="filterBookings('declined',this)" data-i18n="tdash.filter.declined">Bị từ chối</div>
         </div>
         <div id="booking-list"></div>
       </div>
 
       <!-- HISTORY SECTION -->
       <div class="section-card" id="sec-history" style="display:none">
-        <h3><i class="fa-solid fa-clock-rotate-left" style="color:var(--blue)"></i> Lịch sử chuyến đi</h3>
+        <h3><i class="fa-solid fa-clock-rotate-left" style="color:var(--blue)"></i> <span data-i18n="tdash.nav.history">Lịch sử chuyến đi</span></h3>
         <div id="history-list"></div>
       </div>
 
       <!-- REVIEWS SECTION -->
       <div class="section-card" id="sec-reviews" style="display:none">
-        <h3><i class="fa-solid fa-star" style="color:#F59E0B"></i> Đánh giá của tôi</h3>
+        <h3><i class="fa-solid fa-star" style="color:#F59E0B"></i> <span data-i18n="tdash.nav.reviews">Đánh giá của tôi</span></h3>
         <div id="review-list"></div>
       </div>
 
       <!-- MESSAGES SECTION -->
       <div class="section-card" id="sec-messages" style="display:none">
-        <h3><i class="fa-solid fa-comment-dots" style="color:var(--blue)"></i> Tin nhắn</h3>
+        <h3><i class="fa-solid fa-comment-dots" style="color:var(--blue)"></i> <span data-i18n="tdash.nav.messages">Tin nhắn</span></h3>
         <div class="chat-wrap">
           <div class="chat-list" id="chat-list"></div>
           <div class="chat-panel" id="chat-panel">
             <div class="chat-panel-empty">
               <i class="fa-solid fa-comment-dots" style="font-size:2rem;color:var(--border)"></i>
-              <span>Chọn cuộc trò chuyện để bắt đầu</span>
+              <span data-i18n="tdash.chat.empty">Chọn cuộc trò chuyện để bắt đầu</span>
             </div>
           </div>
         </div>
@@ -250,17 +253,17 @@
 <!-- Mobile Bottom Nav -->
 <nav class="mob-bottom-nav" id="mob-bottom-nav">
   <button class="mob-nav-item active" id="mobnav-bookings" onclick="showSec('bookings',null,'bookings')">
-    <i class="fa-solid fa-suitcase"></i>Yêu cầu
+    <i class="fa-solid fa-suitcase"></i><span data-i18n="tdash.mob.bookings">Yêu cầu</span>
   </button>
   <button class="mob-nav-item" id="mobnav-history" onclick="showSec('history',null,'history')">
-    <i class="fa-solid fa-clock-rotate-left"></i>Lịch sử
+    <i class="fa-solid fa-clock-rotate-left"></i><span data-i18n="tdash.mob.history">Lịch sử</span>
   </button>
   <button class="mob-nav-item" id="mobnav-messages" onclick="showSec('messages',null,'messages')">
-    <i class="fa-solid fa-comment-dots"></i>Tin nhắn
+    <i class="fa-solid fa-comment-dots"></i><span data-i18n="tdash.mob.messages">Tin nhắn</span>
     <span class="mob-nav-badge" id="mob-msg-badge"></span>
   </button>
   <button class="mob-nav-item" id="mobnav-reviews" onclick="showSec('reviews',null,'reviews')">
-    <i class="fa-solid fa-star"></i>Đánh giá
+    <i class="fa-solid fa-star"></i><span data-i18n="tdash.mob.reviews">Đánh giá</span>
   </button>
 </nav>
 
@@ -393,10 +396,13 @@ function filterBookings(f, el) {
   renderBookings();
 }
 
-const STATUS_LABEL = {
-  pending: 'Chờ phản hồi', 'Chờ xác nhận': 'Chờ phản hồi',
-  accepted: 'HDV đã xác nhận', declined: 'Bị từ chối', done: 'Hoàn thành'
-};
+function getStatusLabel(status) {
+  const map = {
+    pending: t('tdash.status.pending'), 'Chờ xác nhận': t('tdash.status.pending'),
+    accepted: t('tdash.status.accepted'), declined: t('tdash.status.declined'), done: t('tdash.status.done')
+  };
+  return map[status] || status;
+}
 const STATUS_CLS = {
   pending: 'st-pending', 'Chờ xác nhận': 'st-pending',
   accepted: 'st-accepted', declined: 'st-declined', done: 'st-done'
@@ -415,9 +421,9 @@ function renderBookings() {
   if (!list.length) {
     el.innerHTML = `<div class="empty-state">
       <i class="fa-solid fa-suitcase-rolling"></i>
-      <p style="font-weight:600;color:var(--dark)">Chưa có yêu cầu nào</p>
-      <p style="font-size:.84rem;margin:6px 0 18px">Hãy tìm HDV và gửi yêu cầu chuyến đi đầu tiên!</p>
-      <a href="guides.html" class="btn btn-orange"><i class="fa-solid fa-users"></i> Tìm HDV ngay</a>
+      <p style="font-weight:600;color:var(--dark)">${t('tdash.empty.title')}</p>
+      <p style="font-size:.84rem;margin:6px 0 18px">${t('tdash.empty.sub')}</p>
+      <a href="guides.html" class="btn btn-orange"><i class="fa-solid fa-users"></i> ${t('tdash.empty.btn')}</a>
     </div>`;
     return;
   }
@@ -425,7 +431,7 @@ function renderBookings() {
   el.innerHTML = list.map(r => {
     const guide = getGuide(r.guideId);
     const sc = STATUS_CLS[r.status] || 'st-pending';
-    const sl = STATUS_LABEL[r.status] || r.status;
+    const sl = getStatusLabel(r.status);
     const isPending = r.status === 'pending' || r.status === 'Chờ xác nhận';
     const isAccepted = r.status === 'accepted';
     const isDone = r.status === 'done';
@@ -437,9 +443,9 @@ function renderBookings() {
     <div class="booking-card">
       <div class="bc-head">
         <div class="bc-guide">
-          <img src="${guide ? guide.avatar : 'https://via.placeholder.com/44'}" alt="${r.guideName}">
+          <img src="${guide?.avatar || ''}" alt="${r.guideName}" onerror="this.style.display='none'">
           <div>
-            <div class="bc-guide-name">${r.guideName || 'HDV chưa xác định'}</div>
+            <div class="bc-guide-name">${r.guideName || t('tdash.card.unknown_guide')}</div>
             <div class="bc-guide-loc"><i class="fa-solid fa-location-dot"></i> ${r.destination || '—'}</div>
           </div>
         </div>
@@ -449,20 +455,20 @@ function renderBookings() {
         </div>
       </div>
       <div class="bc-details">
-        <span><i class="fa-regular fa-calendar"></i> Ngày đi: <strong>${r.date || '—'}</strong></span>
-        <span><i class="fa-solid fa-moon"></i> Số ngày: <strong>${r.days || 1} ngày</strong></span>
-        <span><i class="fa-solid fa-users"></i> Số người: <strong>${r.people || 1} người</strong></span>
-        <span><i class="fa-solid fa-sack-dollar"></i> Dự kiến: <strong style="color:var(--blue)">${price ? fmtV(price) : r.budget || '—'}</strong></span>
+        <span><i class="fa-regular fa-calendar"></i> ${t('tdash.card.date')}: <strong>${r.date || '—'}</strong></span>
+        <span><i class="fa-solid fa-moon"></i> ${t('tdash.card.days')}: <strong>${r.days || 1} ${t('unit.days')}</strong></span>
+        <span><i class="fa-solid fa-users"></i> ${t('tdash.card.people')}: <strong>${r.people || 1} ${t('unit.people')}</strong></span>
+        <span><i class="fa-solid fa-sack-dollar"></i> ${t('tdash.card.est')}: <strong style="color:var(--blue)">${price ? fmtV(price) : r.budget || '—'}</strong></span>
       </div>
       ${r.notes ? `<div style="font-size:.8rem;color:var(--gray);background:#F8FAFC;border-radius:6px;padding:8px 10px;margin-bottom:12px"><i class="fa-solid fa-quote-left" style="margin-right:4px;opacity:.5"></i>${r.notes}</div>` : ''}
       <div class="bc-actions">
-        ${guide ? `<a href="guide-profile.html?id=${guide.id}" class="btn btn-sm btn-outline"><i class="fa-solid fa-user"></i> Xem HDV</a>` : ''}
-        ${isPending ? `<button class="btn btn-sm" style="background:#FEF2F2;color:#DC2626;border:1px solid #FECACA" onclick="cancelRequest('${r.id}')"><i class="fa-solid fa-xmark"></i> Hủy yêu cầu</button>` : ''}
-        ${isAccepted ? `<button class="btn btn-sm btn-primary" onclick="gotoChat('${r.id}')"><i class="fa-solid fa-comment-dots"></i> Nhắn tin HDV</button>` : ''}
-        ${isAccepted ? `<button class="btn btn-sm" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="openCompleteModal('${r.id}')"><i class="fa-solid fa-flag-checkered"></i> Đã đi xong</button>` : ''}
-        ${isDone && r.completionPhoto ? `<button class="btn btn-sm btn-outline" onclick="viewCompletionPhoto('${r.id}')"><i class="fa-solid fa-image"></i> Xem ảnh</button>` : ''}
-        ${(isAccepted || isDone) && !alreadyReviewed ? `<button class="btn btn-sm" style="background:#FFF7ED;color:#F97316;border:1px solid #FED7AA" onclick="openReview('${r.id}','${r.guideName}','${r.destination}')"><i class="fa-solid fa-star"></i> Đánh giá</button>` : ''}
-        ${alreadyReviewed ? `<span style="font-size:.78rem;color:#16A34A"><i class="fa-solid fa-circle-check"></i> Đã đánh giá</span>` : ''}
+        ${guide ? `<a href="guide-profile.html?id=${guide.id}" class="btn btn-sm btn-outline"><i class="fa-solid fa-user"></i> ${t('tdash.card.view_guide')}</a>` : ''}
+        ${isPending ? `<button class="btn btn-sm" style="background:#FEF2F2;color:#DC2626;border:1px solid #FECACA" onclick="cancelRequest('${r.id}')"><i class="fa-solid fa-xmark"></i> ${t('tdash.card.cancel')}</button>` : ''}
+        ${isAccepted ? `<button class="btn btn-sm btn-primary" onclick="gotoChat('${r.id}')"><i class="fa-solid fa-comment-dots"></i> ${t('tdash.card.chat')}</button>` : ''}
+        ${isAccepted ? `<button class="btn btn-sm" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="openCompleteModal('${r.id}')"><i class="fa-solid fa-flag-checkered"></i> ${t('tdash.card.mark_done')}</button>` : ''}
+        ${isDone && r.completionPhoto ? `<button class="btn btn-sm btn-outline" onclick="viewCompletionPhoto('${r.id}')"><i class="fa-solid fa-image"></i> ${t('tdash.card.view_photo')}</button>` : ''}
+        ${(isAccepted || isDone) && !alreadyReviewed ? `<button class="btn btn-sm" style="background:#FFF7ED;color:#F97316;border:1px solid #FED7AA" onclick="openReview('${r.id}','${r.guideName}','${r.destination}')"><i class="fa-solid fa-star"></i> ${t('tdash.card.review')}</button>` : ''}
+        ${alreadyReviewed ? `<span style="font-size:.78rem;color:#16A34A"><i class="fa-solid fa-circle-check"></i> ${t('tdash.card.reviewed')}</span>` : ''}
       </div>
     </div>`;
   }).join('');
@@ -472,7 +478,7 @@ function renderHistory() {
   const el = document.getElementById('history-list');
   const done = allBookings.filter(r => r.status === 'done' || r.status === 'accepted');
   if (!done.length) {
-    el.innerHTML = `<div class="empty-state"><i class="fa-solid fa-map"></i><p>Chưa có chuyến đi nào hoàn thành</p></div>`;
+    el.innerHTML = `<div class="empty-state"><i class="fa-solid fa-map"></i><p>${t('tdash.hist.empty')}</p></div>`;
     return;
   }
   el.innerHTML = done.map(r => {
@@ -480,14 +486,14 @@ function renderHistory() {
     const price = guide ? guide.pricePerDay * parseInt(r.days || 1) : 0;
     return `
     <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border)">
-      <img src="${guide?.avatar || ''}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--border)">
+      <img src="${guide?.avatar || ''}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--border)" onerror="this.style.display='none'">
       <div style="flex:1">
         <div style="font-weight:600;font-size:.9rem">${r.guideName} — ${r.destination}</div>
-        <div style="font-size:.78rem;color:var(--gray-2)">${r.date} · ${r.days} ngày · ${r.people} người</div>
+        <div style="font-size:.78rem;color:var(--gray-2)">${r.date} · ${r.days} ${t('unit.days')} · ${r.people} ${t('unit.people')}</div>
       </div>
       <div style="text-align:right">
         <div style="font-weight:700;color:var(--blue)">${price ? fmtV(price) : '—'}</div>
-        <div style="font-size:.74rem;color:#16A34A">✅ Hoàn thành</div>
+        <div style="font-size:.74rem;color:#16A34A">✅ ${t('tdash.status.done')}</div>
       </div>
     </div>`;
   }).join('');
@@ -497,7 +503,7 @@ function renderMyReviews() {
   const el = document.getElementById('review-list');
   const reviews = JSON.parse(localStorage.getItem('gt_my_reviews') || '[]');
   if (!reviews.length) {
-    el.innerHTML = `<div class="empty-state"><i class="fa-solid fa-star"></i><p>Bạn chưa có đánh giá nào</p></div>`;
+    el.innerHTML = `<div class="empty-state"><i class="fa-solid fa-star"></i><p>${t('tdash.rev.empty')}</p></div>`;
     return;
   }
   el.innerHTML = reviews.map(rv => `
@@ -592,6 +598,37 @@ function updateStats() {
   if (badge) badge.textContent = pending || '';
 }
 
+function setAvatarDisplay(session) {
+  const el = document.getElementById('u-avatar');
+  if (!el) return;
+  if (session.avatar) {
+    el.innerHTML = `<img src="${session.avatar}" alt="avatar">`;
+  } else {
+    el.textContent = (session.name || 'K')[0].toUpperCase();
+  }
+}
+
+function uploadAvatar(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { toast(t('tdash.avatar.too_large'), 'err'); return; }
+  const reader = new FileReader();
+  reader.onload = async e => {
+    const base64 = e.target.result;
+    const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
+    if (!session) return;
+    session.avatar = base64;
+    localStorage.setItem('gt_session', JSON.stringify(session));
+    // Cập nhật gt_users
+    const users = JSON.parse(localStorage.getItem('gt_users') || '[]');
+    const idx = users.findIndex(u => u.email === session.email);
+    if (idx !== -1) { users[idx].avatar = base64; localStorage.setItem('gt_users', JSON.stringify(users)); }
+    setAvatarDisplay(session);
+    toast(t('tdash.avatar.updated'), 'ok');
+  };
+  reader.readAsDataURL(file);
+}
+
 function initTouristDash() {
   const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
   if (!session) { location.href = 'login.html?redirect=tourist-dashboard.html'; return; }
@@ -600,7 +637,7 @@ function initTouristDash() {
   document.getElementById('greeting').textContent = t('tdash.greeting') + ', ' + session.name + '!';
   document.getElementById('u-name').textContent = session.name;
   document.getElementById('u-email').textContent = session.email || '';
-  document.getElementById('u-avatar').textContent = (session.name || 'K')[0].toUpperCase();
+  setAvatarDisplay(session);
 
   // Load requests filtered by tourist's email or userId
   const stored = JSON.parse(localStorage.getItem('gt_requests') || '[]');
@@ -609,20 +646,7 @@ function initTouristDash() {
     (session.id && r.userId === session.id)
   );
 
-  if (!myReqs.length) {
-    // No bookings for this tourist yet — insert demo data (append, not replace)
-    const demo = [
-      { id:'GT10000001', guideId:1, guideName:'Nguyễn Minh Khoa', name:session.name, phone:session.phone||'', email:session.email||'', destination:'Nha Trang', date:'2024-06-15', days:3, people:2, budget:'5-10 triệu', interests:['Biển đảo','Ẩm thực'], notes:'Thích chỗ ít người, không cần guide đi theo suốt.', status:'accepted', createdAt:new Date().toISOString() },
-      { id:'GT10000002', guideId:2, guideName:'Trần Thị Lan Anh', name:session.name, phone:session.phone||'', email:session.email||'', destination:'Hội An', date:'2024-07-20', days:2, people:2, budget:'< 5 triệu', interests:['Văn hóa','Chụp ảnh'], notes:'', status:'pending', createdAt:new Date().toISOString() },
-      { id:'GT10000003', guideId:3, guideName:'Phạm Văn Đức', name:session.name, phone:session.phone||'', email:session.email||'', destination:'Sapa', date:'2024-05-01', days:4, people:4, budget:'10-20 triệu', interests:['Leo núi','Bản làng'], notes:'', status:'done', createdAt:new Date().toISOString() },
-    ];
-    // Filter out duplicate IDs then append
-    const existing = stored.filter(r => !['GT10000001','GT10000002','GT10000003'].includes(r.id));
-    localStorage.setItem('gt_requests', JSON.stringify([...existing, ...demo]));
-    allBookings = demo;
-  } else {
-    allBookings = myReqs;
-  }
+  allBookings = myReqs;
 
   renderBookings();
   updateStats();
