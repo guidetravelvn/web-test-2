@@ -1120,3 +1120,12 @@ document.addEventListener('DOMContentLoaded', () => {
 const _langStyle = document.createElement('style');
 _langStyle.textContent = '.lang-btn.active-lang{background:var(--blue)!important;color:white!important}';
 document.head.appendChild(_langStyle);
+
+// Redirect to login.html when Supabase fires PASSWORD_RECOVERY on any page
+if (typeof sb !== 'undefined') {
+  sb.auth.onAuthStateChange((event) => {
+    if (event === 'PASSWORD_RECOVERY' && page() !== 'login.html') {
+      location.href = 'login.html';
+    }
+  });
+}
