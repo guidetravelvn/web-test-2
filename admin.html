@@ -188,6 +188,8 @@
 </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 <script src="lang.js"></script>
 <script src="app.js"></script>
 <script>
@@ -293,7 +295,7 @@ function renderRequests() {
 function setStatus(id, status) {
   const reqs = getAllRequests();
   const idx = reqs.findIndex(r => r.id === id);
-  if (idx > -1) { reqs[idx].status = status; localStorage.setItem('gt_requests', JSON.stringify(reqs)); }
+  if (idx > -1) { reqs[idx].status = status; localStorage.setItem('gt_requests', JSON.stringify(reqs)); SB.updateReq(id, {status, data: reqs[idx]}); }
   renderStats();
   renderRequests();
 }
@@ -334,20 +336,34 @@ function renderNewHDV() {
   </tr>`).join('');
 }
 
-function approveHDV(email) {
+async function approveHDV(email) {
   const profiles = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
   const idx = profiles.findIndex(p => p.email === email);
   if (idx > -1) { profiles[idx].status = 'approved'; localStorage.setItem('gt_hdv_profiles', JSON.stringify(profiles)); }
+  if (typeof sb !== 'undefined') {
+    const { data: rows } = await sb.from('hdv_profiles').select('data').filter('data->>email', 'eq', email);
+    if (rows && rows.length) {
+      const updated = { ...rows[0].data, status: 'approved' };
+      await sb.from('hdv_profiles').update({ status: 'approved', data: updated }).filter('data->>email', 'eq', email);
+    }
+  }
   renderNewHDV();
   renderStats();
   alert('✅ Đã duyệt — hồ sơ HDV sẽ hiển thị trên trang tìm HDV.');
 }
 
-function rejectHDV(email) {
+async function rejectHDV(email) {
   if (!confirm('Từ chối hồ sơ này? HDV sẽ không được hiển thị.')) return;
   const profiles = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
   const idx = profiles.findIndex(p => p.email === email);
   if (idx > -1) { profiles[idx].status = 'rejected'; localStorage.setItem('gt_hdv_profiles', JSON.stringify(profiles)); }
+  if (typeof sb !== 'undefined') {
+    const { data: rows } = await sb.from('hdv_profiles').select('data').filter('data->>email', 'eq', email);
+    if (rows && rows.length) {
+      const updated = { ...rows[0].data, status: 'rejected' };
+      await sb.from('hdv_profiles').update({ status: 'rejected', data: updated }).filter('data->>email', 'eq', email);
+    }
+  }
   renderNewHDV();
 }
 
@@ -412,7 +428,29 @@ function renderReviews() {
     </tr>`).join('');
 }
 
-function initAdmin() {
+async function initAdmin() {
+  if (typeof sb !== 'undefined') {
+    // Load hdv_profiles from Supabase
+    const { data: sbProfiles } = await sb.from('hdv_profiles').select('data, status');
+    if (sbProfiles && sbProfiles.length) {
+      const local = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+      sbProfiles.forEach(row => {
+        const p = { ...row.data, status: row.status };
+        const i = local.findIndex(x => x.email === p.email);
+        if (i > -1) local[i] = p; else local.push(p);
+      });
+      localStorage.setItem('gt_hdv_profiles', JSON.stringify(local));
+    }
+    // Load requests from Supabase
+    const sbReqs = await SB.getAll();
+    if (sbReqs && sbReqs.length) {
+      const local = JSON.parse(localStorage.getItem('gt_requests') || '[]');
+      const sbMap = Object.fromEntries(sbReqs.map(r => [r.id, r]));
+      const merged = local.map(r => sbMap[r.id] ? sbMap[r.id] : r);
+      sbReqs.forEach(r => { if (!merged.find(m => m.id === r.id)) merged.unshift(r); });
+      localStorage.setItem('gt_requests', JSON.stringify(merged));
+    }
+  }
   renderStats();
   renderRequests();
 }
