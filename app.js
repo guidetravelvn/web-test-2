@@ -665,7 +665,7 @@ function guideCard(g) {
   const cardBorder = tier ? `border-color:${tier.border};box-shadow:0 0 0 2px ${tier.bg}` : '';
 
   return `
-  <div class="guide-card" onclick="location.href='guide-profile.html?id=${g.id}'" style="${cardBorder}">
+  <div class="guide-card" onclick="location.href='guide-profile?id=${g.id}'" style="${cardBorder}">
     <div class="guide-card-img">
       <img src="${g.coverImg}" alt="${g.name}" loading="lazy">
       ${tierBadge}
@@ -984,7 +984,7 @@ function initRequestPage() {
   if (guide) {
     const gc = $('req-guide-card');
     if (gc) gc.innerHTML = `
-      <div class="guide-mini" onclick="location.href='guide-profile.html?id=${guide.id}'">
+      <div class="guide-mini" onclick="location.href='guide-profile?id=${guide.id}'">
         <div class="guide-mini-img"><img src="${guide.avatar}" alt="${guide.name}"></div>
         <div>
           <div class="guide-mini-name">${guide.name}</div>
@@ -1036,7 +1036,7 @@ function renderSideGuides() {
   const el = $('side-guides');
   if (!el) return;
   el.innerHTML = GUIDES.slice(0, 4).map(g => `
-    <div class="guide-mini" onclick="location.href='guide-profile.html?id=${g.id}'">
+    <div class="guide-mini" onclick="location.href='guide-profile?id=${g.id}'">
       <div class="guide-mini-img"><img src="${g.avatar}" alt="${g.name}"></div>
       <div>
         <div class="guide-mini-name">${g.name}</div>

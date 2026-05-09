@@ -111,7 +111,7 @@
     .star-btn { font-size:1.6rem; cursor:pointer; color:#E2E8F0; transition:.15s; background:none; border:none; padding:2px; }
     .star-btn.active { color:#F59E0B; }
     /* Mobile bottom nav */
-    .mob-bottom-nav { display:none; position:fixed; bottom:0; left:0; right:0; z-index:998; background:white; border-top:1px solid var(--border); grid-template-columns:repeat(4,1fr); }
+    .mob-bottom-nav { display:none; position:fixed; bottom:0; left:0; right:0; z-index:998; background:white; border-top:1px solid var(--border); grid-template-columns:repeat(5,1fr); }
     @media(max-width:860px){ .mob-bottom-nav { display:grid; } .dash-wrap { padding-bottom:72px; } }
     .mob-nav-item { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 4px 8px; gap:3px; font-size:.6rem; font-weight:600; color:var(--gray-2); cursor:pointer; transition:.15s; background:none; border:none; width:100%; position:relative; }
     .mob-nav-item.active { color:var(--blue); }
@@ -178,6 +178,7 @@
         <a href="guides.html"><i class="fa-solid fa-magnifying-glass"></i> <span data-i18n="tdash.nav.find">Tìm HDV mới</span></a>
         <a href="request.html"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="tdash.nav.new_req">Đăng yêu cầu mới</span></a>
         <a href="#messages" onclick="return showSec('messages',this)" id="nav-messages"><i class="fa-solid fa-comment-dots"></i> <span data-i18n="tdash.nav.messages">Tin nhắn</span> <span id="msg-badge-nav" style="background:#EF4444;color:white;font-size:.65rem;font-weight:800;min-width:16px;height:16px;border-radius:99px;display:none;align-items:center;justify-content:center;padding:0 4px;margin-left:auto"></span></a>
+        <a href="#profile" onclick="return showSec('profile',this)"><i class="fa-solid fa-user-pen"></i> <span data-i18n="tdash.nav.profile">Hồ sơ cá nhân</span></a>
         <a href="chinh-sach.html"><i class="fa-solid fa-file-contract"></i> <span data-i18n="tdash.nav.policy">Chính sách hoàn tiền</span></a>
       </nav>
     </div>
@@ -233,6 +234,51 @@
         <div id="review-list"></div>
       </div>
 
+      <!-- PROFILE SECTION -->
+      <div class="section-card" id="sec-profile" style="display:none">
+        <h3><i class="fa-solid fa-user-pen" style="color:var(--blue)"></i> <span data-i18n="tdash.nav.profile">Hồ sơ cá nhân</span></h3>
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)">
+          <div class="uc-avatar" id="pf-avatar" onclick="document.getElementById('avatar-file').click()" style="width:72px;height:72px;font-size:1.8rem;flex-shrink:0;background:var(--blue)">K</div>
+          <div>
+            <div style="font-weight:700;color:var(--dark);font-size:1rem" id="pf-name-display"></div>
+            <div style="font-size:.8rem;color:var(--gray-2);margin-top:2px" id="pf-email-display"></div>
+            <div style="font-size:.78rem;color:var(--blue);margin-top:6px;cursor:pointer" onclick="document.getElementById('avatar-file').click()" data-i18n="tdash.profile.change_avatar">Đổi ảnh đại diện</div>
+          </div>
+        </div>
+        <div style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)">
+          <div style="font-size:.9rem;font-weight:700;color:var(--dark);margin-bottom:16px" data-i18n="tdash.profile.info_title">Thông tin cá nhân</div>
+          <div class="fg">
+            <label data-i18n="login.name_lbl">Họ và tên</label>
+            <input type="text" id="pf-name-inp">
+          </div>
+          <div class="fg">
+            <label data-i18n="req.email">Email</label>
+            <input type="email" id="pf-email-inp" disabled style="background:#F8FAFC;color:var(--gray-2)">
+          </div>
+          <div class="fg">
+            <label data-i18n="login.phone_lbl">Số điện thoại</label>
+            <input type="tel" id="pf-phone-inp">
+          </div>
+          <button class="btn btn-orange" onclick="saveProfile()" style="margin-top:8px">
+            <i class="fa-solid fa-floppy-disk"></i> <span data-i18n="tdash.profile.save_info">Lưu thông tin</span>
+          </button>
+        </div>
+        <div>
+          <div style="font-size:.9rem;font-weight:700;color:var(--dark);margin-bottom:16px" data-i18n="tdash.profile.pass_title">Đổi mật khẩu</div>
+          <div class="fg">
+            <label data-i18n="tdash.profile.new_pass">Mật khẩu mới</label>
+            <input type="password" id="pf-pass" data-i18n="login.pass_ph2" data-i18n-attr="placeholder" placeholder="Tối thiểu 6 ký tự">
+          </div>
+          <div class="fg">
+            <label data-i18n="tdash.profile.confirm_pass">Xác nhận mật khẩu mới</label>
+            <input type="password" id="pf-pass2" data-i18n="login.newpass_confirm_ph" data-i18n-attr="placeholder" placeholder="Nhập lại mật khẩu mới">
+          </div>
+          <button class="btn btn-outline" onclick="saveNewPassword()" style="margin-top:8px">
+            <i class="fa-solid fa-lock"></i> <span data-i18n="tdash.profile.save_pass">Đổi mật khẩu</span>
+          </button>
+        </div>
+      </div>
+
       <!-- MESSAGES SECTION -->
       <div class="section-card" id="sec-messages" style="display:none">
         <h3><i class="fa-solid fa-comment-dots" style="color:var(--blue)"></i> <span data-i18n="tdash.nav.messages">Tin nhắn</span></h3>
@@ -264,6 +310,9 @@
   </button>
   <button class="mob-nav-item" id="mobnav-reviews" onclick="showSec('reviews',null,'reviews')">
     <i class="fa-solid fa-star"></i><span data-i18n="tdash.mob.reviews">Đánh giá</span>
+  </button>
+  <button class="mob-nav-item" id="mobnav-profile" onclick="showSec('profile',null,'profile')">
+    <i class="fa-solid fa-user-pen"></i><span data-i18n="tdash.mob.profile">Hồ sơ</span>
   </button>
 </nav>
 
@@ -351,6 +400,8 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 <script src="lang.js"></script>
 <script src="app.js"></script>
 <script>
@@ -367,11 +418,10 @@ function doLogout() {
 }
 
 function showSec(name, el, mobKey) {
-  ['bookings','history','reviews','messages'].forEach(s => {
+  ['bookings','history','reviews','messages','profile'].forEach(s => {
     document.getElementById('sec-' + s).style.display = s === name ? 'block' : 'none';
   });
-  // Update mobile bottom nav active state
-  ['bookings','history','messages','reviews'].forEach(s => {
+  ['bookings','history','messages','reviews','profile'].forEach(s => {
     const btn = document.getElementById('mobnav-' + s);
     if (btn) btn.classList.toggle('active', s === (mobKey || name));
   });
@@ -380,6 +430,7 @@ function showSec(name, el, mobKey) {
   if (name === 'history') renderHistory();
   if (name === 'reviews') renderMyReviews();
   if (name === 'messages') renderChatList();
+  if (name === 'profile') renderProfile();
   return false;
 }
 
@@ -462,7 +513,7 @@ function renderBookings() {
       </div>
       ${r.notes ? `<div style="font-size:.8rem;color:var(--gray);background:#F8FAFC;border-radius:6px;padding:8px 10px;margin-bottom:12px"><i class="fa-solid fa-quote-left" style="margin-right:4px;opacity:.5"></i>${r.notes}</div>` : ''}
       <div class="bc-actions">
-        ${guide ? `<a href="guide-profile.html?id=${guide.id}" class="btn btn-sm btn-outline"><i class="fa-solid fa-user"></i> ${t('tdash.card.view_guide')}</a>` : ''}
+        ${guide ? `<a href="guide-profile?id=${guide.id}" class="btn btn-sm btn-outline"><i class="fa-solid fa-user"></i> ${t('tdash.card.view_guide')}</a>` : ''}
         ${isPending ? `<button class="btn btn-sm" style="background:#FEF2F2;color:#DC2626;border:1px solid #FECACA" onclick="cancelRequest('${r.id}')"><i class="fa-solid fa-xmark"></i> ${t('tdash.card.cancel')}</button>` : ''}
         ${isAccepted ? `<button class="btn btn-sm btn-primary" onclick="gotoChat('${r.id}')"><i class="fa-solid fa-comment-dots"></i> ${t('tdash.card.chat')}</button>` : ''}
         ${isAccepted ? `<button class="btn btn-sm" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="openCompleteModal('${r.id}')"><i class="fa-solid fa-flag-checkered"></i> ${t('tdash.card.mark_done')}</button>` : ''}
@@ -530,7 +581,7 @@ function cancelRequest(id) {
 
 function contactGuide(guideId) {
   const guide = getGuide(guideId);
-  if (guide) location.href = 'guide-profile.html?id=' + guide.id;
+  if (guide) location.href = 'guide-profile?id=' + guide.id;
 }
 
 function openReview(reqId, guideName, dest) {
@@ -627,6 +678,63 @@ function uploadAvatar(input) {
     toast(t('tdash.avatar.updated'), 'ok');
   };
   reader.readAsDataURL(file);
+}
+
+function renderProfile() {
+  const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
+  if (!session) return;
+  document.getElementById('pf-name-display').textContent = session.name || '';
+  document.getElementById('pf-email-display').textContent = session.email || '';
+  document.getElementById('pf-name-inp').value = session.name || '';
+  document.getElementById('pf-email-inp').value = session.email || '';
+  document.getElementById('pf-phone-inp').value = session.phone || '';
+  const pfAv = document.getElementById('pf-avatar');
+  if (session.avatar) {
+    pfAv.innerHTML = `<img src="${session.avatar}" alt="avatar">`;
+  } else {
+    pfAv.textContent = (session.name || 'K')[0].toUpperCase();
+  }
+}
+
+async function saveProfile() {
+  const name = document.getElementById('pf-name-inp').value.trim();
+  const phone = document.getElementById('pf-phone-inp').value.trim();
+  if (!name) { toast(t('tdash.profile.err_name'), 'err'); return; }
+  const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
+  if (!session) return;
+  if (typeof sb !== 'undefined' && session.id) {
+    await sb.from('profiles').upsert({ id: session.id, name, phone, type: session.type });
+  }
+  const updated = { ...session, name, phone };
+  localStorage.setItem('gt_session', JSON.stringify(updated));
+  const users = JSON.parse(localStorage.getItem('gt_users') || '[]');
+  const idx = users.findIndex(u => u.email === session.email);
+  if (idx !== -1) { users[idx].name = name; users[idx].phone = phone; localStorage.setItem('gt_users', JSON.stringify(users)); }
+  document.getElementById('u-name').textContent = name;
+  document.getElementById('pf-name-display').textContent = name;
+  document.getElementById('greeting').textContent = t('tdash.greeting') + ', ' + name + '!';
+  toast(t('tdash.profile.saved'), 'ok');
+}
+
+async function saveNewPassword() {
+  const pass = document.getElementById('pf-pass').value;
+  const pass2 = document.getElementById('pf-pass2').value;
+  if (!pass || !pass2) { toast(t('login.err.otp_empty'), 'err'); return; }
+  if (pass.length < 6) { toast('Mật khẩu tối thiểu 6 ký tự!', 'err'); return; }
+  if (pass !== pass2) { toast(t('login.err.pass_mismatch'), 'err'); return; }
+  if (typeof sb !== 'undefined') {
+    const { error } = await sb.auth.updateUser({ password: pass });
+    if (error) { toast(error.message || 'Lỗi đổi mật khẩu!', 'err'); return; }
+  }
+  const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
+  if (session?.email) {
+    const users = JSON.parse(localStorage.getItem('gt_users') || '[]');
+    const idx = users.findIndex(u => u.email === session.email);
+    if (idx !== -1) { users[idx].pass = pass; localStorage.setItem('gt_users', JSON.stringify(users)); }
+  }
+  document.getElementById('pf-pass').value = '';
+  document.getElementById('pf-pass2').value = '';
+  toast(t('tdash.profile.pass_changed'), 'ok');
 }
 
 function initTouristDash() {
