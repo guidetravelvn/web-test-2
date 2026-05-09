@@ -663,18 +663,37 @@ function setAvatarDisplay(session) {
   }
 }
 
-function uploadAvatar(input) {
+async function uploadAvatar(input) {
   const file = input.files[0];
   if (!file) return;
   if (file.size > 2 * 1024 * 1024) { toast(t('tdash.avatar.too_large'), 'err'); return; }
+  const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
+  if (!session) return;
+
+  if (typeof sb !== 'undefined' && session.id) {
+    toast('Đang tải ảnh lên...', 'ok');
+    const ext = file.name.split('.').pop() || 'jpg';
+    const { error } = await sb.storage.from('avatars').upload(session.id + '.' + ext, file, { upsert: true, contentType: file.type });
+    if (!error) {
+      const { data: urlData } = sb.storage.from('avatars').getPublicUrl(session.id + '.' + ext);
+      const url = urlData.publicUrl + '?t=' + Date.now();
+      session.avatar = url;
+      localStorage.setItem('gt_session', JSON.stringify(session));
+      await sb.from('profiles').upsert({ id: session.id, avatar: url });
+      setAvatarDisplay(session);
+      const pfAv = document.getElementById('pf-avatar');
+      if (pfAv) pfAv.innerHTML = `<img src="${url}" alt="avatar">`;
+      toast(t('tdash.avatar.updated'), 'ok');
+      return;
+    }
+  }
+
+  // Fallback: base64
   const reader = new FileReader();
-  reader.onload = async e => {
+  reader.onload = e => {
     const base64 = e.target.result;
-    const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
-    if (!session) return;
     session.avatar = base64;
     localStorage.setItem('gt_session', JSON.stringify(session));
-    // Cập nhật gt_users
     const users = JSON.parse(localStorage.getItem('gt_users') || '[]');
     const idx = users.findIndex(u => u.email === session.email);
     if (idx !== -1) { users[idx].avatar = base64; localStorage.setItem('gt_users', JSON.stringify(users)); }
@@ -707,7 +726,7 @@ async function saveProfile() {
   const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
   if (!session) return;
   if (typeof sb !== 'undefined' && session.id) {
-    await sb.from('profiles').upsert({ id: session.id, name, phone, type: session.type });
+    await sb.from('profiles').upsert({ id: session.id, name, phone, type: session.type, avatar: session.avatar || null });
   }
   const updated = { ...session, name, phone };
   localStorage.setItem('gt_session', JSON.stringify(updated));
@@ -749,6 +768,12 @@ async function initTouristDash() {
   document.getElementById('greeting').textContent = t('tdash.greeting') + ', ' + session.name + '!';
   document.getElementById('u-name').textContent = session.name;
   document.getElementById('u-email').textContent = session.email || '';
+
+  // Load avatar từ Supabase nếu chưa có local
+  if (typeof sb !== 'undefined' && session.id && !session.avatar) {
+    const { data: prof } = await sb.from('profiles').select('avatar').eq('id', session.id).maybeSingle();
+    if (prof?.avatar) { session.avatar = prof.avatar; localStorage.setItem('gt_session', JSON.stringify(session)); }
+  }
   setAvatarDisplay(session);
 
   // Sync from Supabase
