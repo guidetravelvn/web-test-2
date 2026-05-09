@@ -488,22 +488,23 @@ const DB = {
 };
 
 const SB = {
-  async saveReq(req) {
-    if (typeof sb === 'undefined') return;
-    try { await sb.from('requests').upsert({ id: req.id, tourist_email: req.email||'', tourist_id: req.userId||null, guide_id: String(req.guideId||''), status: req.status||'pending', data: req }); } catch(e) {}
-  },
-  async updateReq(id, fields) {
-    if (typeof sb === 'undefined') return;
-    try { await sb.from('requests').update(fields).eq('id', id); } catch(e) {}
-  },
-  async getByEmail(email) {
-    if (typeof sb === 'undefined') return null;
-    try { const { data } = await sb.from('requests').select('data').eq('tourist_email', email); return data ? data.map(r => r.data) : []; } catch(e) { return null; }
-  },
-  async getAll() {
-    if (typeof sb === 'undefined') return null;
-    try { const { data } = await sb.from('requests').select('data'); return data ? data.map(r => r.data) : []; } catch(e) { return null; }
-  }
+  // Requests
+  async saveReq(req) { if (typeof sb==='undefined') return; try { await sb.from('requests').upsert({id:req.id,tourist_email:req.email||'',tourist_id:req.userId||null,guide_id:String(req.guideId||''),status:req.status||'pending',data:req}); } catch(e){} },
+  async updateReq(id,fields) { if (typeof sb==='undefined') return; try { await sb.from('requests').update(fields).eq('id',id); } catch(e){} },
+  async getByEmail(email) { if (typeof sb==='undefined') return null; try { const{data}=await sb.from('requests').select('data').eq('tourist_email',email); return data?data.map(r=>r.data):[]; } catch(e){return null;} },
+  async getAll() { if (typeof sb==='undefined') return null; try { const{data}=await sb.from('requests').select('data'); return data?data.map(r=>r.data):[]; } catch(e){return null;} },
+  // Messages
+  async saveMsg(msg) { if (typeof sb==='undefined') return; try { await sb.from('messages').upsert({id:msg.id,request_id:msg.requestId,from_email:msg.fromEmail,from_type:msg.fromType,from_name:msg.fromName,text:msg.text,time:msg.time,read:msg.read}); } catch(e){} },
+  async getMsgsByReqId(reqId) { if (typeof sb==='undefined') return null; try { const{data}=await sb.from('messages').select('*').eq('request_id',reqId).order('time'); return data?data.map(r=>({id:r.id,requestId:r.request_id,fromEmail:r.from_email,fromType:r.from_type,fromName:r.from_name,text:r.text,time:r.time,read:r.read})):[]; } catch(e){return null;} },
+  async getAllMsgs() { if (typeof sb==='undefined') return null; try { const{data}=await sb.from('messages').select('*').order('time'); return data?data.map(r=>({id:r.id,requestId:r.request_id,fromEmail:r.from_email,fromType:r.from_type,fromName:r.from_name,text:r.text,time:r.time,read:r.read})):[]; } catch(e){return null;} },
+  // Reviews
+  async saveReview(rv) { if (typeof sb==='undefined') return; try { await sb.from('reviews').upsert({id:rv.id,guide_name:rv.guideName||'',tourist_email:rv.touristEmail||'',data:rv}); } catch(e){} },
+  async getReviewsByGuide(guideName) { if (typeof sb==='undefined') return null; try { const{data}=await sb.from('reviews').select('data').eq('guide_name',guideName); return data?data.map(r=>r.data):[]; } catch(e){return null;} },
+  async getReviewsByEmail(email) { if (typeof sb==='undefined') return null; try { const{data}=await sb.from('reviews').select('data').eq('tourist_email',email); return data?data.map(r=>r.data):[]; } catch(e){return null;} },
+  // Notifications
+  async saveNotif(notif) { if (typeof sb==='undefined') return; try { await sb.from('notifications').upsert({id:notif.id,target_type:notif.targetType,read:notif.read,time:notif.time,data:notif}); } catch(e){} },
+  async getNotifsByType(type) { if (typeof sb==='undefined') return null; try { const{data}=await sb.from('notifications').select('data').in('target_type',[type,'all']).order('time',{ascending:false}); return data?data.map(r=>r.data):[]; } catch(e){return null;} },
+  async markNotifsRead(ids) { if (typeof sb==='undefined') return; try { await sb.from('notifications').update({read:true}).in('id',ids); } catch(e){} },
 };
 
 // ===== AUTH =====
@@ -636,6 +637,7 @@ function openNotifDropdown() {
   const mine = all.filter(n => n.targetType === session.type || n.targetType === 'all');
   all.forEach(n => { if (n.targetType === session.type || n.targetType === 'all') n.read = true; });
   localStorage.setItem('gt_notifications', JSON.stringify(all));
+  SB.markNotifsRead(mine.map(n => n.id));
   const btn = document.getElementById('nav-notif-btn');
   if (btn) { const sp = btn.querySelector('span'); if (sp) sp.remove(); }
   if (typeof updateNotifBadge === 'function') updateNotifBadge();
@@ -914,16 +916,14 @@ function renderProfile(g) {
   }).join(''));
 
   // Reviews — merge hardcoded + user-submitted
-  const userReviews = JSON.parse(localStorage.getItem('gt_my_reviews') || '[]')
-    .filter(rv => rv.guideName === g.name)
-    .map(rv => ({
+  function buildReviewHTML(localRevs) {
+    const uRevs = localRevs.filter(rv => rv.guideName === g.name).map(rv => ({
       name: t('review.you') || 'Bạn',
       date: new Date(rv.createdAt).toLocaleDateString('vi-VN'),
       stars: rv.stars,
       text: rv.text || ''
     }));
-  const allReviews = [...userReviews, ...(g.reviewList || [])];
-  setHTML('p-reviews', allReviews.map(r => `
+    return [...uRevs, ...(g.reviewList || [])].map(r => `
     <div class="review-item">
       <div class="review-top">
         <div class="reviewer">
@@ -936,7 +936,21 @@ function renderProfile(g) {
         <div class="review-stars">${'★'.repeat(r.stars)}${'☆'.repeat(5 - r.stars)}</div>
       </div>
       <div class="review-text">${r.text}</div>
-    </div>`).join(''));
+    </div>`).join('');
+  }
+  setHTML('p-reviews', buildReviewHTML(JSON.parse(localStorage.getItem('gt_my_reviews') || '[]')));
+  if (typeof sb !== 'undefined') {
+    SB.getReviewsByGuide(g.name).then(sbRevs => {
+      if (!sbRevs || !sbRevs.length) return;
+      const local = JSON.parse(localStorage.getItem('gt_my_reviews') || '[]');
+      const idSet = new Set(local.map(r => r.id));
+      const newRevs = sbRevs.filter(r => !idSet.has(r.id));
+      if (!newRevs.length) return;
+      newRevs.forEach(r => local.unshift(r));
+      localStorage.setItem('gt_my_reviews', JSON.stringify(local));
+      setHTML('p-reviews', buildReviewHTML(local));
+    });
+  }
 
   // Page title
   const pt = $('page-title'); if (pt) pt.textContent = g.name;

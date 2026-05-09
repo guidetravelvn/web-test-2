@@ -606,6 +606,27 @@ async function initDash() {
   updateMsgBadge();
   updateNotifBadge();
 
+  // Sync messages + notifications from Supabase
+  if (typeof sb !== 'undefined') {
+    SB.getAllMsgs().then(sbMsgs => {
+      if (!sbMsgs || !sbMsgs.length) return;
+      const local = JSON.parse(localStorage.getItem('gt_messages') || '[]');
+      const idSet = new Set(local.map(m => m.id));
+      sbMsgs.forEach(m => { if (!idSet.has(m.id)) local.push(m); });
+      localStorage.setItem('gt_messages', JSON.stringify(local));
+      updateMsgBadge();
+    });
+    const hdvSession = JSON.parse(localStorage.getItem('gt_session') || 'null');
+    if (hdvSession) SB.getNotifsByType(hdvSession.type).then(sbNotifs => {
+      if (!sbNotifs || !sbNotifs.length) return;
+      const local = JSON.parse(localStorage.getItem('gt_notifications') || '[]');
+      const idSet = new Set(local.map(n => n.id));
+      sbNotifs.forEach(n => { if (!idSet.has(n.id)) local.unshift(n); });
+      localStorage.setItem('gt_notifications', JSON.stringify(local));
+      updateNotifBadge();
+    });
+  }
+
   // Earnings calc
   const price = guide.pricePerDay || 0;
   const comm = guide.commission || 15;
@@ -647,9 +668,11 @@ function getNotifs() { return JSON.parse(localStorage.getItem('gt_notifications'
 function saveNotifs(n) { localStorage.setItem('gt_notifications', JSON.stringify(n)); }
 
 function addNotif(type, title, body, targetType, actionUrl) {
+  const notif = { id:'N_'+Date.now(), type, title, body, targetType:targetType||'all', time:new Date().toISOString(), read:false, actionUrl:actionUrl||null };
   const n = getNotifs();
-  n.unshift({ id:'N_'+Date.now(), type, title, body, targetType:targetType||'all', time:new Date().toISOString(), read:false, actionUrl:actionUrl||null });
+  n.unshift(notif);
   saveNotifs(n);
+  SB.saveNotif(notif);
 }
 
 function updateNotifBadge() {
@@ -669,6 +692,7 @@ function updateNotifBadge() {
 
 // ===== CHAT =====
 let currentChatReqId = null;
+let chatChannel = null;
 
 function getMessages() { return JSON.parse(localStorage.getItem('gt_messages') || '[]'); }
 function saveMessages(msgs) { localStorage.setItem('gt_messages', JSON.stringify(msgs)); }
@@ -754,6 +778,54 @@ function openChat(requestId) {
   if (backBtn && window.innerWidth <= 600) backBtn.style.display = 'block';
   const box = document.getElementById('chat-msgs-box');
   if (box) box.scrollTop = box.scrollHeight;
+
+  // Realtime: fetch latest + subscribe
+  if (typeof sb !== 'undefined') {
+    SB.getMsgsByReqId(requestId).then(sbMsgs => {
+      if (!sbMsgs || !sbMsgs.length) return;
+      const local = getMessages();
+      const idSet = new Set(local.map(m => m.id));
+      const newMsgs = sbMsgs.filter(m => !idSet.has(m.id));
+      if (!newMsgs.length) return;
+      newMsgs.forEach(m => local.push(m));
+      saveMessages(local);
+      const b = document.getElementById('chat-msgs-box');
+      if (b) {
+        newMsgs.forEach(m => {
+          const mine = m.fromType === 'guide';
+          const tm = new Date(m.time);
+          const d = document.createElement('div');
+          d.className = 'msg-bubble ' + (mine ? 'mine' : 'theirs');
+          d.innerHTML = `<div class="msg-text">${m.text}</div><div class="msg-time">${tm.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})} ${tm.toLocaleDateString('vi-VN')}</div>`;
+          b.appendChild(d);
+        });
+        b.scrollTop = b.scrollHeight;
+      }
+    });
+    if (chatChannel) sb.removeChannel(chatChannel);
+    chatChannel = sb.channel('chat_g_' + requestId)
+      .on('postgres_changes', {event:'INSERT',schema:'public',table:'messages',filter:'request_id=eq.'+requestId}, payload => {
+        const r = payload.new;
+        const nm = {id:r.id,requestId:r.request_id,fromEmail:r.from_email,fromType:r.from_type,fromName:r.from_name,text:r.text,time:r.time,read:r.read};
+        const local = getMessages();
+        if (local.find(m => m.id === nm.id)) return;
+        local.push(nm);
+        saveMessages(local);
+        const b = document.getElementById('chat-msgs-box');
+        if (b && currentChatReqId === nm.requestId) {
+          const mine = nm.fromType === 'guide';
+          const tm = new Date(nm.time);
+          const d = document.createElement('div');
+          d.className = 'msg-bubble ' + (mine ? 'mine' : 'theirs');
+          d.innerHTML = `<div class="msg-text">${nm.text}</div><div class="msg-time">${tm.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})} ${tm.toLocaleDateString('vi-VN')}</div>`;
+          b.appendChild(d);
+          b.scrollTop = b.scrollHeight;
+        }
+        updateMsgBadge();
+        renderChatList();
+      })
+      .subscribe();
+  }
 }
 
 function closeChatMobile() {
@@ -768,8 +840,10 @@ function sendMsg() {
   if (!text || !currentChatReqId) return;
   const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
   const msgs = getMessages();
-  msgs.push({ id:'MSG_'+Date.now(), requestId:currentChatReqId, fromEmail:session.email, fromType:'guide', fromName:session.name, text, time:new Date().toISOString(), read:false });
+  const newMsg = { id:'MSG_'+Date.now(), requestId:currentChatReqId, fromEmail:session.email, fromType:'guide', fromName:session.name, text, time:new Date().toISOString(), read:false };
+  msgs.push(newMsg);
   saveMessages(msgs);
+  SB.saveMsg(newMsg);
   addNotif('message', 'HDV ' + session.name + ' vừa nhắn tin', text.slice(0,60), 'tourist', 'messages');
   input.value = '';
   openChat(currentChatReqId);
