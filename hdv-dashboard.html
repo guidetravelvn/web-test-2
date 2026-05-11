@@ -733,7 +733,9 @@ async function initDash() {
 
     // Realtime: nhận thông báo mới ngay lập tức
     sb.channel('hdv_notifs')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: 'target_type=in.(guide,all)' }, payload => {
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications' }, payload => {
+        const tt = payload.new?.target_type;
+        if (tt !== 'guide' && tt !== 'all') return;
         const notif = payload.new?.data;
         if (!notif) return;
         const local = JSON.parse(localStorage.getItem('gt_notifications') || '[]');
@@ -741,7 +743,6 @@ async function initDash() {
         local.unshift(notif);
         localStorage.setItem('gt_notifications', JSON.stringify(local));
         updateNotifBadge();
-        // Show toast for important notifications
         const iconMap = { booking:'📋', message:'💬', system:'🔔' };
         toast((iconMap[notif.type]||'🔔') + ' ' + notif.title, 'ok');
       })
