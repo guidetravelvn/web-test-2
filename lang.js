@@ -159,6 +159,7 @@ const TRANS = {
     'profile.g1':'Miễn phí gửi yêu cầu','profile.g2':'HDV phản hồi trong 24h',
     'profile.g3':'Thanh toán sau khi chốt lịch trình',
     'profile.share_h':'Chia sẻ hồ sơ này','profile.link_copied':'Đã sao chép link!',
+    'profile.terms':'Tôi đồng ý với <a href="dieu-khoan.html" target="_blank" style="color:var(--blue);font-weight:600">Điều khoản</a> và <a href="chinh-sach.html" target="_blank" style="color:var(--blue);font-weight:600">Chính sách</a> của GuideTravel.',
     // LOGIN EXTRA
     'login.pass_lbl':'Mật khẩu','login.name_lbl':'Họ và tên',
     'login.phone_lbl':'Số điện thoại',
@@ -725,6 +726,7 @@ const TRANS = {
     'profile.g1':'Free to send a request','profile.g2':'Guide responds within 24h',
     'profile.g3':'Pay after finalizing itinerary',
     'profile.share_h':'Share this profile','profile.link_copied':'Link copied!',
+    'profile.terms':'I agree to the <a href="dieu-khoan.html" target="_blank" style="color:var(--blue);font-weight:600">Terms</a> and <a href="chinh-sach.html" target="_blank" style="color:var(--blue);font-weight:600">Policy</a> of GuideTravel.',
     // LOGIN EXTRA
     'login.pass_lbl':'Password','login.name_lbl':'Full name',
     'login.phone_lbl':'Phone number',
