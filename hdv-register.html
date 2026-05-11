@@ -881,12 +881,23 @@ async function submitRegistration() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Pre-fill form nếu HDV đã có hồ sơ
-document.addEventListener('DOMContentLoaded', () => {
+// Pre-fill form nếu HDV đã có hồ sơ (chỉ khi có trong Supabase — tránh localStorage cũ gây nhầm edit mode)
+document.addEventListener('DOMContentLoaded', async () => {
   const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
   if (!session || session.type !== 'guide') return;
-  const profiles = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
-  const p = profiles.find(pr => pr.email === session.email);
+
+  let p = null;
+  if (typeof sb !== 'undefined' && session.id) {
+    try {
+      const { data: sbRow } = await sb.from('hdv_profiles').select('data').eq('user_id', session.id).maybeSingle();
+      if (sbRow && sbRow.data) p = sbRow.data;
+    } catch(e) {}
+  }
+  // Fallback localStorage chỉ khi Supabase không khả dụng
+  if (!p && typeof sb === 'undefined') {
+    const profiles = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+    p = profiles.find(pr => pr.email === session.email) || null;
+  }
   if (!p) return;
 
   isEditing = true;
