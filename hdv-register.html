@@ -884,8 +884,8 @@ async function submitRegistration() {
 // Pre-fill form nếu HDV đã có hồ sơ (chỉ khi có trong Supabase — tránh localStorage cũ gây nhầm edit mode)
 document.addEventListener('DOMContentLoaded', async () => {
   const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
-  if (!session) { window.location.href = 'register.html'; return; }
-  if (session.type !== 'guide') { window.location.href = 'register.html'; return; }
+  if (!session) { window.location.href = 'login.html'; return; }
+  if (session.type !== 'guide') { window.location.href = 'login.html'; return; }
 
   let p = null;
   if (typeof sb !== 'undefined' && session.id) {
