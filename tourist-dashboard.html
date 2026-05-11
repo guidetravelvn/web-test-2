@@ -469,8 +469,21 @@ function renderBookings() {
   if (currentFilter === 'pending') list = list.filter(r => r.status === 'pending' || r.status === 'Chờ xác nhận');
   else if (currentFilter !== 'all') list = list.filter(r => r.status === currentFilter);
 
+  // Banner nhắc đánh giá tour đã hoàn thành
+  const myReviews = JSON.parse(localStorage.getItem('gt_my_reviews') || '[]');
+  const unreviewedDone = allBookings.filter(r => r.status === 'done' && !myReviews.some(rv => rv.requestId === r.id));
+  const reviewBanner = unreviewedDone.length ? `
+    <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <i class="fa-solid fa-star" style="color:#F97316;font-size:1.3rem;flex-shrink:0"></i>
+      <div style="flex:1;min-width:160px">
+        <div style="font-weight:700;color:#92400E;font-size:.9rem">Bạn có ${unreviewedDone.length} tour chưa đánh giá</div>
+        <div style="font-size:.78rem;color:#B45309;margin-top:2px">Đánh giá giúp HDV và cộng đồng du lịch phát triển</div>
+      </div>
+      <button class="btn btn-sm" style="background:#F97316;color:white;border:none;flex-shrink:0" onclick="openReview('${unreviewedDone[0].id}','${unreviewedDone[0].guideName}','${unreviewedDone[0].destination}')"><i class="fa-solid fa-star"></i> Đánh giá ngay</button>
+    </div>` : '';
+
   if (!list.length) {
-    el.innerHTML = `<div class="empty-state">
+    el.innerHTML = reviewBanner + `<div class="empty-state">
       <i class="fa-solid fa-suitcase-rolling"></i>
       <p style="font-weight:600;color:var(--dark)">${t('tdash.empty.title')}</p>
       <p style="font-size:.84rem;margin:6px 0 18px">${t('tdash.empty.sub')}</p>
@@ -523,6 +536,7 @@ function renderBookings() {
       </div>
     </div>`;
   }).join('');
+  el.innerHTML = reviewBanner + el.innerHTML;
 }
 
 function renderHistory() {

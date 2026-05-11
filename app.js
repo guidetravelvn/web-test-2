@@ -769,10 +769,27 @@ function initHome() {
 // ===== GUIDES LIST PAGE =====
 let gFilters = { region: '', priceMax: 2000000, rating: '', sort: 'popular', search: '', lang: '' };
 
-function initGuidesPage() {
+async function initGuidesPage() {
   const params = new URLSearchParams(location.search);
   if (params.get('region')) { gFilters.region = params.get('region'); const s = $('filter-region'); if (s) s.value = params.get('region'); }
   renderGuides();
+  // Sync approved HDV từ Supabase để hiện trên thiết bị khác
+  if (typeof sb !== 'undefined') {
+    try {
+      const { data: sbProfiles } = await sb.from('hdv_profiles').select('data, status').eq('status', 'approved');
+      if (sbProfiles && sbProfiles.length) {
+        const local = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+        let changed = false;
+        sbProfiles.forEach(row => {
+          const p = { ...row.data, status: row.status };
+          const i = local.findIndex(x => x.email === p.email);
+          if (i > -1) { local[i] = p; } else { local.push(p); changed = true; }
+          if (i === -1) changed = true;
+        });
+        if (changed) { localStorage.setItem('gt_hdv_profiles', JSON.stringify(local)); renderGuides(); }
+      }
+    } catch(e) {}
+  }
   $('filter-region')?.addEventListener('change', e => { gFilters.region = e.target.value; renderGuides(); });
   $('filter-price')?.addEventListener('input', e => {
     gFilters.priceMax = parseInt(e.target.value);

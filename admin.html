@@ -618,6 +618,14 @@ async function approveHDV(email) {
       const updated = { ...rows[0].data, status: 'approved' };
       await sb.from('hdv_profiles').update({ status: 'approved', data: updated }).filter('data->>email', 'eq', email);
     }
+    // Gửi thông báo realtime cho HDV
+    const notif = {
+      id: 'N_' + Date.now(), type: 'system',
+      title: '🎉 Hồ sơ đã được duyệt!',
+      body: 'Chúc mừng! Hồ sơ HDV của bạn đã được GuideTravel phê duyệt. Hồ sơ đã hiển thị công khai và bạn có thể nhận yêu cầu tour ngay.',
+      targetType: 'guide', time: new Date().toISOString(), read: false, actionUrl: null
+    };
+    await SB.saveNotif(notif);
   }
   renderNewHDV();
   alert('✅ Đã duyệt — hồ sơ HDV sẽ hiển thị trên trang tìm HDV.');
