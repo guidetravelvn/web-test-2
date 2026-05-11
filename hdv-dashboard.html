@@ -530,16 +530,18 @@ async function initDash() {
       let approved = lpr && lpr.status === 'approved';
 
       // Check Supabase only if not approved locally
+      let sbPending = false;
       if (!approved && typeof sb !== 'undefined' && session.id) {
         try {
           const { data: sbRow } = await sb.from('hdv_profiles').select('status').eq('user_id', session.id).maybeSingle();
           if (sbRow && sbRow.status === 'approved') approved = true;
+          if (sbRow && sbRow.status === 'pending_review') sbPending = true;
         } catch(e) {}
       }
 
       if (!approved) {
         // Check if profile exists at all (pending_review = show waiting screen)
-        const isPending = lpr && lpr.status === 'pending_review';
+        const isPending = (lpr && lpr.status === 'pending_review') || sbPending;
         document.body.innerHTML = `
           <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#F1F5F9;font-family:'Segoe UI',sans-serif">
             <div style="background:white;border-radius:16px;padding:48px 40px;text-align:center;max-width:420px;box-shadow:0 4px 24px rgba(0,0,0,.1)">
