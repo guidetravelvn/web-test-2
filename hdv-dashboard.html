@@ -187,12 +187,12 @@
         </div>
       </div>
       <nav class="dash-nav">
-        <a href="#requests" class="active" onclick="showSection('requests',this)"><i class="fa-solid fa-inbox"></i> Yêu cầu từ khách</a>
-        <a href="#earnings" onclick="showSection('earnings',this)"><i class="fa-solid fa-chart-line"></i> Thu nhập</a>
-        <a href="#profile" onclick="showSection('profile',this)"><i class="fa-solid fa-user"></i> Hồ sơ của tôi</a>
+        <a href="javascript:;" class="active" onclick="return showSection('requests',this)"><i class="fa-solid fa-inbox"></i> Yêu cầu từ khách</a>
+        <a href="javascript:;" onclick="return showSection('earnings',this)"><i class="fa-solid fa-chart-line"></i> Thu nhập</a>
+        <a href="javascript:;" onclick="return showSection('profile',this)"><i class="fa-solid fa-user"></i> Hồ sơ của tôi</a>
         <a href="guide-profile.html" id="d-profile-link"><i class="fa-solid fa-eye"></i> Xem hồ sơ công khai</a>
-        <a href="#calendar" onclick="showSection('calendar',this)"><i class="fa-solid fa-calendar-days"></i> Lịch hẹn tour</a>
-        <a href="#messages" onclick="return showSection('messages',this)" id="nav-messages"><i class="fa-solid fa-comment-dots"></i> Tin nhắn <span id="msg-badge-nav" style="background:#EF4444;color:white;font-size:.65rem;font-weight:800;min-width:16px;height:16px;border-radius:99px;display:none;align-items:center;justify-content:center;padding:0 4px;margin-left:auto"></span></a>
+        <a href="javascript:;" onclick="return showSection('calendar',this)"><i class="fa-solid fa-calendar-days"></i> Lịch hẹn tour</a>
+        <a href="javascript:;" onclick="return showSection('messages',this)" id="nav-messages"><i class="fa-solid fa-comment-dots"></i> Tin nhắn <span id="msg-badge-nav" style="background:#EF4444;color:white;font-size:.65rem;font-weight:800;min-width:16px;height:16px;border-radius:99px;display:none;align-items:center;justify-content:center;padding:0 4px;margin-left:auto"></span></a>
         <a href="chinh-sach.html"><i class="fa-solid fa-file-contract"></i> Chính sách hoàn tiền</a>
       </nav>
     </div>
@@ -364,18 +364,20 @@ function logout() {
 }
 
 function showSection(name, el, mobKey) {
-  ['requests','earnings','profile','messages','calendar'].forEach(s => {
-    document.getElementById('sec-' + s).style.display = s === name ? 'block' : 'none';
-  });
-  if (name === 'calendar') renderCalendar();
-  // Update mobile bottom nav active state
-  ['requests','earnings','messages','calendar','profile'].forEach(s => {
-    const btn = document.getElementById('mobnav-' + s);
-    if (btn) btn.classList.toggle('active', s === (mobKey || name));
-  });
-  document.querySelectorAll('.dash-nav a').forEach(a => a.classList.remove('active'));
-  if (el) el.classList.add('active');
-  if (name === 'messages') renderChatList();
+  try {
+    ['requests','earnings','profile','messages','calendar'].forEach(s => {
+      const sec = document.getElementById('sec-' + s);
+      if (sec) sec.style.display = s === name ? 'block' : 'none';
+    });
+    if (name === 'calendar') renderCalendar();
+    ['requests','earnings','messages','calendar','profile'].forEach(s => {
+      const btn = document.getElementById('mobnav-' + s);
+      if (btn) btn.classList.toggle('active', s === (mobKey || name));
+    });
+    document.querySelectorAll('.dash-nav a').forEach(a => a.classList.remove('active'));
+    if (el) el.classList.add('active');
+    if (name === 'messages') renderChatList();
+  } catch(e) { console.error('showSection error:', e); }
   return false;
 }
 
@@ -392,96 +394,6 @@ function filterReqs(f, el) {
   document.querySelectorAll('.req-tab').forEach(t => t.classList.remove('active'));
   if (el) el.classList.add('active');
   renderReqs();
-}
-
-let calYear = new Date().getFullYear();
-let calMonth = new Date().getMonth();
-
-function renderCalendar() {
-  const wrap = document.getElementById('calendar-wrap');
-  const detail = document.getElementById('calendar-day-detail');
-  const today = new Date();
-
-  // Build set of dates with accepted bookings: 'YYYY-MM-DD'
-  const bookedDates = {};
-  allReqs.forEach(r => {
-    if (!r.date) return;
-    const dateStr = r.date.length === 10 ? r.date : r.date.slice(0, 10);
-    if (!bookedDates[dateStr]) bookedDates[dateStr] = [];
-    bookedDates[dateStr].push(r);
-  });
-
-  const monthNames = ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6',
-    'Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
-  const dowLabels = ['CN','T2','T3','T4','T5','T6','T7'];
-
-  const firstDay = new Date(calYear, calMonth, 1).getDay();
-  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
-  const daysInPrev = new Date(calYear, calMonth, 0).getDate();
-
-  let cells = '';
-  // Prev month padding
-  for (let i = firstDay - 1; i >= 0; i--) {
-    cells += `<div class="cal-day other-month">${daysInPrev - i}</div>`;
-  }
-  // Current month
-  for (let d = 1; d <= daysInMonth; d++) {
-    const mm = String(calMonth + 1).padStart(2, '0');
-    const dd = String(d).padStart(2, '0');
-    const dateStr = `${calYear}-${mm}-${dd}`;
-    const isToday = d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear();
-    const hasBooking = !!bookedDates[dateStr];
-    let cls = 'cal-day';
-    if (isToday) cls += ' today';
-    if (hasBooking) cls += ' has-booking';
-    const dot = hasBooking && !isToday ? '<span class="cal-dot"></span>' : '';
-    cells += `<div class="${cls}" onclick="showCalDay('${dateStr}')">${d}${dot}</div>`;
-  }
-  // Next month padding
-  const totalCells = firstDay + daysInMonth;
-  const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
-  for (let d = 1; d <= remaining; d++) {
-    cells += `<div class="cal-day other-month">${d}</div>`;
-  }
-
-  wrap.innerHTML = `
-    <div class="cal-header">
-      <button class="btn btn-sm btn-outline" onclick="changeCalMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
-      <strong>${monthNames[calMonth]} ${calYear}</strong>
-      <button class="btn btn-sm btn-outline" onclick="changeCalMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
-    </div>
-    <div class="cal-grid">
-      ${dowLabels.map(d => `<div class="cal-dow">${d}</div>`).join('')}
-      ${cells}
-    </div>`;
-  detail.innerHTML = '';
-}
-
-function changeCalMonth(dir) {
-  calMonth += dir;
-  if (calMonth > 11) { calMonth = 0; calYear++; }
-  if (calMonth < 0) { calMonth = 11; calYear--; }
-  renderCalendar();
-}
-
-function showCalDay(dateStr) {
-  const detail = document.getElementById('calendar-day-detail');
-  const reqs = allReqs.filter(r => r.date && r.date.slice(0, 10) === dateStr);
-  if (!reqs.length) { detail.innerHTML = ''; return; }
-  const statusLabel = { pending:'Chờ xử lý', accepted:'Đã chấp nhận', declined:'Đã từ chối', done:'Hoàn thành' };
-  const statusCls = { pending:'st-pending', accepted:'st-accepted', declined:'st-declined', done:'st-done' };
-  detail.innerHTML = `
-    <div style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px">
-      <div style="font-weight:700;font-size:.9rem;margin-bottom:12px"><i class="fa-regular fa-calendar-check" style="color:#16A34A;margin-right:6px"></i>${dateStr} — ${reqs.length} tour</div>
-      ${reqs.map(r => `
-        <div style="border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:12px">
-          <div>
-            <div style="font-weight:600;font-size:.87rem">${r.name || 'Ẩn danh'} — ${r.destination || ''}</div>
-            <div style="font-size:.78rem;color:var(--gray-2);margin-top:2px">${r.days || 1} ngày · ${r.people || 1} người</div>
-          </div>
-          <span class="req-status ${statusCls[r.status] || 'st-pending'}">${statusLabel[r.status] || r.status}</span>
-        </div>`).join('')}
-    </div>`;
 }
 
 function renderReqs() {
@@ -629,15 +541,16 @@ async function initDash() {
   // Find guide data: GUIDES[] → Supabase → localStorage
   let guide = GUIDES.find(g => g.email === session.email) || null;
   if (!guide && typeof sb !== 'undefined' && session.id) {
-    const { data: sbRow } = await sb.from('hdv_profiles').select('data, status').eq('user_id', session.id).maybeSingle();
-    if (sbRow) {
-      guide = sbRow.data;
-      // Sync to localStorage for offline/other features
-      const lp = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
-      const ei = lp.findIndex(p => p.email === guide.email);
-      if (ei > -1) lp[ei] = guide; else lp.push(guide);
-      localStorage.setItem('gt_hdv_profiles', JSON.stringify(lp));
-    }
+    try {
+      const { data: sbRow } = await sb.from('hdv_profiles').select('data, status').eq('user_id', session.id).maybeSingle();
+      if (sbRow) {
+        guide = sbRow.data;
+        const lp = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+        const ei = lp.findIndex(p => p.email === guide.email);
+        if (ei > -1) lp[ei] = guide; else lp.push(guide);
+        localStorage.setItem('gt_hdv_profiles', JSON.stringify(lp));
+      }
+    } catch(e) {}
   }
   if (!guide) {
     const lp = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
@@ -1106,7 +1019,7 @@ function submitCompletion() {
   toast('Đã xác nhận tour hoàn thành!', 'ok');
   allReqs = DB.requests();
   renderReqs();
-  renderDashStats();
+  updateStats();
 }
 
 function viewCompletionPhoto(reqId) {
