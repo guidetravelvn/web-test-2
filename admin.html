@@ -1065,6 +1065,15 @@ async function initAdmin() {
       sbReports.forEach(r => { if (!idSet.has(r.id)) local.unshift(r); else { const i = local.findIndex(x => x.id === r.id); if (i > -1) local[i] = r; } });
       localStorage.setItem('gt_reports', JSON.stringify(local));
     }
+    try {
+      const { data: allRevs } = await sb.from('reviews').select('data');
+      if (allRevs && allRevs.length) {
+        const local = JSON.parse(localStorage.getItem('gt_my_reviews') || '[]');
+        const idSet = new Set(local.map(r => r.id));
+        allRevs.forEach(row => { if (row.data && !idSet.has(row.data.id)) local.unshift(row.data); });
+        localStorage.setItem('gt_my_reviews', JSON.stringify(local));
+      }
+    } catch(e) {}
   }
   renderDashboard();
   renderNewHDV();
