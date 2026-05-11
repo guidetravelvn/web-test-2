@@ -460,7 +460,10 @@ const STATUS_CLS = {
 };
 
 function getGuide(id) {
-  return GUIDES.find(g => g.id === parseInt(id)) || null;
+  const fromGuides = GUIDES.find(g => g.id === parseInt(id));
+  if (fromGuides) return fromGuides;
+  const profiles = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+  return profiles.find(p => p.id == id && p.status === 'approved') || null;
 }
 
 function renderBookings() {
@@ -537,6 +540,11 @@ function renderBookings() {
     </div>`;
   }).join('');
   el.innerHTML = reviewBanner + el.innerHTML;
+  if (unreviewedDone.length && !sessionStorage.getItem('review_prompted')) {
+    sessionStorage.setItem('review_prompted', '1');
+    const r = unreviewedDone[0];
+    setTimeout(() => openReview(r.id, r.guideName, r.destination), 400);
+  }
 }
 
 function renderHistory() {
