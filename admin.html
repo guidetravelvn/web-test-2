@@ -529,10 +529,13 @@ function renderReports() {
   </tr>`).join('');
 }
 
-function updateReport(id, status) {
+async function updateReport(id, status) {
   const reports = JSON.parse(localStorage.getItem('gt_reports') || '[]');
   const idx = reports.findIndex(r => r.id === id);
   if (idx > -1) { reports[idx].status = status; localStorage.setItem('gt_reports', JSON.stringify(reports)); }
+  if (typeof sb !== 'undefined') {
+    try { await sb.from('reports').update({ status }).eq('id', id); } catch(e) {}
+  }
   renderReports();
   toast(status==='resolved'?'Đã đánh dấu xử lý.':status==='dismissed'?'Đã bỏ qua báo cáo.':'Đã hoàn tác.', 'ok');
 }
@@ -1054,6 +1057,13 @@ async function initAdmin() {
       const merged = local.map(r => sbMap[r.id] ? sbMap[r.id] : r);
       sbReqs.forEach(r => { if (!merged.find(m => m.id === r.id)) merged.unshift(r); });
       localStorage.setItem('gt_requests', JSON.stringify(merged));
+    }
+    const sbReports = await SB.getReports();
+    if (sbReports && sbReports.length) {
+      const local = JSON.parse(localStorage.getItem('gt_reports') || '[]');
+      const idSet = new Set(local.map(r => r.id));
+      sbReports.forEach(r => { if (!idSet.has(r.id)) local.unshift(r); else { const i = local.findIndex(x => x.id === r.id); if (i > -1) local[i] = r; } });
+      localStorage.setItem('gt_reports', JSON.stringify(local));
     }
   }
   renderDashboard();
