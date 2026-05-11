@@ -505,6 +505,9 @@ const SB = {
   async saveNotif(notif) { if (typeof sb==='undefined') return; try { await sb.from('notifications').upsert({id:notif.id,target_type:notif.targetType,read:notif.read,time:notif.time,data:notif}); } catch(e){} },
   async getNotifsByType(type) { if (typeof sb==='undefined') return null; try { const{data}=await sb.from('notifications').select('data').in('target_type',[type,'all']).order('time',{ascending:false}); return data?data.map(r=>r.data):[]; } catch(e){return null;} },
   async markNotifsRead(ids) { if (typeof sb==='undefined') return; try { await sb.from('notifications').update({read:true}).in('id',ids); } catch(e){} },
+  // Reports
+  async saveReport(r) { if (typeof sb==='undefined') return; try { await sb.from('reports').upsert({id:r.id,reporter_email:r.reporterEmail||'',guide_id:String(r.guideId||''),type:r.type||'',description:r.description||'',status:r.status||'pending',data:r}); } catch(e){} },
+  async getReports() { if (typeof sb==='undefined') return null; try { const{data}=await sb.from('reports').select('data'); return data?data.map(r=>r.data):[]; } catch(e){return null;} },
 };
 
 // ===== AUTH =====

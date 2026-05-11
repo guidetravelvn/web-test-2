@@ -316,6 +316,7 @@ function submitReport() {
   const reports = JSON.parse(localStorage.getItem('gt_reports') || '[]');
   reports.unshift(report);
   localStorage.setItem('gt_reports', JSON.stringify(reports));
+  SB.saveReport(report);
   closeReport();
   toast(t('report.success'), 'ok');
 }
