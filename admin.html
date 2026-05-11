@@ -359,6 +359,20 @@ function showTab(name, el) {
 
 function getAllRequests() { return JSON.parse(localStorage.getItem('gt_requests') || '[]'); }
 
+// Merge hardcoded GUIDES + approved self-registered guides
+function getAllGuides() {
+  const approved = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]')
+    .filter(p => p.status === 'approved' && !GUIDES.find(g => g.email === p.email))
+    .map(p => ({
+      id: p.id, name: p.name, email: p.email, avatar: p.avatar || '',
+      location: p.location || '—', regions: [p.location || '—'],
+      commission: p.commission || 15, pricePerDay: p.pricePerDay || 0,
+      rating: p.rating || 0, reviews: p.reviews || 0, trips: p.trips || 0,
+      verified: false, selfRegistered: true
+    }));
+  return [...GUIDES, ...approved];
+}
+
 // ===== DASHBOARD =====
 function renderDashboard() {
   const reqs = getAllRequests();
@@ -627,7 +641,7 @@ async function rejectHDV(email) {
 function renderGuideTable() {
   const reqs = getAllRequests();
   const today = new Date().toISOString().slice(0, 10);
-  document.getElementById('guides-tbody').innerHTML = GUIDES.map(g => {
+  document.getElementById('guides-tbody').innerHTML = getAllGuides().map(g => {
     const gReqs   = reqs.filter(r => r.guideId == g.id);
     const pending  = gReqs.filter(r => r.status === 'pending').length;
     const active   = gReqs.filter(r => r.status === 'accepted').length;
@@ -635,11 +649,11 @@ function renderGuideTable() {
     return `<tr>
       <td><div style="display:flex;align-items:center;gap:10px">
         <img src="${g.avatar}" style="width:36px;height:36px;border-radius:50%;object-fit:cover">
-        <div><div style="font-weight:600">${g.name}</div><div style="font-size:.75rem;color:#94A3B8">${g.location}</div></div>
+        <div><div style="font-weight:600">${g.name}${g.selfRegistered?'<span style="margin-left:5px;font-size:.68rem;background:#EFF6FF;color:#0EA5E9;border-radius:99px;padding:1px 7px;font-weight:700">Tự ĐK</span>':''}</div><div style="font-size:.75rem;color:#94A3B8">${g.location}</div></div>
       </div></td>
-      <td style="font-size:.82rem">${g.regions.join(', ')}</td>
-      <td><span style="color:#F59E0B;font-weight:700">★ ${g.rating}</span> <span style="color:#94A3B8;font-size:.78rem">(${g.reviews})</span></td>
-      <td style="text-align:center">${g.trips}+</td>
+      <td style="font-size:.82rem">${(g.regions||[g.location||'—']).join(', ')}</td>
+      <td><span style="color:#F59E0B;font-weight:700">★ ${g.rating||0}</span> <span style="color:#94A3B8;font-size:.78rem">(${g.reviews||0})</span></td>
+      <td style="text-align:center">${g.trips||0}+</td>
       <td style="text-align:center">${active > 0 ? `<span class="badge b-pending">${active} tour</span>` : '<span style="color:#94A3B8;font-size:.8rem">—</span>'}</td>
       <td><span class="badge ${isBusy ? 'b-busy' : 'b-free'}">${isBusy ? 'Đang bận' : 'Rảnh'}</span></td>
       <td><span style="font-weight:700;color:#7C3AED">${g.commission}%</span></td>
@@ -665,20 +679,19 @@ function renderRevenue() {
 
   // Stat cards
   const totalRev   = reqs.reduce((s,r) => s + (r.totalAmount||0), 0);
+  const allGuides = getAllGuides();
+  const findGuide = id => allGuides.find(x => x.id == id);
   const totalComm  = reqs.reduce((s,r) => {
-    const g = GUIDES.find(x => x.id == r.guideId);
-    const comm = g ? g.commission : 15;
-    return s + Math.round((r.totalAmount||0) * comm / 100);
+    const g = findGuide(r.guideId);
+    return s + Math.round((r.totalAmount||0) * (g ? g.commission : 15) / 100);
   }, 0);
   const monthComm  = reqs.filter(r => (r.createdAt||'').slice(0,7) === thisMonth).reduce((s,r) => {
-    const g = GUIDES.find(x => x.id == r.guideId);
-    const comm = g ? g.commission : 15;
-    return s + Math.round((r.totalAmount||0) * comm / 100);
+    const g = findGuide(r.guideId);
+    return s + Math.round((r.totalAmount||0) * (g ? g.commission : 15) / 100);
   }, 0);
   const todayComm  = reqs.filter(r => (r.createdAt||'').slice(0,10) === todayStr).reduce((s,r) => {
-    const g = GUIDES.find(x => x.id == r.guideId);
-    const comm = g ? g.commission : 15;
-    return s + Math.round((r.totalAmount||0) * comm / 100);
+    const g = findGuide(r.guideId);
+    return s + Math.round((r.totalAmount||0) * (g ? g.commission : 15) / 100);
   }, 0);
   document.getElementById('rev-stat-cards').innerHTML = `
     <div class="dcard" style="--c:#7C3AED"><div class="dcard-val" style="font-size:1.3rem">${fmtV(totalRev)}</div><div class="dcard-lbl"><i class="fa-solid fa-sack-dollar" style="color:#7C3AED"></i> Tổng doanh thu</div></div>
@@ -723,12 +736,12 @@ function renderRevenue() {
       </div>`).join('');
   }
 
-  const maxRev = Math.max(...GUIDES.map(g => allReqs.filter(r => r.guideId == g.id && (r.status==='accepted'||r.status==='done')).reduce((s,r) => s+(r.totalAmount||0), 0)), 1);
+  const maxRev = Math.max(...allGuides.map(g => allReqs.filter(r => r.guideId == g.id && (r.status==='accepted'||r.status==='done')).reduce((s,r) => s+(r.totalAmount||0), 0)), 1);
   document.getElementById('revenue-content').innerHTML = `
     <div style="display:grid;grid-template-columns:1fr auto auto;gap:0;background:#F8FAFC;border-radius:8px;padding:8px 16px;margin-bottom:10px;font-size:.74rem;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.04em">
       <span>HDV</span><span style="text-align:right;padding-right:24px">Doanh thu</span><span style="text-align:right;min-width:110px">Hoa hồng (${''}<i class="fa-solid fa-hand-holding-dollar" style="color:#16A34A"></i>)</span>
     </div>` +
-  GUIDES.map(g => {
+  allGuides.map(g => {
     const gReqs = allReqs.filter(r => r.guideId == g.id && (r.status==='accepted'||r.status==='done'));
     const rev  = gReqs.reduce((s,r) => s+(r.totalAmount||0), 0);
     const comm = gReqs.reduce((s,r) => s+Math.round((r.totalAmount||0)*g.commission/100), 0);
@@ -737,7 +750,7 @@ function renderRevenue() {
       <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
         <img src="${g.avatar}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">
         <div>
-          <div style="font-size:.85rem;font-weight:600">${g.name} <span style="color:#94A3B8;font-size:.75rem">${g.commission}% • ${cnt} tour</span></div>
+          <div style="font-size:.85rem;font-weight:600">${g.name}${g.selfRegistered?'<span style="margin-left:5px;font-size:.68rem;background:#EFF6FF;color:#0EA5E9;border-radius:99px;padding:1px 6px">Tự ĐK</span>':''} <span style="color:#94A3B8;font-size:.75rem">${g.commission}% • ${cnt} tour</span></div>
           <div style="background:#E2E8F0;border-radius:99px;height:6px;margin-top:5px;overflow:hidden;width:160px"><div style="height:100%;border-radius:99px;background:linear-gradient(90deg,#0EA5E9,#7C3AED);width:${Math.round(rev/maxRev*100)}%"></div></div>
         </div>
       </div>

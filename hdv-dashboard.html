@@ -347,8 +347,7 @@ function updateNavBadge() {
   if (!btn) return;
   const old = btn.querySelector('.nav-badge');
   if (old) old.remove();
-  const reqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
-  const n = reqs.filter(r => r.status === 'pending').length;
+  const n = allReqs.filter(r => r.status === 'pending').length;
   if (n > 0) {
     const badge = document.createElement('span');
     badge.className = 'nav-badge';
@@ -587,35 +586,43 @@ async function initDash() {
   document.getElementById('d-profile-link').href = profileLink;
   document.getElementById('pub-profile-link').href = profileLink;
 
-  // Load requests - show all requests (demo mode)
+  // Demo accounts see all requests; real guides only see their own
+  const isDemoGuide = [
+    'khoa@guidetravel.vn','lan@guidetravel.vn','minh@guidetravel.vn',
+    'thu@guidetravel.vn','hung@guidetravel.vn','hoa@guidetravel.vn'
+  ].includes(session.email);
+
   const storedReqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
 
-  // Add some demo requests if empty
-  if (!storedReqs.length) {
+  if (isDemoGuide && !storedReqs.length) {
     const demo = [
-      { id:'GT00000001', name:'Lê Thị Hương', phone:'0901234567', email:'huong@gmail.com', destination:'Nha Trang', date:'2024-06-15', days:3, people:2, budget:'5-10 triệu', interests:['Biển đảo','Ẩm thực'], notes:'Gia đình 2 người lớn, thích chỗ ít du khách.', status:'pending', createdAt: new Date().toISOString() },
-      { id:'GT00000002', name:'Trần Quốc Bảo', phone:'0912345678', email:'bao@gmail.com', destination:'Nha Trang', date:'2024-06-20', days:2, people:4, budget:'10-20 triệu', interests:['Lặn biển'], notes:'Nhóm bạn 4 người, muốn lặn ngắm san hô.', status:'pending', createdAt: new Date().toISOString() },
-      { id:'GT00000003', name:'Phạm Thúy Linh', phone:'0923456789', email:'linh@gmail.com', destination:'Đà Lạt', date:'2024-05-28', days:4, people:2, budget:'< 5 triệu', interests:['Chụp ảnh','Cà phê'], notes:'', status:'accepted', createdAt: new Date().toISOString() },
+      { id:'GT00000001', guideId: guide.id, name:'Lê Thị Hương', phone:'0901234567', email:'huong@gmail.com', destination:'Nha Trang', date:'2024-06-15', days:3, people:2, budget:'5-10 triệu', interests:['Biển đảo','Ẩm thực'], notes:'Gia đình 2 người lớn, thích chỗ ít du khách.', status:'pending', createdAt: new Date().toISOString() },
+      { id:'GT00000002', guideId: guide.id, name:'Trần Quốc Bảo', phone:'0912345678', email:'bao@gmail.com', destination:'Nha Trang', date:'2024-06-20', days:2, people:4, budget:'10-20 triệu', interests:['Lặn biển'], notes:'Nhóm bạn 4 người, muốn lặn ngắm san hô.', status:'pending', createdAt: new Date().toISOString() },
+      { id:'GT00000003', guideId: guide.id, name:'Phạm Thúy Linh', phone:'0923456789', email:'linh@gmail.com', destination:'Đà Lạt', date:'2024-05-28', days:4, people:2, budget:'< 5 triệu', interests:['Chụp ảnh','Cà phê'], notes:'', status:'accepted', createdAt: new Date().toISOString() },
     ];
     localStorage.setItem('gt_requests', JSON.stringify(demo));
     allReqs = demo;
   } else {
-    allReqs = storedReqs;
+    // Filter: only show requests belonging to this guide
+    allReqs = storedReqs.filter(r => isDemoGuide || r.guideId == guide.id);
   }
 
   renderReqs();
   updateStats();
   updateNavBadge();
 
-  // Sync from Supabase and re-render if new data
+  // Sync from Supabase — save all to localStorage, display only this guide's
   if (typeof sb !== 'undefined') {
     const sbReqs = await SB.getAll();
     if (sbReqs && sbReqs.length) {
+      // Merge ALL into localStorage so other guides' data isn't lost
+      const allStored = JSON.parse(localStorage.getItem('gt_requests') || '[]');
       const sbMap = Object.fromEntries(sbReqs.map(r => [r.id, r]));
-      const merged = allReqs.map(r => sbMap[r.id] ? sbMap[r.id] : r);
-      sbReqs.forEach(r => { if (!merged.find(m => m.id === r.id)) merged.unshift(r); });
-      allReqs = merged;
-      localStorage.setItem('gt_requests', JSON.stringify(merged));
+      const mergedAll = allStored.map(r => sbMap[r.id] ? sbMap[r.id] : r);
+      sbReqs.forEach(r => { if (!mergedAll.find(m => m.id === r.id)) mergedAll.unshift(r); });
+      localStorage.setItem('gt_requests', JSON.stringify(mergedAll));
+      // Display only this guide's requests
+      allReqs = mergedAll.filter(r => isDemoGuide || r.guideId == guide.id);
       renderReqs();
       updateStats();
       updateNavBadge();
@@ -666,9 +673,13 @@ async function initDash() {
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'requests' }, payload => {
         const newReq = payload.new?.data;
         if (!newReq) return;
+        // Only show if it belongs to this guide
+        if (!isDemoGuide && newReq.guideId != guide.id) return;
         if (allReqs.find(r => r.id === newReq.id)) return;
         allReqs.unshift(newReq);
-        localStorage.setItem('gt_requests', JSON.stringify(allReqs));
+        // Save to localStorage without overwriting other guides' data
+        const all = JSON.parse(localStorage.getItem('gt_requests') || '[]');
+        if (!all.find(r => r.id === newReq.id)) { all.unshift(newReq); localStorage.setItem('gt_requests', JSON.stringify(all)); }
         renderReqs();
         updateStats();
         updateNavBadge();
