@@ -814,7 +814,7 @@ async function submitRegistration() {
     license: document.getElementById('hdv-license').value,
     bio: document.getElementById('hdv-bio').value,
     bioEn: existingProfile?.bioEn || '',
-    pricePerDay: parseInt(price),
+    pricePerDay: parseInt(price) || 0,
     commission: selectedCommission,
     languages: [...selectedLangs],
     specialties: [...selectedSpecs],

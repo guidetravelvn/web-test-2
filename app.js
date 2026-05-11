@@ -818,6 +818,7 @@ function getFilteredGuides() {
       ...p,
       coverImg: p.coverImg || 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=800&q=80',
       reviews: p.reviews || 0, trips: p.trips || 0, rating: p.rating || 0,
+      responseTime: p.responseTime || '',
       specialties: p.specialties || [], languages: p.languages || [],
       regions: p.regions || [p.region].filter(Boolean), reviewList: [], itineraries: [],
     }));
@@ -877,6 +878,7 @@ function renderGuides() {
 
 // ===== GUIDE PROFILE PAGE =====
 function fmtResponseTime(str) {
+  if (!str) return '';
   if ((localStorage.getItem('gt_lang') || 'vi') === 'en') {
     return str.replace('giờ', 'h').replace('phút', 'min').replace('ngày', 'day');
   }
@@ -893,6 +895,9 @@ function initProfile() {
     g = localProfiles.find(p => p.id === idRaw);
   }
   if (!g) { location.href = 'guides.html'; return; }
+  // Ensure safe defaults for self-registered guides
+  if (!g.responseTime) g.responseTime = '';
+  if (!g.pricePerDay) g.pricePerDay = 0;
   renderProfile(g);
   initBookingForm(g);
 }
