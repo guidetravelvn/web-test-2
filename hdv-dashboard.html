@@ -574,18 +574,20 @@ async function initDash() {
     return;
   }
 
-  // Kiểm tra trạng thái tài khoản bị admin hạn chế
+  // Kiểm tra trạng thái tài khoản — ưu tiên accountStatus trong profile (sync Supabase)
+  // Fallback gt_guide_status cho HDV demo hardcode
   const guideStatusMap = JSON.parse(localStorage.getItem('gt_guide_status') || '{}');
-  const acStatusEntry = guideStatusMap[String(guide.id)];
-  const acStatus = acStatusEntry ? acStatusEntry.status : 'active';
+  const localEntry = guideStatusMap[String(guide.id)];
+  const acStatus = guide.accountStatus || (localEntry ? localEntry.status : 'active');
+  const acReason = guide.accountStatusReason || (localEntry ? localEntry.reason : '');
   const banner = document.getElementById('account-status-banner');
-  if (banner && acStatus !== 'active') {
+  if (banner && acStatus && acStatus !== 'active') {
     const isSuspended = acStatus === 'suspended';
     banner.style.display = 'block';
     banner.innerHTML = `<div style="background:${isSuspended ? '#FFF7ED' : '#FEF2F2'};border-bottom:2px solid ${isSuspended ? '#FED7AA' : '#FECACA'};padding:14px 20px;text-align:center">
       <i class="fa-solid fa-${isSuspended ? 'pause-circle' : 'ban'}" style="color:${isSuspended ? '#F97316' : '#DC2626'};margin-right:8px"></i>
       <strong style="color:${isSuspended ? '#92400E' : '#991B1B'}">${isSuspended ? 'Tài khoản đang bị tạm dừng' : 'Tài khoản đã bị khoá'}</strong>
-      ${acStatusEntry.reason ? ` — Lý do: ${acStatusEntry.reason}` : ''}
+      ${acReason ? ` — Lý do: ${acReason}` : ''}
       <span style="font-size:.83rem;color:#64748B;margin-left:8px">Vui lòng liên hệ hỗ trợ để biết thêm thông tin.</span>
     </div>`;
   }

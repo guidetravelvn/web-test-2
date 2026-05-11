@@ -663,17 +663,35 @@ function getGuideStatus(id) {
   return entry ? entry.status : 'active';
 }
 
-function setGuideStatus(id, status) {
+async function setGuideStatus(id, status) {
   let reason = '';
   if (status === 'suspended') reason = window.prompt('Lý do tạm dừng tài khoản:', '');
   if (status === 'locked')    reason = window.prompt('Lý do khoá tài khoản:', '');
   if (status !== 'active' && reason === null) return;
   reason = reason || '';
+
+  // Lưu gt_guide_status (dùng cho tất cả HDV kể cả demo)
   const s = JSON.parse(localStorage.getItem('gt_guide_status') || '{}');
   const key = String(id);
   if (status === 'active') delete s[key];
   else s[key] = { status, reason, updatedAt: new Date().toISOString() };
   localStorage.setItem('gt_guide_status', JSON.stringify(s));
+
+  // Với HDV tự đăng ký: cập nhật gt_hdv_profiles + sync Supabase
+  const profiles = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+  const pidx = profiles.findIndex(p => String(p.id) === key);
+  if (pidx > -1) {
+    profiles[pidx].accountStatus = status === 'active' ? null : status;
+    profiles[pidx].accountStatusReason = reason;
+    localStorage.setItem('gt_hdv_profiles', JSON.stringify(profiles));
+    if (typeof sb !== 'undefined') {
+      const p = profiles[pidx];
+      try {
+        await sb.from('hdv_profiles').upsert({ user_id: p.userId, email: p.email, status: p.status, data: p });
+      } catch(e) { console.error('setGuideStatus Supabase:', e); }
+    }
+  }
+
   renderGuideTable();
   renderSuspendedGuides();
   const msgs = { suspended: 'Đã tạm dừng tài khoản HDV.', locked: 'Đã khoá tài khoản HDV.', active: 'Đã kích hoạt lại tài khoản.' };

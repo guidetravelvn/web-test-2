@@ -824,7 +824,9 @@ function getFilteredGuides() {
   const guideStatusMap = JSON.parse(localStorage.getItem('gt_guide_status') || '{}');
   let list = [...GUIDES, ...localProfiles].filter(g => {
     const st = guideStatusMap[String(g.id)];
-    return !st || st.status === 'active';
+    const localOk = !st || st.status === 'active';
+    const profileOk = !g.accountStatus || g.accountStatus === 'active';
+    return localOk && profileOk;
   });
   if (gFilters.search) list = list.filter(g => g.name.toLowerCase().includes(gFilters.search.toLowerCase()));
   if (gFilters.region) list = list.filter(g => g.regions.includes(gFilters.region));
