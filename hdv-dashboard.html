@@ -239,17 +239,21 @@
       <!-- EARNINGS SECTION -->
       <div class="section-card" id="sec-earnings" style="display:none">
         <h3><i class="fa-solid fa-chart-line" style="color:var(--blue)"></i> Thu nhập</h3>
-        <div class="earn-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
-          <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--radius);padding:18px;text-align:center">
-            <div style="font-size:.8rem;color:#16A34A;font-weight:600;margin-bottom:4px">Tháng này</div>
-            <div style="font-size:1.6rem;font-weight:800;color:#15803D" id="earn-month">0đ</div>
+        <div class="earn-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
+          <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--radius);padding:16px;text-align:center">
+            <div style="font-size:.75rem;color:#16A34A;font-weight:600;margin-bottom:4px">Tháng này</div>
+            <div style="font-size:1.4rem;font-weight:800;color:#15803D" id="earn-month">0đ</div>
           </div>
-          <div style="background:#EFF6FF;border:1px solid #BAE6FD;border-radius:var(--radius);padding:18px;text-align:center">
-            <div style="font-size:.8rem;color:var(--blue);font-weight:600;margin-bottom:4px">Tổng cộng</div>
-            <div style="font-size:1.6rem;font-weight:800;color:#0369A1" id="earn-total">0đ</div>
+          <div style="background:#EFF6FF;border:1px solid #BAE6FD;border-radius:var(--radius);padding:16px;text-align:center">
+            <div style="font-size:.75rem;color:var(--blue);font-weight:600;margin-bottom:4px">Đã hoàn thành</div>
+            <div style="font-size:1.4rem;font-weight:800;color:#0369A1" id="earn-done">0đ</div>
+          </div>
+          <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:var(--radius);padding:16px;text-align:center">
+            <div style="font-size:.75rem;color:#F97316;font-weight:600;margin-bottom:4px">Đang xử lý</div>
+            <div style="font-size:1.4rem;font-weight:800;color:#C2410C" id="earn-pending">0đ</div>
           </div>
         </div>
-        <div style="font-size:.85rem;font-weight:600;color:var(--dark);margin-bottom:10px">Chi tiết giao dịch</div>
+        <div style="font-size:.85rem;font-weight:600;color:var(--dark);margin-bottom:10px">Lịch sử giao dịch</div>
         <div id="earn-list"><div class="empty-state"><i class="fa-solid fa-receipt"></i><p>Chưa có giao dịch</p></div></div>
       </div>
 
@@ -709,22 +713,34 @@ async function initDash() {
   // Earnings calc
   const price = guide.pricePerDay || 0;
   const comm = guide.commission || 15;
-  const acceptedReqs = allReqs.filter(r => r.status === 'accepted');
-  const totalEarn = acceptedReqs.reduce((s, r) => s + (price * (1 - comm/100) * parseInt(r.days||1)), 0);
-  document.getElementById('st-earn').textContent = fmt2(Math.round(totalEarn));
-  document.getElementById('earn-total').textContent = fmt2(Math.round(totalEarn));
-  document.getElementById('earn-month').textContent = fmt2(Math.round(totalEarn * 0.4));
+  const thisMonth = new Date().toISOString().slice(0, 7);
+  const earnReqs = allReqs.filter(r => r.status === 'accepted' || r.status === 'done')
+    .slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  const calcEarn = r => Math.round(price * (1 - comm/100) * parseInt(r.days || 1));
+  const earnDone = earnReqs.filter(r => r.status === 'done').reduce((s, r) => s + calcEarn(r), 0);
+  const earnPending = earnReqs.filter(r => r.status === 'accepted').reduce((s, r) => s + calcEarn(r), 0);
+  const earnMonth = earnReqs.filter(r => (r.date || '').slice(0,7) === thisMonth).reduce((s, r) => s + calcEarn(r), 0);
+  const totalEarn = earnDone + earnPending;
+  document.getElementById('st-earn').textContent = fmt2(totalEarn);
+  document.getElementById('earn-month').textContent = fmt2(earnMonth);
+  document.getElementById('earn-done').textContent = fmt2(earnDone);
+  document.getElementById('earn-pending').textContent = fmt2(earnPending);
 
   // Earn list
-  if (acceptedReqs.length) {
-    document.getElementById('earn-list').innerHTML = acceptedReqs.map(r => `
-      <div class="earn-row">
-        <div>
-          <div style="font-weight:600;font-size:.85rem">${r.name} — ${r.destination}</div>
-          <div style="font-size:.75rem;color:var(--gray-2)">${r.date} · ${r.days} ngày · ${r.people} người</div>
+  if (earnReqs.length) {
+    document.getElementById('earn-list').innerHTML = earnReqs.map(r => {
+      const isDone = r.status === 'done';
+      return `<div class="earn-row">
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:.85rem">${r.name || '—'} — ${r.destination || '—'}</div>
+          <div style="font-size:.75rem;color:var(--gray-2)">${r.date || '—'} · ${r.days || 1} ngày · ${r.people || 1} người · hoa hồng ${comm}%</div>
         </div>
-        <div style="font-weight:700;color:#16A34A">+${fmt2(Math.round(price * (1 - comm/100) * parseInt(r.days||1)))}</div>
-      </div>`).join('');
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-weight:700;color:${isDone ? '#16A34A' : '#F97316'}">+${fmt2(calcEarn(r))}</div>
+          <div style="font-size:.72rem;margin-top:2px"><span style="background:${isDone?'#F0FDF4':'#FFF7ED'};color:${isDone?'#16A34A':'#F97316'};padding:2px 8px;border-radius:99px;font-weight:600">${isDone ? 'Đã nhận' : 'Chờ thanh toán'}</span></div>
+        </div>
+      </div>`;
+    }).join('');
   }
 
   // Profile section
