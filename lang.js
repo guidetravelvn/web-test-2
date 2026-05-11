@@ -204,6 +204,13 @@ const TRANS = {
     'login.err.reset_success':'Đặt lại mật khẩu thành công!',
     'login.err.pass_mismatch':'Mật khẩu xác nhận không khớp!',
     'login.err.email_not_found':'Email không tồn tại trong hệ thống!',
+    // CALENDAR
+    'cal.m0':'Tháng 1','cal.m1':'Tháng 2','cal.m2':'Tháng 3','cal.m3':'Tháng 4',
+    'cal.m4':'Tháng 5','cal.m5':'Tháng 6','cal.m6':'Tháng 7','cal.m7':'Tháng 8',
+    'cal.m8':'Tháng 9','cal.m9':'Tháng 10','cal.m10':'Tháng 11','cal.m11':'Tháng 12',
+    'cal.d0':'CN','cal.d1':'T2','cal.d2':'T3','cal.d3':'T4','cal.d4':'T5','cal.d5':'T6','cal.d6':'T7',
+    'cal.no_tour':'Không có tour trong ngày này',
+    'cal.tour_on':'tour ngày','cal.guest':'Khách',
     // UNITS
     'unit.days':'ngày','unit.hours':'giờ','unit.people':'người',
     // SPECIALTIES
@@ -793,6 +800,13 @@ const TRANS = {
     'login.err.reset_success':'Password reset successful!',
     'login.err.pass_mismatch':'Passwords do not match!',
     'login.err.email_not_found':'Email not found in the system!',
+    // CALENDAR
+    'cal.m0':'January','cal.m1':'February','cal.m2':'March','cal.m3':'April',
+    'cal.m4':'May','cal.m5':'June','cal.m6':'July','cal.m7':'August',
+    'cal.m8':'September','cal.m9':'October','cal.m10':'November','cal.m11':'December',
+    'cal.d0':'Sun','cal.d1':'Mon','cal.d2':'Tue','cal.d3':'Wed','cal.d4':'Thu','cal.d5':'Fri','cal.d6':'Sat',
+    'cal.no_tour':'No tours on this day',
+    'cal.tour_on':'tour(s) on','cal.guest':'Guest',
     // UNITS
     'unit.days':'days','unit.hours':'hours','unit.people':'people',
     // SPECIALTIES

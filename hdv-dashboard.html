@@ -757,7 +757,7 @@ async function initDash() {
 }
 
 document.addEventListener('DOMContentLoaded', () => initDash().catch(e => console.error('initDash error:', e)));
-window.addEventListener('langchange', () => { renderReqs(); updateStats(); renderChatList && renderChatList(); });
+window.addEventListener('langchange', () => { renderReqs(); updateStats(); renderChatList && renderChatList(); renderCalendar && renderCalendar(); });
 
 // ===== NOTIFICATIONS =====
 function getNotifs() { return JSON.parse(localStorage.getItem('gt_notifications') || '[]'); }
@@ -947,21 +947,21 @@ function sendMsg() {
 
 // ===== CALENDAR =====
 let calYear, calMonth, calSelectedDate;
-const CAL_MONTHS = ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
-const CAL_DOWS = ['CN','T2','T3','T4','T5','T6','T7'];
 
 function renderCalendar() {
   const wrap = document.getElementById('calendar-wrap');
   if (!wrap) return;
   const now = new Date();
   if (calYear === undefined) { calYear = now.getFullYear(); calMonth = now.getMonth(); }
+  const months = Array.from({length:12}, (_,i) => t(`cal.m${i}`));
+  const dows   = Array.from({length:7},  (_,i) => t(`cal.d${i}`));
   const reqs = DB.requests().filter(r => r.status === 'accepted' || r.status === 'done');
   const byDate = {};
   reqs.forEach(r => { if (r.date) { if (!byDate[r.date]) byDate[r.date] = []; byDate[r.date].push(r); } });
   const todayStr = now.toISOString().slice(0,10);
   const firstDow = new Date(calYear, calMonth, 1).getDay();
   const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
-  let cells = CAL_DOWS.map(d => `<div class="cal-dow">${d}</div>`).join('');
+  let cells = dows.map(d => `<div class="cal-dow">${d}</div>`).join('');
   for (let i = 0; i < firstDow; i++) cells += `<div class="cal-day other-month"></div>`;
   for (let d = 1; d <= daysInMonth; d++) {
     const ds = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
@@ -971,7 +971,7 @@ function renderCalendar() {
   wrap.innerHTML = `
     <div class="cal-header">
       <button onclick="calNav(-1)" class="btn btn-sm btn-outline"><i class="fa-solid fa-chevron-left"></i></button>
-      <strong style="font-size:.95rem;color:var(--dark)">${CAL_MONTHS[calMonth]} ${calYear}</strong>
+      <strong style="font-size:.95rem;color:var(--dark)">${months[calMonth]} ${calYear}</strong>
       <button onclick="calNav(1)" class="btn btn-sm btn-outline"><i class="fa-solid fa-chevron-right"></i></button>
     </div>
     <div class="cal-grid">${cells}</div>`;
@@ -995,21 +995,21 @@ function renderCalDayDetail(bookings) {
   if (!el) return;
   if (!bookings) { el.innerHTML = ''; return; }
   if (!bookings.length) {
-    el.innerHTML = `<div style="font-size:.85rem;color:var(--gray-2);text-align:center;padding:16px;border-top:1px solid var(--border);margin-top:16px">Không có tour trong ngày này</div>`;
+    el.innerHTML = `<div style="font-size:.85rem;color:var(--gray-2);text-align:center;padding:16px;border-top:1px solid var(--border);margin-top:16px">${t('cal.no_tour')}</div>`;
     return;
   }
   el.innerHTML = `<div style="margin-top:16px;border-top:1px solid var(--border);padding-top:16px">
-    <div style="font-size:.85rem;font-weight:700;color:var(--dark);margin-bottom:10px">${bookings.length} tour ngày ${calSelectedDate}</div>
+    <div style="font-size:.85rem;font-weight:700;color:var(--dark);margin-bottom:10px">${bookings.length} ${t('cal.tour_on')} ${calSelectedDate}</div>
     ${bookings.map(r => `<div class="req-card" style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
         <div>
-          <div style="font-weight:700;font-size:.9rem;color:var(--dark)">${r.name || 'Khách'}</div>
-          <div style="font-size:.78rem;color:var(--gray-2);margin-top:2px"><i class="fa-solid fa-location-dot"></i> ${r.destination} &nbsp;·&nbsp; ${r.days||1} ngày &nbsp;·&nbsp; ${r.people||1} người</div>
+          <div style="font-weight:700;font-size:.9rem;color:var(--dark)">${r.name || t('cal.guest')}</div>
+          <div style="font-size:.78rem;color:var(--gray-2);margin-top:2px"><i class="fa-solid fa-location-dot"></i> ${r.destination} &nbsp;·&nbsp; ${r.days||1} ${t('unit.days')} &nbsp;·&nbsp; ${r.people||1} ${t('unit.people')}</div>
           ${r.phone ? `<div style="font-size:.78rem;color:var(--gray-2);margin-top:2px"><i class="fa-solid fa-phone"></i> ${r.phone}</div>` : ''}
         </div>
-        <span class="req-status ${r.status==='done'?'st-done':'st-accepted'}">${r.status==='done'?'Hoàn thành':'Đã xác nhận'}</span>
+        <span class="req-status ${r.status==='done'?'st-done':'st-accepted'}">${r.status==='done'?t('hdash.status.done'):t('hdash.status.accepted')}</span>
       </div>
-      ${r.status==='accepted'?`<div style="margin-top:10px"><button class="btn btn-sm" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="openCompleteModal('${r.id}')"><i class="fa-solid fa-flag-checkered"></i> Đánh dấu hoàn thành</button></div>`:''}
+      ${r.status==='accepted'?`<div style="margin-top:10px"><button class="btn btn-sm" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="openCompleteModal('${r.id}')"><i class="fa-solid fa-flag-checkered"></i> ${t('hdash.req.complete')}</button></div>`:''}
     </div>`).join('')}
   </div>`;
 }
