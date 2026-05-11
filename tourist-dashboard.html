@@ -951,6 +951,7 @@ function openChat(requestId) {
   updateMsgBadge();
 
   const r = DB.requests().find(b => b.id === requestId);
+  if (!r) return;
   const rMsgs = msgs.filter(m => m.requestId === requestId);
   const panel = document.getElementById('chat-panel');
 
@@ -964,8 +965,8 @@ function openChat(requestId) {
     <div class="chat-panel-header" style="display:flex;align-items:center;gap:10px">
       <button onclick="closeChatMobile()" style="display:none;background:none;border:none;color:var(--gray);cursor:pointer;font-size:1rem;flex-shrink:0" id="chat-back-btn"><i class="fa-solid fa-arrow-left"></i></button>
       <div style="flex:1;min-width:0">
-        <div class="chat-panel-name"><i class="fa-solid fa-user-tie"></i> ${r.guideName}</div>
-        <div class="chat-panel-sub"><i class="fa-solid fa-location-dot"></i> ${r.destination} · ${r.date}</div>
+        <div class="chat-panel-name"><i class="fa-solid fa-user-tie"></i> ${r.guideName || '—'}</div>
+        <div class="chat-panel-sub"><i class="fa-solid fa-location-dot"></i> ${r.destination || '—'} · ${r.date || '—'}</div>
       </div>
     </div>
     <div class="chat-msgs" id="chat-msgs-box">

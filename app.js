@@ -832,7 +832,7 @@ function getFilteredGuides() {
     const profileOk = !g.accountStatus || g.accountStatus === 'active';
     return localOk && profileOk;
   });
-  if (gFilters.search) list = list.filter(g => g.name.toLowerCase().includes(gFilters.search.toLowerCase()));
+  if (gFilters.search) list = list.filter(g => (g.name||'').toLowerCase().includes(gFilters.search.toLowerCase()));
   if (gFilters.region) list = list.filter(g => g.regions.includes(gFilters.region));
   if (gFilters.lang) list = list.filter(g => g.languages.includes(gFilters.lang));
   list = list.filter(g => g.pricePerDay <= gFilters.priceMax);
