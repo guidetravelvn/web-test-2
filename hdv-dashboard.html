@@ -565,7 +565,7 @@ async function initDash() {
   document.getElementById('d-comm').textContent = (guide.commission || 15) + '%';
   document.getElementById('d-price').textContent = fmt2(guide.pricePerDay || 0);
   document.getElementById('st-rating2').textContent = guide.rating || '—';
-  const profileLink = guide.id ? 'guide-profile?id=' + guide.id : 'guides.html';
+  const profileLink = guide.id ? 'guide-profile.html?id=' + guide.id : 'guides.html';
   document.getElementById('d-profile-link').href = profileLink;
   document.getElementById('pub-profile-link').href = profileLink;
 

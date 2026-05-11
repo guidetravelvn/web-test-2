@@ -280,7 +280,7 @@ function initPost() {
   // Region guides
   const regionGuides = post.region ? GUIDES.filter(g => g.regions.includes(post.region)).slice(0, 3) : GUIDES.slice(0, 3);
   document.getElementById('region-guides').innerHTML = regionGuides.map(g => `
-    <div class="guide-mini-card" onclick="location.href='guide-profile?id=${g.id}'">
+    <div class="guide-mini-card" onclick="location.href='guide-profile.html?id=${g.id}'">
       <img src="${g.avatar}" alt="${g.name}">
       <div style="flex:1">
         <div class="gmc-name">${g.name}</div>
