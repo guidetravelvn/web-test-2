@@ -114,7 +114,9 @@
     .cal-day { position:relative; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:8px; font-size:.85rem; cursor:pointer; transition:.15s; user-select:none; }
     .cal-day:hover { background:var(--bg); }
     .cal-day.today { background:var(--blue); color:white; font-weight:700; }
-    .cal-day.has-booking { font-weight:700; color:var(--dark); }
+    .cal-day.has-booking { font-weight:700; color:#15803D; background:#DCFCE7; }
+    .cal-day.has-booking:hover { background:#BBF7D0; }
+    .cal-day.has-booking.today { background:var(--blue); color:white; }
     .cal-day.selected:not(.today) { background:var(--blue-light); color:var(--blue); }
     .cal-day.other-month { color:var(--border); pointer-events:none; }
     .cal-dot { width:5px; height:5px; background:var(--orange); border-radius:50%; position:absolute; bottom:3px; }
@@ -390,6 +392,96 @@ function filterReqs(f, el) {
   document.querySelectorAll('.req-tab').forEach(t => t.classList.remove('active'));
   if (el) el.classList.add('active');
   renderReqs();
+}
+
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+
+function renderCalendar() {
+  const wrap = document.getElementById('calendar-wrap');
+  const detail = document.getElementById('calendar-day-detail');
+  const today = new Date();
+
+  // Build set of dates with accepted bookings: 'YYYY-MM-DD'
+  const bookedDates = {};
+  allReqs.forEach(r => {
+    if (!r.date) return;
+    const dateStr = r.date.length === 10 ? r.date : r.date.slice(0, 10);
+    if (!bookedDates[dateStr]) bookedDates[dateStr] = [];
+    bookedDates[dateStr].push(r);
+  });
+
+  const monthNames = ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6',
+    'Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
+  const dowLabels = ['CN','T2','T3','T4','T5','T6','T7'];
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const daysInPrev = new Date(calYear, calMonth, 0).getDate();
+
+  let cells = '';
+  // Prev month padding
+  for (let i = firstDay - 1; i >= 0; i--) {
+    cells += `<div class="cal-day other-month">${daysInPrev - i}</div>`;
+  }
+  // Current month
+  for (let d = 1; d <= daysInMonth; d++) {
+    const mm = String(calMonth + 1).padStart(2, '0');
+    const dd = String(d).padStart(2, '0');
+    const dateStr = `${calYear}-${mm}-${dd}`;
+    const isToday = d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear();
+    const hasBooking = !!bookedDates[dateStr];
+    let cls = 'cal-day';
+    if (isToday) cls += ' today';
+    if (hasBooking) cls += ' has-booking';
+    const dot = hasBooking && !isToday ? '<span class="cal-dot"></span>' : '';
+    cells += `<div class="${cls}" onclick="showCalDay('${dateStr}')">${d}${dot}</div>`;
+  }
+  // Next month padding
+  const totalCells = firstDay + daysInMonth;
+  const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+  for (let d = 1; d <= remaining; d++) {
+    cells += `<div class="cal-day other-month">${d}</div>`;
+  }
+
+  wrap.innerHTML = `
+    <div class="cal-header">
+      <button class="btn btn-sm btn-outline" onclick="changeCalMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+      <strong>${monthNames[calMonth]} ${calYear}</strong>
+      <button class="btn btn-sm btn-outline" onclick="changeCalMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+    <div class="cal-grid">
+      ${dowLabels.map(d => `<div class="cal-dow">${d}</div>`).join('')}
+      ${cells}
+    </div>`;
+  detail.innerHTML = '';
+}
+
+function changeCalMonth(dir) {
+  calMonth += dir;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+function showCalDay(dateStr) {
+  const detail = document.getElementById('calendar-day-detail');
+  const reqs = allReqs.filter(r => r.date && r.date.slice(0, 10) === dateStr);
+  if (!reqs.length) { detail.innerHTML = ''; return; }
+  const statusLabel = { pending:'Chờ xử lý', accepted:'Đã chấp nhận', declined:'Đã từ chối', done:'Hoàn thành' };
+  const statusCls = { pending:'st-pending', accepted:'st-accepted', declined:'st-declined', done:'st-done' };
+  detail.innerHTML = `
+    <div style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px">
+      <div style="font-weight:700;font-size:.9rem;margin-bottom:12px"><i class="fa-regular fa-calendar-check" style="color:#16A34A;margin-right:6px"></i>${dateStr} — ${reqs.length} tour</div>
+      ${reqs.map(r => `
+        <div style="border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <div>
+            <div style="font-weight:600;font-size:.87rem">${r.name || 'Ẩn danh'} — ${r.destination || ''}</div>
+            <div style="font-size:.78rem;color:var(--gray-2);margin-top:2px">${r.days || 1} ngày · ${r.people || 1} người</div>
+          </div>
+          <span class="req-status ${statusCls[r.status] || 'st-pending'}">${statusLabel[r.status] || r.status}</span>
+        </div>`).join('')}
+    </div>`;
 }
 
 function renderReqs() {
