@@ -591,37 +591,37 @@ async function initDash() {
       'thu@guidetravel.vn','hung@guidetravel.vn','hoa@guidetravel.vn'
     ].includes(session.email);
     if (!isDemo) {
-      // Check Supabase if admin has approved this HDV
-      let approvedBySupa = false;
-      if (typeof sb !== 'undefined' && session.id) {
-        const { data: sbRow } = await sb.from('hdv_profiles').select('status').eq('user_id', session.id).maybeSingle();
-        if (sbRow && sbRow.status === 'approved') approvedBySupa = true;
+      // Check localStorage first (fast)
+      const lp = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+      const lpr = lp.find(p => p.email === session.email);
+      let approved = lpr && lpr.status === 'approved';
+
+      // Check Supabase only if not approved locally
+      if (!approved && typeof sb !== 'undefined' && session.id) {
+        try {
+          const { data: sbRow } = await sb.from('hdv_profiles').select('status').eq('user_id', session.id).maybeSingle();
+          if (sbRow && sbRow.status === 'approved') approved = true;
+        } catch(e) {}
       }
-      // Also check localStorage profiles
-      if (!approvedBySupa) {
-        const lp = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
-        const lpr = lp.find(p => p.email === session.email);
-        if (lpr && lpr.status === 'approved') approvedBySupa = true;
-      }
-      if (!approvedBySupa) {
+
+      if (!approved) {
+        // Check if profile exists at all (pending_review = show waiting screen)
+        const isPending = lpr && lpr.status === 'pending_review';
         document.body.innerHTML = `
           <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#F1F5F9;font-family:'Segoe UI',sans-serif">
             <div style="background:white;border-radius:16px;padding:48px 40px;text-align:center;max-width:420px;box-shadow:0 4px 24px rgba(0,0,0,.1)">
-              <div style="width:72px;height:72px;background:#FEF2F2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
-                <i class="fa-solid fa-lock" style="font-size:2rem;color:#EF4444"></i>
+              <div style="width:72px;height:72px;background:${isPending?'#FFF7ED':'#FEF2F2'};border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
+                <i class="fa-solid ${isPending?'fa-clock':'fa-lock'}" style="font-size:2rem;color:${isPending?'#F97316':'#EF4444'}"></i>
               </div>
-              <h2 style="font-size:1.3rem;font-weight:700;color:#0F172A;margin-bottom:10px">Chưa đăng ký HDV</h2>
-              <p style="color:#64748B;font-size:.9rem;line-height:1.6;margin-bottom:28px">Bạn cần hoàn tất đăng ký hướng dẫn viên chuyên nghiệp trước khi sử dụng dashboard và nhận yêu cầu tour.</p>
-              <a href="hdv-register.html" style="display:inline-block;background:#F97316;color:white;font-weight:700;padding:12px 28px;border-radius:10px;text-decoration:none;font-size:.95rem">
-                <i class="fa-solid fa-id-card"></i> Đăng ký ngay
-              </a>
+              <h2 style="font-size:1.3rem;font-weight:700;color:#0F172A;margin-bottom:10px">${isPending?'Đang chờ duyệt':'Chưa đăng ký HDV'}</h2>
+              <p style="color:#64748B;font-size:.9rem;line-height:1.6;margin-bottom:28px">${isPending?'Hồ sơ của bạn đang được admin xét duyệt (1-2 ngày). Bạn sẽ nhận thông báo khi được duyệt.':'Bạn cần hoàn tất đăng ký hướng dẫn viên chuyên nghiệp trước khi sử dụng dashboard.'}</p>
+              ${isPending?'':`<a href="hdv-register.html" style="display:inline-block;background:#F97316;color:white;font-weight:700;padding:12px 28px;border-radius:10px;text-decoration:none;font-size:.95rem"><i class="fa-solid fa-id-card"></i> Đăng ký ngay</a>`}
               <div style="margin-top:14px"><a href="index.html" style="color:#94A3B8;font-size:.85rem">Về trang chủ</a></div>
             </div>
           </div>`;
         return;
       }
     }
-    // Auto-verify: demo accounts or admin-approved
     session.verified = true;
     localStorage.setItem('gt_session', JSON.stringify(session));
   }
@@ -797,7 +797,7 @@ async function initDash() {
     </div>`;
 }
 
-document.addEventListener('DOMContentLoaded', initDash);
+document.addEventListener('DOMContentLoaded', () => initDash().catch(e => console.error('initDash error:', e)));
 
 // ===== NOTIFICATIONS =====
 function getNotifs() { return JSON.parse(localStorage.getItem('gt_notifications') || '[]'); }
