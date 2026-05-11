@@ -580,6 +580,8 @@
 let currentStep = 1;
 let selectedSpecs = [];
 let selectedLangs = ['Tiếng Việt'];
+let isEditing = false;
+let existingProfile = null;
 
 // Step navigation
 function goStep(n) {
@@ -600,8 +602,10 @@ function validateStep(s) {
       ['hdv-name', 'err-hdv-name', v => v.trim().length >= 2],
       ['hdv-phone', 'err-hdv-phone', v => /^[0-9]{10,11}$/.test(v.trim())],
       ['hdv-email', 'err-hdv-email', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())],
-      ['hdv-address', 'err-hdv-address', v => v.trim().length >= 5],
-      ['hdv-idcard', 'err-hdv-idcard', v => v.trim().length >= 9],
+      ...(!isEditing ? [
+        ['hdv-address', 'err-hdv-address', v => v.trim().length >= 5],
+        ['hdv-idcard', 'err-hdv-idcard', v => v.trim().length >= 9],
+      ] : []),
     ];
     let ok = true;
     checks.forEach(([id, eid, fn]) => {
@@ -612,14 +616,16 @@ function validateStep(s) {
       if (err) err.classList.toggle('show', !valid);
       if (!valid) ok = false;
     });
-    // Validate CCCD file upload
-    const fileInput = document.getElementById('file-id');
-    const fileErr = document.getElementById('err-hdv-file');
-    const uploadBox = document.getElementById('upload-id-box');
-    const hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
-    if (fileErr) fileErr.classList.toggle('show', !hasFile);
-    if (uploadBox) uploadBox.style.borderColor = hasFile ? '' : 'var(--red)';
-    if (!hasFile) ok = false;
+    // Validate CCCD file upload — bỏ qua khi đang chỉnh sửa
+    if (!isEditing) {
+      const fileInput = document.getElementById('file-id');
+      const fileErr = document.getElementById('err-hdv-file');
+      const uploadBox = document.getElementById('upload-id-box');
+      const hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
+      if (fileErr) fileErr.classList.toggle('show', !hasFile);
+      if (uploadBox) uploadBox.style.borderColor = hasFile ? '' : 'var(--red)';
+      if (!hasFile) ok = false;
+    }
     return ok;
   }
   if (s === 2) {
@@ -645,12 +651,14 @@ function validateStep(s) {
     if (bio) bio.classList.toggle('err', !bioOk);
     if (bioErr) bioErr.classList.toggle('show', !bioOk);
     if (!bioOk) ok = false;
-    // Validate ảnh đại diện
-    const avatarFile = document.getElementById('file-avatar');
-    const avatarErr = document.getElementById('err-hdv-avatar');
-    const avatarOk = avatarFile && avatarFile.files && avatarFile.files.length > 0;
-    if (avatarErr) avatarErr.classList.toggle('show', !avatarOk);
-    if (!avatarOk) ok = false;
+    // Validate ảnh đại diện — bỏ qua khi đang chỉnh sửa và đã có ảnh
+    if (!isEditing || !existingProfile?.avatar) {
+      const avatarFile = document.getElementById('file-avatar');
+      const avatarErr = document.getElementById('err-hdv-avatar');
+      const avatarOk = avatarFile && avatarFile.files && avatarFile.files.length > 0;
+      if (avatarErr) avatarErr.classList.toggle('show', !avatarOk);
+      if (!avatarOk) ok = false;
+    }
     return ok;
   }
   return true;
@@ -787,9 +795,15 @@ async function submitRegistration() {
   const regionVal = document.getElementById('hdv-region').value;
   const hdvName = document.getElementById('hdv-name').value;
   const hdvEmail = document.getElementById('hdv-email').value || (session ? session.email : '');
+  const avatarFile = document.getElementById('file-avatar');
+  const hasNewAvatar = avatarFile && avatarFile.files && avatarFile.files.length > 0;
+  const avatarUrl = (isEditing && existingProfile?.avatar && !hasNewAvatar)
+    ? existingProfile.avatar
+    : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(hdvName) + '&size=200&background=0284C7&color=fff';
+
   const profile = {
-    id: 'HDV' + Date.now(),
-    userId: session ? session.id : null,
+    id: isEditing ? existingProfile.id : ('HDV' + Date.now()),
+    userId: session ? session.id : (isEditing ? existingProfile.userId : null),
     email: hdvEmail,
     name: hdvName,
     phone: document.getElementById('hdv-phone').value,
@@ -799,22 +813,22 @@ async function submitRegistration() {
     experience: parseInt(document.getElementById('hdv-exp').value) || 0,
     license: document.getElementById('hdv-license').value,
     bio: document.getElementById('hdv-bio').value,
-    bioEn: '',
+    bioEn: existingProfile?.bioEn || '',
     pricePerDay: parseInt(price),
     commission: selectedCommission,
     languages: [...selectedLangs],
     specialties: [...selectedSpecs],
-    rating: 0,
-    reviews: 0,
-    trips: 0,
-    reviewList: [],
-    itineraries: [],
-    sampleItineraries: [],
-    avatar: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(hdvName) + '&size=200&background=0284C7&color=fff',
-    coverImg: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=800&q=80',
+    rating: isEditing ? (existingProfile.rating || 0) : 0,
+    reviews: isEditing ? (existingProfile.reviews || 0) : 0,
+    trips: isEditing ? (existingProfile.trips || 0) : 0,
+    reviewList: isEditing ? (existingProfile.reviewList || []) : [],
+    itineraries: isEditing ? (existingProfile.itineraries || []) : [],
+    sampleItineraries: isEditing ? (existingProfile.sampleItineraries || []) : [],
+    avatar: avatarUrl,
+    coverImg: existingProfile?.coverImg || 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=800&q=80',
     verified: true,
-    status: 'pending_review',
-    createdAt: new Date().toISOString()
+    status: isEditing ? existingProfile.status : 'pending_review',
+    createdAt: isEditing ? existingProfile.createdAt : new Date().toISOString()
   };
   const profiles = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
   const existIdx = profiles.findIndex(p => p.email === profile.email);
@@ -841,10 +855,97 @@ async function submitRegistration() {
     const idx = users.findIndex(u => u.id === session.id);
     if (idx !== -1) { users[idx].verified = true; localStorage.setItem('gt_users', JSON.stringify(users)); }
   }
+  if (isEditing) {
+    const suc = document.getElementById('reg-success-section');
+    suc.querySelector('h2').textContent = 'Hồ sơ đã được cập nhật! ✅';
+    const statusBox = suc.querySelector('[style*="FFF7ED"]');
+    if (statusBox) statusBox.style.display = 'none';
+    const stepsBox = suc.querySelector('[style*="flex-direction:column"]')?.closest('[style*="background:var(--bg)"]');
+    if (stepsBox) stepsBox.style.display = 'none';
+    const desc = suc.querySelector('p');
+    if (desc) desc.textContent = 'Thông tin hồ sơ của bạn đã được lưu thành công.';
+  }
   document.getElementById('reg-form-section').classList.add('hidden');
   document.getElementById('reg-success-section').classList.remove('hidden');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+// Pre-fill form nếu HDV đã có hồ sơ
+document.addEventListener('DOMContentLoaded', () => {
+  const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
+  if (!session || session.type !== 'guide') return;
+  const profiles = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+  const p = profiles.find(pr => pr.email === session.email);
+  if (!p) return;
+
+  isEditing = true;
+  existingProfile = p;
+
+  // Đổi tiêu đề trang
+  const h1 = document.querySelector('.page-hd h1');
+  const sub = document.querySelector('.page-hd p');
+  if (h1) h1.textContent = 'Chỉnh sửa hồ sơ';
+  if (sub) sub.textContent = 'Cập nhật thông tin và giá dịch vụ của bạn';
+
+  // Đổi nút submit
+  const submitBtn = document.querySelector('button[onclick="submitRegistration()"]');
+  if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi';
+
+  const setVal = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val; };
+
+  // Step 1
+  setVal('hdv-name', p.name || '');
+  setVal('hdv-phone', p.phone || '');
+  setVal('hdv-email', p.email || '');
+  setVal('hdv-exp', p.experience ?? 0);
+  setVal('hdv-license', p.license || '');
+
+  // Step 2
+  setVal('hdv-region', p.region || '');
+  if (p.specialties && p.specialties.length) {
+    selectedSpecs = [...p.specialties];
+    document.querySelectorAll('.spec-btn').forEach(btn => btn.classList.toggle('sel', selectedSpecs.includes(btn.dataset.val)));
+  }
+  if (p.languages && p.languages.length) {
+    selectedLangs = [...p.languages];
+    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('sel', selectedLangs.includes(btn.dataset.lang)));
+  }
+
+  // Step 3
+  setVal('hdv-bio', p.bio || '');
+  const bioCount = document.getElementById('bio-count');
+  if (bioCount) bioCount.textContent = (p.bio || '').length;
+  if (p.avatar) {
+    const prevA = document.getElementById('prev-avatar');
+    if (prevA) prevA.innerHTML = `<img src="${p.avatar}" style="width:100%;height:120px;object-fit:cover;border-radius:var(--radius);border:2px solid var(--blue)">`;
+  }
+  if (p.coverImg) {
+    const prevC = document.getElementById('prev-cover');
+    if (prevC) prevC.innerHTML = `<img src="${p.coverImg}" style="width:100%;height:120px;object-fit:cover;border-radius:var(--radius);border:2px solid var(--blue)">`;
+  }
+
+  // Step 4
+  setVal('hdv-price', p.pricePerDay || '');
+  if (p.commission) {
+    selectedCommission = p.commission;
+    const colors = { 15: 'var(--gray)', 20: '#0284C7', 25: '#7C3AED', 30: 'var(--orange)' };
+    const bgs    = { 15: '#F8FAFC',     20: '#E0F2FE', 25: '#F5F3FF', 30: '#FFF7ED'       };
+    document.querySelectorAll('.comm-opt').forEach(opt => {
+      const val = parseInt(opt.dataset.val);
+      const sel = val === selectedCommission;
+      opt.style.borderColor = sel ? (colors[val] || 'var(--blue)') : 'var(--border)';
+      opt.style.background  = sel ? (bgs[val] || 'var(--blue-light)') : 'white';
+      opt.style.transform   = sel ? 'translateY(-2px)' : 'none';
+      const input = opt.querySelector('input');
+      if (input) input.checked = sel;
+    });
+    updatePricePreview();
+  }
+
+  // Tự tick điều khoản
+  const terms = document.getElementById('agree-terms');
+  if (terms) terms.checked = true;
+});
 </script>
 </body>
 </html>
