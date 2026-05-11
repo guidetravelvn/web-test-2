@@ -38,6 +38,8 @@
     .lang-grid { display: flex; flex-wrap: wrap; gap: 10px; }
     .lang-btn { padding: 8px 16px; border: 1.5px solid var(--border); border-radius: 99px; font-size: .82rem; font-weight: 600; color: var(--gray); cursor: pointer; transition: var(--t); }
     .lang-btn.sel { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+    .day-lbl { display:flex; align-items:center; gap:6px; padding:8px 14px; border:1.5px solid var(--border); border-radius:99px; cursor:pointer; font-size:.82rem; font-weight:600; transition:var(--t); }
+    .day-lbl:has(input:checked) { border-color:var(--blue); color:var(--blue); background:var(--blue-light); }
     .price-preview { background: var(--bg); border-radius: var(--radius); padding: 16px; display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
     .nav-btns { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border); }
     @media (max-width: 900px) { .reg-layout { grid-template-columns: 1fr; } }
@@ -400,7 +402,13 @@
             <div class="fg">
               <label>Thời gian có thể dẫn tour</label>
               <div style="display:flex;flex-wrap:wrap;gap:8px">
-                {['T2','T3','T4','T5','T6','T7','CN'].map(d => `<label style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1.5px solid var(--border);border-radius:99px;cursor:pointer;font-size:.82rem;font-weight:600;transition:var(--t)" class="day-lbl"><input type="checkbox" value="${d}" style="accent-color:var(--blue)"> ${d}</label>`).join('')}
+                <label class="day-lbl"><input type="checkbox" value="T2" style="accent-color:var(--blue)"> T2</label>
+                <label class="day-lbl"><input type="checkbox" value="T3" style="accent-color:var(--blue)"> T3</label>
+                <label class="day-lbl"><input type="checkbox" value="T4" style="accent-color:var(--blue)"> T4</label>
+                <label class="day-lbl"><input type="checkbox" value="T5" style="accent-color:var(--blue)"> T5</label>
+                <label class="day-lbl"><input type="checkbox" value="T6" style="accent-color:var(--blue)"> T6</label>
+                <label class="day-lbl"><input type="checkbox" value="T7" style="accent-color:var(--blue)"> T7</label>
+                <label class="day-lbl"><input type="checkbox" value="CN" style="accent-color:var(--blue)"> CN</label>
               </div>
             </div>
             <div class="fg" style="margin-bottom:0">
