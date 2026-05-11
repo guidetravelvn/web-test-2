@@ -334,6 +334,10 @@ function doPayment() {
   };
   DB.addRequest(req);
 
+  // Notify guide of new booking
+  const _newBookingNotif = { id:'N_'+Date.now(), type:'booking', title:'Yêu cầu đặt tour mới!', body: name + ' muốn đặt tour ' + (req.destination||'') + ' (' + req.days + ' ngày, ' + req.people + ' người).', targetType:'guide', time:new Date().toISOString(), read:false, actionUrl:'requests' };
+  SB.saveNotif(_newBookingNotif);
+
   document.getElementById('pay-content').style.display = 'none';
   document.getElementById('pay-success').style.display = 'block';
   document.getElementById('success-code').textContent = req.id;

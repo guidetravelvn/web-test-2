@@ -730,6 +730,36 @@ async function initDash() {
       localStorage.setItem('gt_notifications', JSON.stringify(local));
       updateNotifBadge();
     });
+
+    // Realtime: nhận thông báo mới ngay lập tức
+    sb.channel('hdv_notifs')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: 'target_type=in.(guide,all)' }, payload => {
+        const notif = payload.new?.data;
+        if (!notif) return;
+        const local = JSON.parse(localStorage.getItem('gt_notifications') || '[]');
+        if (local.find(n => n.id === notif.id)) return;
+        local.unshift(notif);
+        localStorage.setItem('gt_notifications', JSON.stringify(local));
+        updateNotifBadge();
+        // Show toast for important notifications
+        const iconMap = { booking:'📋', message:'💬', system:'🔔' };
+        toast((iconMap[notif.type]||'🔔') + ' ' + notif.title, 'ok');
+      })
+      .subscribe();
+
+    // Realtime: nhận yêu cầu đặt tour mới
+    sb.channel('hdv_requests')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'requests' }, payload => {
+        const newReq = payload.new?.data;
+        if (!newReq) return;
+        if (allReqs.find(r => r.id === newReq.id)) return;
+        allReqs.unshift(newReq);
+        localStorage.setItem('gt_requests', JSON.stringify(allReqs));
+        renderReqs();
+        updateStats();
+        updateNavBadge();
+      })
+      .subscribe();
   }
 
   // Earnings calc
@@ -1065,6 +1095,12 @@ function submitCompletion() {
   SB.updateReq(reqId, {status:'done', data: reqs[idx]});
   const req = reqs[idx];
   addNotif('booking', 'Tour đã hoàn thành!', 'HDV đã xác nhận tour ' + (req.destination||'') + ' hoàn thành. Hãy để lại đánh giá!', 'tourist', 'bookings');
+  // Notify guide about payment
+  const _gSess = JSON.parse(localStorage.getItem('gt_session') || 'null');
+  const _gPrice = _gSess?.pricePerDay || 0;
+  const _gComm = _gSess?.commission || 15;
+  const _earn = Math.round(_gPrice * (1 - _gComm/100) * parseInt(req.days||1));
+  addNotif('booking', 'Tiền tour đã về!', 'Tour ' + (req.destination||'') + ' hoàn thành. Dự kiến nhận ' + (_earn ? fmt2(_earn) : 'thanh toán') + ' sau khi trừ phí dịch vụ.', 'guide', 'earnings');
   closeCompleteModal();
   toast('Đã xác nhận tour hoàn thành!', 'ok');
   allReqs = DB.requests();

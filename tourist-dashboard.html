@@ -572,7 +572,14 @@ function cancelRequest(id) {
   if (!confirm('Bạn có chắc muốn hủy yêu cầu này?')) return;
   const reqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
   const idx = reqs.findIndex(r => r.id === id);
-  if (idx > -1) { reqs[idx].status = 'declined'; localStorage.setItem('gt_requests', JSON.stringify(reqs)); SB.updateReq(id, {status:'declined', data: reqs[idx]}); }
+  if (idx > -1) {
+    reqs[idx].status = 'declined';
+    localStorage.setItem('gt_requests', JSON.stringify(reqs));
+    SB.updateReq(id, {status:'declined', data: reqs[idx]});
+    const _cr = reqs[idx];
+    const _cancelNotif = { id:'N_'+Date.now(), type:'booking', title:'Khách đã hủy yêu cầu', body:(_cr.name||'Khách') + ' đã hủy tour ' + (_cr.destination||'') + ' ngày ' + (_cr.date||'') + '.', targetType:'guide', time:new Date().toISOString(), read:false, actionUrl:'requests' };
+    SB.saveNotif(_cancelNotif);
+  }
   allBookings = allBookings.map(r => r.id === id ? {...r, status:'declined'} : r);
   renderBookings();
   updateStats();
