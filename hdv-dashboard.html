@@ -107,6 +107,10 @@
     .mob-nav-badge { position:absolute; top:6px; right:calc(50% - 18px); background:#EF4444; color:white; font-size:.55rem; font-weight:800; min-width:14px; height:14px; border-radius:99px; display:none; align-items:center; justify-content:center; padding:0 3px; }
     /* Earnings grid mobile */
     @media(max-width:480px){ #sec-earnings .earn-grid { grid-template-columns:1fr !important; } }
+    /* Work days */
+    .wd-btn { padding:7px 14px; border-radius:8px; font-size:.82rem; font-weight:700; border:2px solid var(--border); color:var(--gray-2); background:white; transition:.15s; }
+    .wd-btn:hover { border-color:var(--blue-light); color:var(--blue); }
+    .wd-btn.wd-active { background:var(--blue); color:white; border-color:var(--blue); }
     /* Calendar */
     .cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
     .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
@@ -259,7 +263,18 @@
 
       <!-- CALENDAR SECTION -->
       <div class="section-card" id="sec-calendar" style="display:none">
-        <h3><i class="fa-solid fa-calendar-days" style="color:var(--blue)"></i> Lịch hẹn tour</h3>
+        <h3><i class="fa-solid fa-calendar-days" style="color:var(--blue)"></i> <span data-i18n="cal.section_title">Lịch</span></h3>
+
+        <!-- Work schedule -->
+        <div style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)">
+          <div style="font-size:.88rem;font-weight:700;color:var(--dark);margin-bottom:4px" data-i18n="hdash.workdays.title">Lịch làm việc</div>
+          <div style="font-size:.76rem;color:var(--gray-2);margin-bottom:12px" data-i18n="hdash.workdays.note">Khách sẽ thấy ngày bạn nhận tour</div>
+          <div id="work-days-wrap" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px"></div>
+          <button onclick="saveWorkDays()" class="btn btn-primary btn-sm"><i class="fa-solid fa-check"></i> <span data-i18n="hdash.workdays.save">Lưu lịch</span></button>
+        </div>
+
+        <!-- Tour calendar -->
+        <div style="font-size:.88rem;font-weight:700;color:var(--dark);margin-bottom:12px" data-i18n="hdash.workdays.cal_title">Lịch hẹn tour</div>
         <div id="calendar-wrap"></div>
         <div id="calendar-day-detail"></div>
       </div>
@@ -373,7 +388,7 @@ function showSection(name, el, mobKey) {
       const sec = document.getElementById('sec-' + s);
       if (sec) sec.style.display = s === name ? 'block' : 'none';
     });
-    if (name === 'calendar') renderCalendar();
+    if (name === 'calendar') { renderCalendar(); loadWorkDays(); }
     ['requests','earnings','messages','calendar','profile'].forEach(s => {
       const btn = document.getElementById('mobnav-' + s);
       if (btn) btn.classList.toggle('active', s === (mobKey || name));
@@ -392,6 +407,8 @@ function gotoChat(requestId) {
 
 let allReqs = [];
 let currentFilter = 'all';
+let dashGuide = null;
+let selectedWorkDays = new Set();
 
 function filterReqs(f, el) {
   currentFilter = f;
@@ -596,6 +613,8 @@ async function initDash() {
     </div>`;
   }
 
+  dashGuide = guide;
+
   // Update greeting
   document.getElementById('dash-greeting').textContent = 'Xin chào, ' + guide.name + '!';
   document.getElementById('d-name').textContent = guide.name;
@@ -757,7 +776,7 @@ async function initDash() {
 }
 
 document.addEventListener('DOMContentLoaded', () => initDash().catch(e => console.error('initDash error:', e)));
-window.addEventListener('langchange', () => { renderReqs(); updateStats(); renderChatList && renderChatList(); renderCalendar && renderCalendar(); });
+window.addEventListener('langchange', () => { renderReqs(); updateStats(); renderChatList && renderChatList(); renderCalendar && renderCalendar(); renderWorkDays(); });
 
 // ===== NOTIFICATIONS =====
 function getNotifs() { return JSON.parse(localStorage.getItem('gt_notifications') || '[]'); }
@@ -943,6 +962,47 @@ function sendMsg() {
   addNotif('message', 'HDV ' + session.name + ' vừa nhắn tin', text.slice(0,60), 'tourist', 'messages');
   input.value = '';
   openChat(currentChatReqId);
+}
+
+// ===== WORK DAYS =====
+function loadWorkDays() {
+  if (!dashGuide) return;
+  const store = JSON.parse(localStorage.getItem('gt_work_days') || '{}');
+  const days = dashGuide.workDays || store[dashGuide.email] || [];
+  selectedWorkDays = new Set(days);
+  renderWorkDays();
+}
+
+function renderWorkDays() {
+  const wrap = document.getElementById('work-days-wrap');
+  if (!wrap) return;
+  const order = [1,2,3,4,5,6,0];
+  wrap.innerHTML = order.map(d => `<button class="wd-btn${selectedWorkDays.has(d)?' wd-active':''}" onclick="toggleWorkDay(${d})">${t('cal.d'+d)}</button>`).join('');
+}
+
+function toggleWorkDay(d) {
+  if (selectedWorkDays.has(d)) selectedWorkDays.delete(d);
+  else selectedWorkDays.add(d);
+  renderWorkDays();
+}
+
+async function saveWorkDays() {
+  if (!dashGuide) return;
+  const days = Array.from(selectedWorkDays).sort((a,b) => a-b);
+  const store = JSON.parse(localStorage.getItem('gt_work_days') || '{}');
+  store[dashGuide.email] = days;
+  localStorage.setItem('gt_work_days', JSON.stringify(store));
+  const profiles = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+  const idx = profiles.findIndex(p => p.email === dashGuide.email);
+  if (idx > -1) {
+    profiles[idx].workDays = days;
+    localStorage.setItem('gt_hdv_profiles', JSON.stringify(profiles));
+    if (typeof sb !== 'undefined') {
+      const p = profiles[idx];
+      try { await sb.from('hdv_profiles').upsert({user_id: p.userId, email: p.email, status: p.status, data: p}); } catch(e) {}
+    }
+  }
+  toast(t('hdash.workdays.saved'), 'ok');
 }
 
 // ===== CALENDAR =====

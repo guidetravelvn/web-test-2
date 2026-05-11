@@ -211,6 +211,13 @@ const TRANS = {
     'cal.d0':'CN','cal.d1':'T2','cal.d2':'T3','cal.d3':'T4','cal.d4':'T5','cal.d5':'T6','cal.d6':'T7',
     'cal.no_tour':'Không có tour trong ngày này',
     'cal.tour_on':'tour ngày','cal.guest':'Khách',
+    'cal.section_title':'Lịch',
+    'hdash.workdays.title':'Lịch làm việc',
+    'hdash.workdays.note':'Khách sẽ thấy ngày bạn nhận tour',
+    'hdash.workdays.save':'Lưu lịch',
+    'hdash.workdays.saved':'Đã lưu lịch làm việc!',
+    'hdash.workdays.cal_title':'Lịch hẹn tour',
+    'profile.workdays':'Lịch làm việc:',
     // UNITS
     'unit.days':'ngày','unit.hours':'giờ','unit.people':'người',
     // SPECIALTIES
@@ -807,6 +814,13 @@ const TRANS = {
     'cal.d0':'Sun','cal.d1':'Mon','cal.d2':'Tue','cal.d3':'Wed','cal.d4':'Thu','cal.d5':'Fri','cal.d6':'Sat',
     'cal.no_tour':'No tours on this day',
     'cal.tour_on':'tour(s) on','cal.guest':'Guest',
+    'cal.section_title':'Schedule',
+    'hdash.workdays.title':'Work Schedule',
+    'hdash.workdays.note':'Guests will see which days you accept tours',
+    'hdash.workdays.save':'Save Schedule',
+    'hdash.workdays.saved':'Work schedule saved!',
+    'hdash.workdays.cal_title':'Tour Calendar',
+    'profile.workdays':'Work schedule:',
     // UNITS
     'unit.days':'days','unit.hours':'hours','unit.people':'people',
     // SPECIALTIES

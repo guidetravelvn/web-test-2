@@ -908,6 +908,17 @@ function renderProfile(g) {
   set('p-rating', `${g.rating} (${g.reviews} ${t('card.reviews')})`);
   set('p-exp', g.experience + ' ' + t('card.experience'));
   set('p-response', fmtResponseTime(g.responseTime));
+
+  // Work days
+  const wdStore = JSON.parse(localStorage.getItem('gt_work_days') || '{}');
+  const wdDays = (g.workDays && g.workDays.length) ? g.workDays : (wdStore[g.email] || []);
+  if (wdDays.length) {
+    const order = [1,2,3,4,5,6,0];
+    setHTML('p-workdays', order.filter(d => wdDays.includes(d)).map(d => `<span class="tag tag-blue" style="font-size:.72rem;padding:2px 8px">${t('cal.d'+d)}</span>`).join(''));
+    const wdWrap = $('p-workdays-wrap');
+    if (wdWrap) wdWrap.style.display = '';
+  }
+
   set('p-bio', (lang === 'en' && g.bioEn) ? g.bioEn : g.bio);
   set('p-trips', g.trips + '+');
   set('p-reviews-count', g.reviews);
