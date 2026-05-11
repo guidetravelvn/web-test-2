@@ -195,9 +195,19 @@
         </div>
       </div>
 
-      <button class="btn btn-orange btn-block btn-lg" onclick="doPayment()" data-i18n="pay.confirm_btn">
+      <button id="confirm-pay-btn" class="btn btn-orange btn-block btn-lg" onclick="doPayment()" data-i18n="pay.confirm_btn">
         <i class="fa-solid fa-lock"></i> Xác nhận & Thanh toán an toàn
       </button>
+
+      <!-- PayPal sandbox buttons (shown when PayPal method selected) -->
+      <div id="paypal-btn-wrap" style="display:none;margin:16px 0">
+        <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:var(--radius);padding:10px 14px;font-size:.78rem;color:#1D4ED8;margin-bottom:12px;text-align:center">
+          <i class="fa-solid fa-flask" style="margin-right:6px"></i>
+          <span data-i18n="pay.sandbox_note">🧪 Sandbox — Dùng tài khoản test PayPal, không trừ tiền thật</span>
+        </div>
+        <div id="paypal-btn-container"></div>
+      </div>
+
       <p style="text-align:center;font-size:.78rem;color:var(--gray-2);margin-top:10px" data-i18n="pay.ssl_note">
         <i class="fa-solid fa-shield-halved"></i> Thanh toán được mã hóa SSL. Bạn có thể hủy miễn phí trước 7 ngày.
       </p>
@@ -290,8 +300,14 @@
 <script src="lang.js"></script>
 <script src="app.js"></script>
 <script>
+// Replace with your sandbox Client ID from developer.paypal.com → My Apps & Credentials → Sandbox
+const PAYPAL_SANDBOX_CLIENT_ID = 'YOUR_SANDBOX_CLIENT_ID_HERE';
+const VND_TO_USD = 25000;
+
 let selectedMethod = 'vnpay';
 let orderData = {};
+let _paypalSDKLoaded = false;
+let _paypalValidationFailed = false;
 
 function switchPayTab(tab) {
   document.getElementById('methods-vn').style.display = tab === 'vn' ? 'grid' : 'none';
@@ -300,27 +316,90 @@ function switchPayTab(tab) {
   document.getElementById('tab-intl').classList.toggle('active', tab === 'intl');
   document.querySelectorAll('.method-opt').forEach(o => o.classList.remove('sel'));
   selectedMethod = tab === 'vn' ? 'vnpay' : 'stripe';
+  document.getElementById('confirm-pay-btn').style.display = '';
+  document.getElementById('paypal-btn-wrap').style.display = 'none';
 }
 
 function selectMethod(el, method) {
   document.querySelectorAll('.method-opt').forEach(o => o.classList.remove('sel'));
   el.classList.add('sel');
   selectedMethod = method;
+  const confirmBtn = document.getElementById('confirm-pay-btn');
+  const paypalWrap = document.getElementById('paypal-btn-wrap');
+  if (method === 'paypal') {
+    confirmBtn.style.display = 'none';
+    paypalWrap.style.display = 'block';
+    initPayPalSDK();
+  } else {
+    confirmBtn.style.display = '';
+    paypalWrap.style.display = 'none';
+  }
 }
 
-function doPayment() {
+function initPayPalSDK() {
+  if (_paypalSDKLoaded) { renderPayPalButtons(); return; }
+  const s = document.createElement('script');
+  s.src = 'https://www.paypal.com/sdk/js?client-id=' + PAYPAL_SANDBOX_CLIENT_ID + '&currency=USD&intent=capture';
+  s.onload = function() { _paypalSDKLoaded = true; renderPayPalButtons(); };
+  s.onerror = function() { toast(t('pay.paypal_error'), 'err'); };
+  document.head.appendChild(s);
+}
+
+function renderPayPalButtons() {
+  const container = document.getElementById('paypal-btn-container');
+  container.innerHTML = '';
+  paypal.Buttons({
+    style: { layout: 'vertical', color: 'blue', shape: 'rect', label: 'pay', height: 44 },
+    createOrder: function(data, actions) {
+      if (!validateContactForm()) {
+        _paypalValidationFailed = true;
+        return Promise.reject(new Error('form_invalid'));
+      }
+      _paypalValidationFailed = false;
+      const usd = Math.max(0.01, orderData.total / VND_TO_USD).toFixed(2);
+      return actions.order.create({
+        purchase_units: [{
+          description: 'GuideTravel - ' + orderData.guideName + ' (' + orderData.days + ' days)',
+          amount: { currency_code: 'USD', value: usd }
+        }]
+      });
+    },
+    onApprove: function(data, actions) {
+      return actions.order.capture().then(function(details) {
+        completeBooking({ paypalOrderId: details.id });
+      });
+    },
+    onCancel: function() {
+      toast(t('pay.paypal_cancelled'), 'err');
+    },
+    onError: function(err) {
+      if (_paypalValidationFailed) { _paypalValidationFailed = false; return; }
+      console.error('PayPal error', err);
+      toast(t('pay.paypal_error'), 'err');
+    }
+  }).render('#paypal-btn-container');
+}
+
+function validateContactForm() {
   const name = document.getElementById('p-name').value.trim();
   const phone = document.getElementById('p-phone').value.trim();
   const email = document.getElementById('p-email').value.trim();
-  if (!name || !phone || !email) { toast('Vui lòng điền đầy đủ thông tin liên hệ!', 'err'); return; }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast('Email không hợp lệ!', 'err'); return; }
+  if (!name || !phone || !email) { toast(t('pay.fill_required'), 'err'); return false; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast(t('pay.email_invalid'), 'err'); return false; }
+  return true;
+}
 
+function completeBooking(extras) {
+  extras = extras || {};
+  const name = document.getElementById('p-name').value.trim();
+  const phone = document.getElementById('p-phone').value.trim();
+  const email = document.getElementById('p-email').value.trim();
   const _paySession = JSON.parse(localStorage.getItem('gt_session') || 'null');
-  const req = {
+  const req = Object.assign({
     id: 'GT' + Date.now().toString().slice(-8),
     guideId: orderData.guideId,
     guideName: orderData.guideName,
-    userId: _paySession?.id || null,
+    userId: _paySession ? _paySession.id : null,
     name, phone, email,
     destination: orderData.destination || '',
     date: orderData.date,
@@ -331,17 +410,19 @@ function doPayment() {
     totalAmount: orderData.total,
     status: 'pending',
     createdAt: new Date().toISOString()
-  };
+  }, extras);
   DB.addRequest(req);
-
-  // Notify guide of new booking
-  const _newBookingNotif = { id:'N_'+Date.now(), type:'booking', title:'Yêu cầu đặt tour mới!', body: name + ' muốn đặt tour ' + (req.destination||'') + ' (' + req.days + ' ngày, ' + req.people + ' người).', targetType:'guide', time:new Date().toISOString(), read:false, actionUrl:'requests' };
-  SB.saveNotif(_newBookingNotif);
-
+  const notif = { id:'N_'+Date.now(), type:'booking', title:'Yêu cầu đặt tour mới!', body: name + ' muốn đặt tour ' + (req.destination||'') + ' (' + req.days + ' ngày, ' + req.people + ' người).', targetType:'guide', time:new Date().toISOString(), read:false, actionUrl:'requests' };
+  SB.saveNotif(notif);
   document.getElementById('pay-content').style.display = 'none';
   document.getElementById('pay-success').style.display = 'block';
   document.getElementById('success-code').textContent = req.id;
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function doPayment() {
+  if (!validateContactForm()) return;
+  completeBooking();
 }
 
 function initPayment() {
@@ -353,16 +434,12 @@ function initPayment() {
     const localProfiles = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
     guide = localProfiles.find(p => p.id === guideIdRaw);
   }
-
   if (!guide) { location.href = 'guides.html'; return; }
-
   const date = params.get('date') || '—';
   const days = parseInt(params.get('days') || 1);
   const people = parseInt(params.get('people') || 1);
   const total = guide.pricePerDay * days;
-
   orderData = { guideId: guide.id, guideName: guide.name, destination: guide.location, date, days, people, total };
-
   document.getElementById('ord-avatar').src = guide.avatar;
   document.getElementById('ord-name').textContent = guide.name;
   document.getElementById('ord-loc').textContent = guide.location;
@@ -371,7 +448,6 @@ function initPayment() {
   document.getElementById('ord-people').textContent = people;
   document.getElementById('ord-price').textContent = fmtPrice(guide.pricePerDay);
   document.getElementById('ord-total').textContent = fmtPrice(total);
-
   const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
   if (session) {
     document.getElementById('p-name').value = session.name || '';

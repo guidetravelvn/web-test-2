@@ -234,6 +234,11 @@ const TRANS = {
     'pay.page_title':'Xác nhận & Thanh toán',
     'pay.bank_transfer':'Chuyển khoản',
     'pay.wise_fee':'Phí thấp nhất',
+    'pay.fill_required':'Vui lòng điền đầy đủ thông tin liên hệ!',
+    'pay.email_invalid':'Email không hợp lệ!',
+    'pay.paypal_cancelled':'Bạn đã hủy thanh toán PayPal.',
+    'pay.paypal_error':'Có lỗi với PayPal. Vui lòng thử lại hoặc chọn phương thức khác.',
+    'pay.sandbox_note':'🧪 Sandbox — Dùng tài khoản test PayPal, không trừ tiền thật',
     // NAV
     'nav.about':'Giới thiệu','nav.blog':'Blog',
     // BLOG
@@ -837,6 +842,11 @@ const TRANS = {
     'pay.page_title':'Confirm & Pay',
     'pay.bank_transfer':'Bank Transfer',
     'pay.wise_fee':'Lowest fees',
+    'pay.fill_required':'Please fill in all contact details!',
+    'pay.email_invalid':'Invalid email address!',
+    'pay.paypal_cancelled':'PayPal payment cancelled.',
+    'pay.paypal_error':'PayPal error. Please try again or choose another method.',
+    'pay.sandbox_note':'🧪 Sandbox mode — Use PayPal test account, no real money charged',
     // NAV
     'nav.about':'About','nav.blog':'Blog',
     // BLOG
