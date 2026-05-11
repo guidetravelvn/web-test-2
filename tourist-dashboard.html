@@ -479,10 +479,10 @@ function renderBookings() {
     <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
       <i class="fa-solid fa-star" style="color:#F97316;font-size:1.3rem;flex-shrink:0"></i>
       <div style="flex:1;min-width:160px">
-        <div style="font-weight:700;color:#92400E;font-size:.9rem">Bạn có ${unreviewedDone.length} tour chưa đánh giá</div>
-        <div style="font-size:.78rem;color:#B45309;margin-top:2px">Đánh giá giúp HDV và cộng đồng du lịch phát triển</div>
+        <div style="font-weight:700;color:#92400E;font-size:.9rem">${t('tdash.banner.unreviewed_pre')} ${unreviewedDone.length} ${t('tdash.banner.unreviewed_suf')}</div>
+        <div style="font-size:.78rem;color:#B45309;margin-top:2px">${t('tdash.banner.review_sub')}</div>
       </div>
-      <button class="btn btn-sm" style="background:#F97316;color:white;border:none;flex-shrink:0" onclick="openReview('${unreviewedDone[0].id}','${unreviewedDone[0].guideName}','${unreviewedDone[0].destination}')"><i class="fa-solid fa-star"></i> Đánh giá ngay</button>
+      <button class="btn btn-sm" style="background:#F97316;color:white;border:none;flex-shrink:0" onclick="openReview('${unreviewedDone[0].id}','${unreviewedDone[0].guideName}','${unreviewedDone[0].destination}')"><i class="fa-solid fa-star"></i> ${t('tdash.banner.review_btn')}</button>
     </div>` : '';
 
   if (!list.length) {
@@ -585,13 +585,13 @@ function renderMyReviews() {
         <div style="font-weight:600;font-size:.88rem">${rv.guideName} — ${rv.destination}</div>
         <div style="color:#F59E0B;font-size:.9rem">${'★'.repeat(rv.stars)}${'☆'.repeat(5-rv.stars)}</div>
       </div>
-      <div style="font-size:.82rem;color:var(--gray)">${rv.text || '(Không có nhận xét)'}</div>
+      <div style="font-size:.82rem;color:var(--gray)">${rv.text || t('tdash.rev.no_comment')}</div>
       <div style="font-size:.73rem;color:var(--gray-2);margin-top:6px">${new Date(rv.createdAt).toLocaleDateString('vi-VN')}</div>
     </div>`).join('');
 }
 
 function cancelRequest(id) {
-  if (!confirm('Bạn có chắc muốn hủy yêu cầu này?')) return;
+  if (!confirm(t('tdash.cancel.confirm'))) return;
   const reqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
   const idx = reqs.findIndex(r => r.id === id);
   if (idx > -1) {
@@ -605,7 +605,7 @@ function cancelRequest(id) {
   allBookings = allBookings.map(r => r.id === id ? {...r, status:'declined'} : r);
   renderBookings();
   updateStats();
-  toast('Đã hủy yêu cầu.', 'ok');
+  toast(t('tdash.cancel.success'), 'ok');
 }
 
 function contactGuide(guideId) {
@@ -661,7 +661,7 @@ function submitReview() {
   document.getElementById('review-modal').style.display = 'none';
   renderBookings();
   updateStats();
-  toast('Cảm ơn bạn đã đánh giá!', 'ok');
+  toast(t('tdash.review.thanks'), 'ok');
 }
 
 function updateStats() {
@@ -864,6 +864,7 @@ async function initTouristDash() {
 }
 
 document.addEventListener('DOMContentLoaded', initTouristDash);
+window.addEventListener('langchange', () => { renderBookings(); renderHistory(); renderMyReviews(); });
 
 // ===== NOTIFICATIONS =====
 function getNotifs() { return JSON.parse(localStorage.getItem('gt_notifications') || '[]'); }
