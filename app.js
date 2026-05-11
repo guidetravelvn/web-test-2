@@ -582,7 +582,7 @@ function initNav() {
       navRight.innerHTML = `
         ${langToggle}
         <a href="login.html" class="btn btn-outline btn-sm" style="color:var(--dark)"><i class="fa-solid fa-right-to-bracket"></i> <span data-i18n="nav.login"></span></a>
-        <a href="hdv-register.html" class="btn btn-outline btn-sm" style="color:var(--dark)"><i class="fa-solid fa-id-card"></i> <span data-i18n="nav.become_guide"></span></a>
+        <a href="register.html" class="btn btn-outline btn-sm" style="color:var(--dark)"><i class="fa-solid fa-id-card"></i> <span data-i18n="nav.become_guide"></span></a>
         <a href="request.html" class="btn btn-orange"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="nav.post_request"></span></a>`;
     }
     // Mark active lang
@@ -610,7 +610,7 @@ function initNav() {
       } else {
         authArea.innerHTML = `
           <a href="login.html" style="padding:11px 14px;border-radius:var(--radius-sm);font-size:.95rem;font-weight:500;color:var(--dark);display:flex;align-items:center;gap:10px"><i class="fa-solid fa-right-to-bracket" style="width:18px;text-align:center"></i> Đăng nhập</a>
-          <a href="hdv-register.html" style="padding:11px 14px;border-radius:var(--radius-sm);font-size:.95rem;font-weight:500;color:var(--dark);display:flex;align-items:center;gap:10px"><i class="fa-solid fa-id-card" style="width:18px;text-align:center"></i> Làm HDV</a>
+          <a href="register.html" style="padding:11px 14px;border-radius:var(--radius-sm);font-size:.95rem;font-weight:500;color:var(--dark);display:flex;align-items:center;gap:10px"><i class="fa-solid fa-id-card" style="width:18px;text-align:center"></i> Làm HDV</a>
           <a href="request.html" style="padding:10px 14px;border-radius:var(--radius-sm);font-size:.95rem;font-weight:600;color:white;background:var(--orange);display:flex;align-items:center;gap:10px"><i class="fa-solid fa-paper-plane" style="width:18px;text-align:center"></i> Đăng yêu cầu</a>`;
       }
       mobPanel.appendChild(divEl);
