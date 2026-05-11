@@ -105,6 +105,7 @@
     <div class="tab" onclick="showTab('guides',this)"><i class="fa-solid fa-users"></i> HDV</div>
     <div class="tab" onclick="showTab('revenue',this)"><i class="fa-solid fa-chart-bar"></i> Doanh thu</div>
     <div class="tab" onclick="showTab('reviews',this)"><i class="fa-solid fa-star"></i> Đánh giá</div>
+    <div class="tab" onclick="showTab('broadcast',this)"><i class="fa-solid fa-bullhorn"></i> Thông báo</div>
   </div>
 
   <!-- REQUESTS TAB -->
@@ -185,6 +186,48 @@
     </div>
   </div>
 
+  <!-- BROADCAST TAB -->
+  <div id="tab-broadcast" style="display:none">
+    <div class="card" style="max-width:600px">
+      <div class="card-head"><h3><i class="fa-solid fa-bullhorn" style="color:#7C3AED"></i> Gửi thông báo cho người dùng</h3></div>
+      <div style="padding:24px;display:flex;flex-direction:column;gap:14px">
+        <div>
+          <label style="font-size:.8rem;font-weight:700;color:#64748B;display:block;margin-bottom:6px">Đối tượng nhận</label>
+          <select id="bc-target" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:.88rem;outline:none">
+            <option value="all">Tất cả (Khách + HDV)</option>
+            <option value="tourist">Chỉ Khách du lịch</option>
+            <option value="guide">Chỉ Hướng dẫn viên</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:.8rem;font-weight:700;color:#64748B;display:block;margin-bottom:6px">Loại thông báo</label>
+          <select id="bc-type" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:.88rem;outline:none">
+            <option value="policy">📋 Chính sách</option>
+            <option value="promo">🏷️ Ưu đãi / Khuyến mãi</option>
+            <option value="system">🔔 Thông báo hệ thống</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:.8rem;font-weight:700;color:#64748B;display:block;margin-bottom:6px">Tiêu đề</label>
+          <input id="bc-title" type="text" placeholder="VD: Cập nhật chính sách hoàn tiền tháng 6" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:.88rem;outline:none">
+        </div>
+        <div>
+          <label style="font-size:.8rem;font-weight:700;color:#64748B;display:block;margin-bottom:6px">Nội dung</label>
+          <textarea id="bc-body" rows="4" placeholder="Nhập nội dung thông báo..." style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:.88rem;outline:none;resize:vertical;font-family:inherit"></textarea>
+        </div>
+        <button onclick="sendBroadcast()" style="background:#7C3AED;color:white;font-weight:700;padding:12px;border:none;border-radius:10px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;gap:8px">
+          <i class="fa-solid fa-paper-plane"></i> Gửi thông báo
+        </button>
+        <div id="bc-result" style="display:none;padding:12px 14px;border-radius:10px;font-size:.85rem;font-weight:600"></div>
+      </div>
+    </div>
+
+    <div class="card" style="max-width:600px">
+      <div class="card-head"><h3><i class="fa-solid fa-clock-rotate-left" style="color:#64748B"></i> Thông báo đã gửi gần đây</h3></div>
+      <div id="bc-history" style="padding:8px 0"></div>
+    </div>
+  </div>
+
 </div>
 </div>
 
@@ -215,7 +258,7 @@ function adminLogout() {
 }
 
 function showTab(name, el) {
-  ['requests','guides','revenue','reviews'].forEach(t => {
+  ['requests','guides','revenue','reviews','broadcast'].forEach(t => {
     document.getElementById('tab-' + t).style.display = t === name ? 'block' : 'none';
   });
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -223,6 +266,68 @@ function showTab(name, el) {
   if (name === 'guides') { renderNewHDV(); renderGuideTable(); }
   if (name === 'revenue') renderRevenue();
   if (name === 'reviews') renderReviews();
+  if (name === 'broadcast') renderBcHistory();
+}
+
+async function sendBroadcast() {
+  const title = document.getElementById('bc-title').value.trim();
+  const body = document.getElementById('bc-body').value.trim();
+  const targetType = document.getElementById('bc-target').value;
+  const type = document.getElementById('bc-type').value;
+  const res = document.getElementById('bc-result');
+  if (!title || !body) {
+    res.style.display = 'block';
+    res.style.background = '#FEF2F2';
+    res.style.color = '#DC2626';
+    res.textContent = 'Vui lòng điền đầy đủ tiêu đề và nội dung!';
+    return;
+  }
+  const notif = { id:'N_'+Date.now(), type, title, body, targetType, time:new Date().toISOString(), read:false, actionUrl:null };
+  if (typeof sb !== 'undefined') {
+    const { error } = await sb.from('notifications').upsert({ id:notif.id, target_type:targetType, read:false, time:notif.time, data:notif });
+    if (error) {
+      res.style.display = 'block';
+      res.style.background = '#FEF2F2';
+      res.style.color = '#DC2626';
+      res.textContent = 'Lỗi: ' + error.message;
+      return;
+    }
+  }
+  // Save to admin history
+  const hist = JSON.parse(localStorage.getItem('gt_admin_broadcasts') || '[]');
+  hist.unshift(notif);
+  localStorage.setItem('gt_admin_broadcasts', JSON.stringify(hist.slice(0, 50)));
+  document.getElementById('bc-title').value = '';
+  document.getElementById('bc-body').value = '';
+  res.style.display = 'block';
+  res.style.background = '#F0FDF4';
+  res.style.color = '#16A34A';
+  res.textContent = '✓ Đã gửi thông báo thành công!';
+  setTimeout(() => { res.style.display = 'none'; }, 3000);
+  renderBcHistory();
+}
+
+function renderBcHistory() {
+  const hist = JSON.parse(localStorage.getItem('gt_admin_broadcasts') || '[]');
+  const el = document.getElementById('bc-history');
+  if (!hist.length) {
+    el.innerHTML = '<div style="text-align:center;padding:24px;color:#94A3B8;font-size:.85rem">Chưa có thông báo nào được gửi</div>';
+    return;
+  }
+  const targetLabel = { all:'Tất cả', tourist:'Khách', guide:'HDV' };
+  const typeIcon = { policy:'📋', promo:'🏷️', system:'🔔', booking:'📅' };
+  el.innerHTML = hist.slice(0, 10).map(n => {
+    const t = new Date(n.time);
+    const ts = t.toLocaleString('vi-VN', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    return `<div style="padding:12px 20px;border-bottom:1px solid #F1F5F9;display:flex;gap:12px;align-items:flex-start">
+      <span style="font-size:1.2rem;flex-shrink:0">${typeIcon[n.type]||'🔔'}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:.85rem">${n.title}</div>
+        <div style="font-size:.78rem;color:#64748B;margin-top:2px">${n.body}</div>
+        <div style="font-size:.72rem;color:#94A3B8;margin-top:4px">${ts} · ${targetLabel[n.targetType]||n.targetType}</div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 const fmtV = n => new Intl.NumberFormat('vi-VN').format(n) + 'đ';
