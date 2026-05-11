@@ -8,7 +8,6 @@
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Segoe UI',sans-serif;background:#F1F5F9;color:#0F172A;min-height:100vh}
-    /* Login screen */
     .login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#0F172A,#1E3A5F);display:flex;align-items:center;justify-content:center;z-index:999}
     .login-box{background:white;border-radius:20px;padding:40px;width:340px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3)}
     .login-box h2{font-size:1.2rem;margin-bottom:6px}
@@ -18,32 +17,33 @@
     .login-box button{width:100%;padding:11px;background:#0EA5E9;color:white;border:none;border-radius:10px;font-weight:700;font-size:.95rem;cursor:pointer}
     .login-box button:hover{background:#0284C7}
     .err-msg{color:#DC2626;font-size:.8rem;margin-top:6px;display:none}
-    /* Topbar */
     .topbar{background:linear-gradient(135deg,#0F172A,#1E3A5F);padding:16px 28px;display:flex;align-items:center;justify-content:space-between}
     .topbar h1{color:white;font-size:1rem;font-weight:700;display:flex;align-items:center;gap:10px}
     .topbar-right{display:flex;align-items:center;gap:12px}
     .admin-badge{background:rgba(239,68,68,.9);color:white;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:99px}
     .logout-btn{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:6px 14px;font-size:.8rem;cursor:pointer;transition:.2s}
     .logout-btn:hover{background:rgba(255,255,255,.2)}
-    /* Layout */
-    .wrap{max-width:1200px;margin:0 auto;padding:28px 20px 60px}
-    /* Stats */
-    .stat-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:28px}
-    @media(max-width:900px){.stat-row{grid-template-columns:repeat(2,1fr)}}
-    .scard{background:white;border-radius:14px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,.06);border-left:4px solid var(--c,#0EA5E9)}
-    .scard-val{font-size:1.8rem;font-weight:800;color:var(--dark)}
-    .scard-lbl{font-size:.76rem;color:#64748B;margin-top:3px}
+    .wrap{max-width:1300px;margin:0 auto;padding:28px 20px 60px}
     /* Tabs */
-    .tabs{display:flex;gap:0;border-bottom:2px solid #E2E8F0;margin-bottom:24px;overflow-x:auto}
-    .tab{padding:10px 20px;font-size:.85rem;font-weight:600;cursor:pointer;color:#64748B;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:.2s}
+    .tabs{display:flex;gap:0;border-bottom:2px solid #E2E8F0;margin-bottom:24px;overflow-x:auto;background:white;border-radius:12px 12px 0 0;padding:0 8px}
+    .tab{padding:14px 18px;font-size:.84rem;font-weight:600;cursor:pointer;color:#64748B;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:.2s;display:flex;align-items:center;gap:7px}
     .tab.active{color:#0EA5E9;border-bottom-color:#0EA5E9}
-    /* Table */
+    .tab:hover{color:#0F172A}
+    /* Cards */
     .card{background:white;border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,.06);overflow:hidden;margin-bottom:20px}
-    .card-head{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #F1F5F9}
-    .card-head h3{font-size:.92rem;font-weight:700}
+    .card-head{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #F1F5F9;flex-wrap:wrap;gap:10px}
+    .card-head h3{font-size:.92rem;font-weight:700;display:flex;align-items:center;gap:8px}
+    /* Dashboard stat grid */
+    .dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+    @media(max-width:1000px){.dash-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:500px){.dash-grid{grid-template-columns:1fr 1fr}}
+    .dcard{background:white;border-radius:14px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,.06);border-left:4px solid var(--c,#0EA5E9);cursor:default}
+    .dcard-val{font-size:1.9rem;font-weight:800;color:#0F172A}
+    .dcard-lbl{font-size:.75rem;color:#64748B;margin-top:4px;display:flex;align-items:center;gap:5px}
+    /* Table */
     table{width:100%;border-collapse:collapse}
-    th{background:#F8FAFC;padding:10px 16px;text-align:left;font-size:.72rem;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #E2E8F0}
-    td{padding:11px 16px;font-size:.84rem;border-bottom:1px solid #F8FAFC;vertical-align:middle}
+    th{background:#F8FAFC;padding:10px 14px;text-align:left;font-size:.72rem;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #E2E8F0;white-space:nowrap}
+    td{padding:10px 14px;font-size:.83rem;border-bottom:1px solid #F8FAFC;vertical-align:middle}
     tr:last-child td{border-bottom:none}
     tr:hover td{background:#FAFCFF}
     .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:99px;font-size:.72rem;font-weight:700}
@@ -51,27 +51,56 @@
     .b-accepted{background:#F0FDF4;color:#16A34A}
     .b-declined{background:#FEF2F2;color:#DC2626}
     .b-done{background:#EFF6FF;color:#0EA5E9}
-    /* Search bar */
-    .search-wrap{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
-    .search-wrap input,.search-wrap select{padding:8px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-size:.84rem;outline:none}
-    .search-wrap input:focus,.search-wrap select:focus{border-color:#0EA5E9}
-    .action-btn{padding:5px 12px;border-radius:7px;font-size:.76rem;font-weight:700;cursor:pointer;border:none;transition:.15s}
-    .btn-green{background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0}
-    .btn-green:hover{background:#DCFCE7}
-    .btn-red{background:#FEF2F2;color:#DC2626;border:1px solid #FECACA}
-    .btn-red:hover{background:#FEE2E2}
-    .btn-blue{background:#EFF6FF;color:#0EA5E9;border:1px solid #BAE6FD}
+    .b-paid{background:#F0FDF4;color:#16A34A}
+    .b-unpaid{background:#FFF7ED;color:#F97316}
+    .b-free{background:#F0FDF4;color:#16A34A}
+    .b-busy{background:#FFF7ED;color:#F97316}
+    /* Filters */
+    .filters{display:flex;gap:8px;flex-wrap:wrap;padding:14px 20px;border-bottom:1px solid #F1F5F9;background:#FAFCFF}
+    .filters input,.filters select{padding:7px 11px;border:1.5px solid #E2E8F0;border-radius:8px;font-size:.82rem;outline:none;background:white}
+    .filters input:focus,.filters select:focus{border-color:#0EA5E9}
+    .filters input[type=search]{min-width:200px}
+    /* Action buttons */
+    .action-btn{padding:4px 11px;border-radius:7px;font-size:.75rem;font-weight:700;cursor:pointer;border:none;transition:.15s;white-space:nowrap}
+    .btn-green{background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0}.btn-green:hover{background:#DCFCE7}
+    .btn-red{background:#FEF2F2;color:#DC2626;border:1px solid #FECACA}.btn-red:hover{background:#FEE2E2}
+    .btn-blue{background:#EFF6FF;color:#0EA5E9;border:1px solid #BAE6FD}.btn-blue:hover{background:#E0F2FE}
+    .btn-gray{background:#F8FAFC;color:#64748B;border:1px solid #E2E8F0}.btn-gray:hover{background:#F1F5F9}
     .empty{text-align:center;padding:40px;color:#94A3B8;font-size:.85rem}
+    /* Revenue bars */
     .revenue-bar{display:flex;align-items:center;gap:12px;background:#F8FAFC;border-radius:10px;padding:12px 16px;margin-bottom:10px}
-    .rb-label{font-size:.82rem;font-weight:600;min-width:160px}
+    .rb-label{font-size:.82rem;font-weight:600;min-width:180px;display:flex;align-items:center;gap:8px}
     .rb-track{flex:1;background:#E2E8F0;border-radius:99px;height:8px;overflow:hidden}
     .rb-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#0EA5E9,#7C3AED);transition:.6s}
-    .rb-val{font-size:.82rem;font-weight:700;color:#0F172A;min-width:80px;text-align:right}
+    .rb-val{font-size:.82rem;font-weight:700;color:#0F172A;min-width:90px;text-align:right}
+    /* Booking detail modal */
+    .modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+    .modal-box{background:white;border-radius:16px;width:100%;max-width:700px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+    .modal-head{padding:20px 24px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:white;z-index:1}
+    .modal-head h3{font-size:1rem;font-weight:700}
+    .modal-close{background:none;border:none;font-size:1.3rem;color:#94A3B8;cursor:pointer;line-height:1;padding:4px}
+    .modal-body{padding:24px;display:flex;flex-direction:column;gap:20px}
+    .detail-section{border:1px solid #F1F5F9;border-radius:12px;overflow:hidden}
+    .detail-section-head{background:#F8FAFC;padding:10px 16px;font-size:.8rem;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.04em}
+    .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+    .detail-row{padding:10px 16px;border-top:1px solid #F8FAFC;display:flex;flex-direction:column;gap:2px}
+    .detail-row:first-child{border-top:none}
+    .detail-lbl{font-size:.74rem;color:#94A3B8;font-weight:600}
+    .detail-val{font-size:.88rem;color:#0F172A;font-weight:500}
+    .history-item{display:flex;gap:12px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #F8FAFC}
+    .history-item:last-child{border-bottom:none}
+    .history-dot{width:8px;height:8px;border-radius:50%;background:#0EA5E9;margin-top:5px;flex-shrink:0}
+    /* Mini quick-list in dashboard */
+    .quick-list-item{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid #F8FAFC;font-size:.83rem}
+    .quick-list-item:last-child{border-bottom:none}
+    /* Revenue day/month toggle */
+    .rev-toggle{display:flex;gap:0;border:1.5px solid #E2E8F0;border-radius:8px;overflow:hidden}
+    .rev-toggle button{padding:6px 14px;font-size:.8rem;font-weight:600;border:none;cursor:pointer;background:white;color:#64748B;transition:.15s}
+    .rev-toggle button.active{background:#0EA5E9;color:white}
   </style>
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
 <div class="login-screen" id="login-screen">
   <div class="login-box">
     <div style="font-size:2rem;margin-bottom:12px">🔐</div>
@@ -83,9 +112,7 @@
   </div>
 </div>
 
-<!-- MAIN CONTENT -->
 <div id="admin-content" style="display:none">
-
 <div class="topbar">
   <h1><i class="fa-solid fa-shield-halved" style="color:#F59E0B"></i> GuideTravel Admin</h1>
   <div class="topbar-right">
@@ -95,49 +122,87 @@
 </div>
 
 <div class="wrap">
-
-  <!-- Stats -->
-  <div class="stat-row" id="stat-row"></div>
-
-  <!-- Tabs -->
   <div class="tabs">
-    <div class="tab active" onclick="showTab('requests',this)"><i class="fa-solid fa-inbox"></i> Yêu cầu</div>
-    <div class="tab" onclick="showTab('guides',this)"><i class="fa-solid fa-users"></i> HDV</div>
+    <div class="tab active" onclick="showTab('dashboard',this)"><i class="fa-solid fa-gauge"></i> Dashboard</div>
+    <div class="tab" onclick="showTab('bookings',this)"><i class="fa-solid fa-inbox"></i> Quản lý Booking</div>
+    <div class="tab" onclick="showTab('guides',this)"><i class="fa-solid fa-users"></i> Quản lý HDV</div>
     <div class="tab" onclick="showTab('revenue',this)"><i class="fa-solid fa-chart-bar"></i> Doanh thu</div>
     <div class="tab" onclick="showTab('reviews',this)"><i class="fa-solid fa-star"></i> Đánh giá</div>
     <div class="tab" onclick="showTab('broadcast',this)"><i class="fa-solid fa-bullhorn"></i> Thông báo</div>
   </div>
 
-  <!-- REQUESTS TAB -->
-  <div id="tab-requests">
-    <div class="card">
-      <div class="card-head">
-        <h3><i class="fa-solid fa-inbox" style="color:#0EA5E9"></i> Tất cả yêu cầu</h3>
-        <div class="search-wrap">
-          <input type="search" id="req-search" placeholder="Tìm theo tên, email..." oninput="renderRequests()">
-          <select id="req-status-filter" onchange="renderRequests()">
-            <option value="">Tất cả trạng thái</option>
-            <option value="pending">Chờ xử lý</option>
-            <option value="accepted">Đã xác nhận</option>
-            <option value="done">Hoàn thành</option>
-            <option value="declined">Từ chối</option>
-          </select>
-        </div>
+  <!-- DASHBOARD TAB -->
+  <div id="tab-dashboard">
+    <div class="dash-grid" id="dash-grid"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div class="card">
+        <div class="card-head"><h3><i class="fa-solid fa-clock" style="color:#F97316"></i> Booking chờ xử lý</h3></div>
+        <div id="dash-pending-list"></div>
       </div>
-      <div style="overflow-x:auto">
-        <table>
-          <thead><tr>
-            <th>Mã</th><th>Khách hàng</th><th>HDV</th><th>Điểm đến</th>
-            <th>Ngày đi</th><th>Số ngày</th><th>Trạng thái</th><th>Thao tác</th>
-          </tr></thead>
-          <tbody id="req-tbody"></tbody>
-        </table>
-        <div id="req-empty" class="empty" style="display:none"><i class="fa-solid fa-inbox" style="font-size:2rem;display:block;margin-bottom:10px"></i>Không có yêu cầu nào</div>
+      <div class="card">
+        <div class="card-head"><h3><i class="fa-solid fa-plane-departure" style="color:#0EA5E9"></i> Sắp khởi hành (7 ngày tới)</h3></div>
+        <div id="dash-upcoming-list"></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px">
+      <div class="card">
+        <div class="card-head"><h3><i class="fa-solid fa-user-slash" style="color:#DC2626"></i> Chưa gán HDV</h3></div>
+        <div id="dash-unassigned-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3><i class="fa-solid fa-flag-checkered" style="color:#16A34A"></i> Hoàn thành gần đây</h3></div>
+        <div id="dash-done-list"></div>
       </div>
     </div>
   </div>
 
-  <!-- GUIDES TAB -->
+  <!-- BOOKINGS TAB -->
+  <div id="tab-bookings" style="display:none">
+    <div class="card">
+      <div class="card-head">
+        <h3><i class="fa-solid fa-inbox" style="color:#0EA5E9"></i> Tất cả booking</h3>
+        <span id="booking-count" style="font-size:.8rem;color:#94A3B8"></span>
+      </div>
+      <div class="filters">
+        <input type="search" id="bk-search" placeholder="🔍 Tìm tên, email, điểm đến..." oninput="renderBookings()">
+        <select id="bk-status" onchange="renderBookings()">
+          <option value="">Tất cả trạng thái</option>
+          <option value="pending">Chờ xử lý</option>
+          <option value="accepted">Đã xác nhận</option>
+          <option value="done">Hoàn thành</option>
+          <option value="declined">Từ chối</option>
+        </select>
+        <input type="date" id="bk-date" onchange="renderBookings()" title="Lọc theo ngày đi">
+        <select id="bk-guide" onchange="renderBookings()">
+          <option value="">Tất cả HDV</option>
+        </select>
+        <select id="bk-dest" onchange="renderBookings()">
+          <option value="">Tất cả điểm đến</option>
+        </select>
+        <button class="action-btn btn-gray" onclick="clearFilters()"><i class="fa-solid fa-xmark"></i> Xóa lọc</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr>
+            <th>Mã booking</th>
+            <th>Khách hàng</th>
+            <th>HDV</th>
+            <th>Điểm đến</th>
+            <th>Ngày đi</th>
+            <th>Ngày / Khách</th>
+            <th>Tổng tiền</th>
+            <th>Thanh toán</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+          </tr></thead>
+          <tbody id="bk-tbody"></tbody>
+        </table>
+        <div id="bk-empty" class="empty" style="display:none"><i class="fa-solid fa-inbox" style="font-size:2rem;display:block;margin-bottom:10px"></i>Không có booking nào</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HDV TAB -->
   <div id="tab-guides" style="display:none">
     <div class="card" style="margin-bottom:20px">
       <div class="card-head"><h3><i class="fa-solid fa-user-clock" style="color:#F97316"></i> HDV mới đăng ký <span id="new-hdv-count" style="background:#FFF7ED;color:#F97316;border-radius:99px;padding:2px 10px;font-size:.8rem;margin-left:8px"></span></h3></div>
@@ -150,11 +215,11 @@
       </div>
     </div>
     <div class="card">
-      <div class="card-head"><h3><i class="fa-solid fa-users" style="color:#7C3AED"></i> HDV đang hoạt động</h3></div>
+      <div class="card-head"><h3><i class="fa-solid fa-users" style="color:#7C3AED"></i> Danh sách HDV</h3></div>
       <div style="overflow-x:auto">
         <table>
           <thead><tr>
-            <th>HDV</th><th>Khu vực</th><th>Đánh giá</th><th>Số tour</th><th>Hoa hồng</th><th>Yêu cầu đang chờ</th><th>Xác minh</th>
+            <th>HDV</th><th>Khu vực</th><th>Đánh giá</th><th>Số tour</th><th>Đang nhận</th><th>Trạng thái</th><th>Hoa hồng</th><th>Xác minh</th>
           </tr></thead>
           <tbody id="guides-tbody"></tbody>
         </table>
@@ -164,8 +229,18 @@
 
   <!-- REVENUE TAB -->
   <div id="tab-revenue" style="display:none">
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-head">
+        <h3><i class="fa-solid fa-chart-line" style="color:#7C3AED"></i> Tổng quan doanh thu</h3>
+        <div class="rev-toggle">
+          <button class="active" onclick="setRevMode('month',this)">Theo tháng</button>
+          <button onclick="setRevMode('day',this)">Theo ngày</button>
+        </div>
+      </div>
+      <div style="padding:20px" id="rev-summary"></div>
+    </div>
     <div class="card">
-      <div class="card-head"><h3><i class="fa-solid fa-chart-bar" style="color:#F97316"></i> Doanh thu ước tính theo HDV</h3></div>
+      <div class="card-head"><h3><i class="fa-solid fa-chart-bar" style="color:#F97316"></i> Doanh thu theo HDV</h3></div>
       <div style="padding:20px" id="revenue-content"></div>
     </div>
   </div>
@@ -176,9 +251,7 @@
       <div class="card-head"><h3><i class="fa-solid fa-star" style="color:#F59E0B"></i> Đánh giá từ khách</h3></div>
       <div style="overflow-x:auto">
         <table>
-          <thead><tr>
-            <th>HDV</th><th>Điểm đến</th><th>Sao</th><th>Nội dung</th><th>Ngày</th>
-          </tr></thead>
+          <thead><tr><th>HDV</th><th>Điểm đến</th><th>Sao</th><th>Nội dung</th><th>Ngày</th></tr></thead>
           <tbody id="reviews-tbody"></tbody>
         </table>
         <div id="reviews-empty" class="empty" style="display:none"><i class="fa-solid fa-star" style="font-size:2rem;display:block;margin-bottom:10px"></i>Chưa có đánh giá nào</div>
@@ -188,47 +261,58 @@
 
   <!-- BROADCAST TAB -->
   <div id="tab-broadcast" style="display:none">
-    <div class="card" style="max-width:600px">
-      <div class="card-head"><h3><i class="fa-solid fa-bullhorn" style="color:#7C3AED"></i> Gửi thông báo cho người dùng</h3></div>
-      <div style="padding:24px;display:flex;flex-direction:column;gap:14px">
-        <div>
-          <label style="font-size:.8rem;font-weight:700;color:#64748B;display:block;margin-bottom:6px">Đối tượng nhận</label>
-          <select id="bc-target" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:.88rem;outline:none">
-            <option value="all">Tất cả (Khách + HDV)</option>
-            <option value="tourist">Chỉ Khách du lịch</option>
-            <option value="guide">Chỉ Hướng dẫn viên</option>
-          </select>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div class="card">
+        <div class="card-head"><h3><i class="fa-solid fa-bullhorn" style="color:#7C3AED"></i> Gửi thông báo</h3></div>
+        <div style="padding:24px;display:flex;flex-direction:column;gap:14px">
+          <div>
+            <label style="font-size:.8rem;font-weight:700;color:#64748B;display:block;margin-bottom:6px">Đối tượng nhận</label>
+            <select id="bc-target" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:.88rem;outline:none">
+              <option value="all">Tất cả (Khách + HDV)</option>
+              <option value="tourist">Chỉ Khách du lịch</option>
+              <option value="guide">Chỉ Hướng dẫn viên</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:.8rem;font-weight:700;color:#64748B;display:block;margin-bottom:6px">Loại thông báo</label>
+            <select id="bc-type" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:.88rem;outline:none">
+              <option value="policy">📋 Chính sách</option>
+              <option value="promo">🏷️ Ưu đãi / Khuyến mãi</option>
+              <option value="system">🔔 Thông báo hệ thống</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:.8rem;font-weight:700;color:#64748B;display:block;margin-bottom:6px">Tiêu đề</label>
+            <input id="bc-title" type="text" placeholder="VD: Cập nhật chính sách hoàn tiền tháng 6" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:.88rem;outline:none">
+          </div>
+          <div>
+            <label style="font-size:.8rem;font-weight:700;color:#64748B;display:block;margin-bottom:6px">Nội dung</label>
+            <textarea id="bc-body" rows="4" placeholder="Nhập nội dung thông báo..." style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:.88rem;outline:none;resize:vertical;font-family:inherit"></textarea>
+          </div>
+          <button onclick="sendBroadcast()" style="background:#7C3AED;color:white;font-weight:700;padding:12px;border:none;border-radius:10px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;gap:8px">
+            <i class="fa-solid fa-paper-plane"></i> Gửi thông báo
+          </button>
+          <div id="bc-result" style="display:none;padding:12px 14px;border-radius:10px;font-size:.85rem;font-weight:600"></div>
         </div>
-        <div>
-          <label style="font-size:.8rem;font-weight:700;color:#64748B;display:block;margin-bottom:6px">Loại thông báo</label>
-          <select id="bc-type" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:.88rem;outline:none">
-            <option value="policy">📋 Chính sách</option>
-            <option value="promo">🏷️ Ưu đãi / Khuyến mãi</option>
-            <option value="system">🔔 Thông báo hệ thống</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-size:.8rem;font-weight:700;color:#64748B;display:block;margin-bottom:6px">Tiêu đề</label>
-          <input id="bc-title" type="text" placeholder="VD: Cập nhật chính sách hoàn tiền tháng 6" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:.88rem;outline:none">
-        </div>
-        <div>
-          <label style="font-size:.8rem;font-weight:700;color:#64748B;display:block;margin-bottom:6px">Nội dung</label>
-          <textarea id="bc-body" rows="4" placeholder="Nhập nội dung thông báo..." style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:.88rem;outline:none;resize:vertical;font-family:inherit"></textarea>
-        </div>
-        <button onclick="sendBroadcast()" style="background:#7C3AED;color:white;font-weight:700;padding:12px;border:none;border-radius:10px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;gap:8px">
-          <i class="fa-solid fa-paper-plane"></i> Gửi thông báo
-        </button>
-        <div id="bc-result" style="display:none;padding:12px 14px;border-radius:10px;font-size:.85rem;font-weight:600"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3><i class="fa-solid fa-clock-rotate-left" style="color:#64748B"></i> Đã gửi gần đây</h3></div>
+        <div id="bc-history" style="padding:8px 0"></div>
       </div>
     </div>
-
-    <div class="card" style="max-width:600px">
-      <div class="card-head"><h3><i class="fa-solid fa-clock-rotate-left" style="color:#64748B"></i> Thông báo đã gửi gần đây</h3></div>
-      <div id="bc-history" style="padding:8px 0"></div>
-    </div>
   </div>
-
 </div>
+</div>
+
+<!-- BOOKING DETAIL MODAL -->
+<div class="modal-overlay" id="booking-modal" style="display:none" onclick="if(event.target===this)closeBookingModal()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="modal-title">Chi tiết booking</h3>
+      <button class="modal-close" onclick="closeBookingModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -237,6 +321,10 @@
 <script src="app.js"></script>
 <script>
 const ADMIN_PASS = 'admin123';
+const fmtV = n => new Intl.NumberFormat('vi-VN').format(n) + 'đ';
+const STATUS_LABEL = { pending:'Chờ xử lý', accepted:'Đã xác nhận', done:'Hoàn thành', declined:'Từ chối' };
+const STATUS_CLS   = { pending:'b-pending', accepted:'b-accepted', done:'b-done', declined:'b-declined' };
+let revMode = 'month';
 
 function checkLogin() {
   const pass = document.getElementById('admin-pass').value;
@@ -252,145 +340,135 @@ function checkLogin() {
   }
 }
 
-function adminLogout() {
-  sessionStorage.removeItem('gt_admin');
-  location.reload();
-}
+function adminLogout() { sessionStorage.removeItem('gt_admin'); location.reload(); }
 
 function showTab(name, el) {
-  ['requests','guides','revenue','reviews','broadcast'].forEach(t => {
+  ['dashboard','bookings','guides','revenue','reviews','broadcast'].forEach(t => {
     document.getElementById('tab-' + t).style.display = t === name ? 'block' : 'none';
   });
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   if (el) el.classList.add('active');
+  if (name === 'dashboard') renderDashboard();
+  if (name === 'bookings') { populateFilters(); renderBookings(); }
   if (name === 'guides') { renderNewHDV(); renderGuideTable(); }
   if (name === 'revenue') renderRevenue();
   if (name === 'reviews') renderReviews();
   if (name === 'broadcast') renderBcHistory();
 }
 
-async function sendBroadcast() {
-  const title = document.getElementById('bc-title').value.trim();
-  const body = document.getElementById('bc-body').value.trim();
-  const targetType = document.getElementById('bc-target').value;
-  const type = document.getElementById('bc-type').value;
-  const res = document.getElementById('bc-result');
-  if (!title || !body) {
-    res.style.display = 'block';
-    res.style.background = '#FEF2F2';
-    res.style.color = '#DC2626';
-    res.textContent = 'Vui lòng điền đầy đủ tiêu đề và nội dung!';
-    return;
-  }
-  const notif = { id:'N_'+Date.now(), type, title, body, targetType, time:new Date().toISOString(), read:false, actionUrl:null };
-  if (typeof sb !== 'undefined') {
-    const { error } = await sb.from('notifications').upsert({ id:notif.id, target_type:targetType, read:false, time:notif.time, data:notif });
-    if (error) {
-      res.style.display = 'block';
-      res.style.background = '#FEF2F2';
-      res.style.color = '#DC2626';
-      res.textContent = 'Lỗi: ' + error.message;
-      return;
-    }
-  }
-  // Save to admin history
-  const hist = JSON.parse(localStorage.getItem('gt_admin_broadcasts') || '[]');
-  hist.unshift(notif);
-  localStorage.setItem('gt_admin_broadcasts', JSON.stringify(hist.slice(0, 50)));
-  document.getElementById('bc-title').value = '';
-  document.getElementById('bc-body').value = '';
-  res.style.display = 'block';
-  res.style.background = '#F0FDF4';
-  res.style.color = '#16A34A';
-  res.textContent = '✓ Đã gửi thông báo thành công!';
-  setTimeout(() => { res.style.display = 'none'; }, 3000);
-  renderBcHistory();
-}
+function getAllRequests() { return JSON.parse(localStorage.getItem('gt_requests') || '[]'); }
 
-function renderBcHistory() {
-  const hist = JSON.parse(localStorage.getItem('gt_admin_broadcasts') || '[]');
-  const el = document.getElementById('bc-history');
-  if (!hist.length) {
-    el.innerHTML = '<div style="text-align:center;padding:24px;color:#94A3B8;font-size:.85rem">Chưa có thông báo nào được gửi</div>';
-    return;
-  }
-  const targetLabel = { all:'Tất cả', tourist:'Khách', guide:'HDV' };
-  const typeIcon = { policy:'📋', promo:'🏷️', system:'🔔', booking:'📅' };
-  el.innerHTML = hist.slice(0, 10).map(n => {
-    const t = new Date(n.time);
-    const ts = t.toLocaleString('vi-VN', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
-    return `<div style="padding:12px 20px;border-bottom:1px solid #F1F5F9;display:flex;gap:12px;align-items:flex-start">
-      <span style="font-size:1.2rem;flex-shrink:0">${typeIcon[n.type]||'🔔'}</span>
-      <div style="flex:1;min-width:0">
-        <div style="font-weight:700;font-size:.85rem">${n.title}</div>
-        <div style="font-size:.78rem;color:#64748B;margin-top:2px">${n.body}</div>
-        <div style="font-size:.72rem;color:#94A3B8;margin-top:4px">${ts} · ${targetLabel[n.targetType]||n.targetType}</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-const fmtV = n => new Intl.NumberFormat('vi-VN').format(n) + 'đ';
-const STATUS_LABEL = { pending:'Chờ xử lý', accepted:'Đã xác nhận', done:'Hoàn thành', declined:'Từ chối' };
-const STATUS_CLS   = { pending:'b-pending', accepted:'b-accepted', done:'b-done', declined:'b-declined' };
-
-function getAllRequests() {
-  return JSON.parse(localStorage.getItem('gt_requests') || '[]');
-}
-
-function renderStats() {
+// ===== DASHBOARD =====
+function renderDashboard() {
   const reqs = getAllRequests();
-  const pending  = reqs.filter(r => r.status === 'pending').length;
-  const accepted = reqs.filter(r => r.status === 'accepted').length;
-  const done     = reqs.filter(r => r.status === 'done').length;
-  const revenue  = reqs.filter(r => r.status === 'accepted' || r.status === 'done').reduce((s, r) => {
-    const g = GUIDES.find(x => x.id === parseInt(r.guideId));
-    return s + (g ? g.pricePerDay * parseInt(r.days || 1) : 0);
-  }, 0);
-  const reviews = JSON.parse(localStorage.getItem('gt_my_reviews') || '[]').length;
+  const today = new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const in7 = new Date(now.getTime() + 7 * 86400000);
+  const thisMonth = today.slice(0, 7);
 
-  document.getElementById('stat-row').innerHTML = `
-    <div class="scard" style="--c:#F97316"><div class="scard-val">${pending}</div><div class="scard-lbl">⏳ Chờ xử lý</div></div>
-    <div class="scard" style="--c:#16A34A"><div class="scard-val">${accepted}</div><div class="scard-lbl">✅ Đã xác nhận</div></div>
-    <div class="scard" style="--c:#0EA5E9"><div class="scard-val">${done}</div><div class="scard-lbl">🏁 Hoàn thành</div></div>
-    <div class="scard" style="--c:#7C3AED"><div class="scard-val">${fmtV(revenue)}</div><div class="scard-lbl">💰 Doanh thu ước tính</div></div>
-    <div class="scard" style="--c:#F59E0B"><div class="scard-val">${reviews}</div><div class="scard-lbl">⭐ Đánh giá nhận được</div></div>`;
+  const pending   = reqs.filter(r => r.status === 'pending').length;
+  const accepted  = reqs.filter(r => r.status === 'accepted').length;
+  const done      = reqs.filter(r => r.status === 'done').length;
+  const upcoming  = reqs.filter(r => r.status === 'accepted' && r.date >= today && r.date <= in7.toISOString().slice(0,10));
+  const unassigned = reqs.filter(r => r.status === 'pending' && (!r.guideName || r.guideName === 'Tất cả HDV phù hợp'));
+
+  const revToday = reqs.filter(r => (r.status === 'accepted' || r.status === 'done') && (r.createdAt||'').slice(0,10) === today)
+    .reduce((s,r) => s + (r.totalAmount || 0), 0);
+  const revMonth = reqs.filter(r => (r.status === 'accepted' || r.status === 'done') && (r.createdAt||'').slice(0,7) === thisMonth)
+    .reduce((s,r) => s + (r.totalAmount || 0), 0);
+
+  document.getElementById('dash-grid').innerHTML = `
+    <div class="dcard" style="--c:#F97316"><div class="dcard-val">${pending}</div><div class="dcard-lbl"><i class="fa-solid fa-clock" style="color:#F97316"></i> Chờ xử lý</div></div>
+    <div class="dcard" style="--c:#16A34A"><div class="dcard-val">${accepted}</div><div class="dcard-lbl"><i class="fa-solid fa-circle-check" style="color:#16A34A"></i> Đã xác nhận</div></div>
+    <div class="dcard" style="--c:#0EA5E9"><div class="dcard-val">${done}</div><div class="dcard-lbl"><i class="fa-solid fa-flag-checkered" style="color:#0EA5E9"></i> Hoàn thành</div></div>
+    <div class="dcard" style="--c:#7C3AED"><div class="dcard-val">${revToday ? fmtV(revToday) : '0đ'}</div><div class="dcard-lbl"><i class="fa-solid fa-fire" style="color:#7C3AED"></i> Doanh thu hôm nay</div></div>
+    <div class="dcard" style="--c:#0284C7"><div class="dcard-val">${revMonth ? fmtV(revMonth) : '0đ'}</div><div class="dcard-lbl"><i class="fa-solid fa-calendar-days" style="color:#0284C7"></i> Doanh thu tháng này</div></div>
+    <div class="dcard" style="--c:#06B6D4"><div class="dcard-val">${upcoming.length}</div><div class="dcard-lbl"><i class="fa-solid fa-plane-departure" style="color:#06B6D4"></i> Sắp khởi hành</div></div>
+    <div class="dcard" style="--c:#DC2626"><div class="dcard-val">${unassigned.length}</div><div class="dcard-lbl"><i class="fa-solid fa-user-slash" style="color:#DC2626"></i> Chưa gán HDV</div></div>
+    <div class="dcard" style="--c:#F59E0B"><div class="dcard-val">${JSON.parse(localStorage.getItem('gt_my_reviews')||'[]').length}</div><div class="dcard-lbl"><i class="fa-solid fa-star" style="color:#F59E0B"></i> Đánh giá</div></div>`;
+
+  const mkList = (items, emptyText) => items.length
+    ? items.slice(0,5).map(r => `<div class="quick-list-item">
+        <div>
+          <div style="font-weight:600;font-size:.83rem">${r.name||'—'} → ${r.destination||'—'}</div>
+          <div style="font-size:.74rem;color:#94A3B8">#${r.id} · ${r.date||'—'}</div>
+        </div>
+        <span class="badge ${STATUS_CLS[r.status]||'b-pending'}">${STATUS_LABEL[r.status]||r.status}</span>
+      </div>`).join('')
+    : `<div class="empty" style="padding:20px">${emptyText}</div>`;
+
+  document.getElementById('dash-pending-list').innerHTML = mkList(reqs.filter(r=>r.status==='pending'), 'Không có booking chờ');
+  document.getElementById('dash-upcoming-list').innerHTML = mkList(upcoming, 'Không có chuyến sắp tới');
+  document.getElementById('dash-unassigned-list').innerHTML = mkList(unassigned, 'Không có booking chưa gán');
+  document.getElementById('dash-done-list').innerHTML = mkList(reqs.filter(r=>r.status==='done').slice().reverse(), 'Chưa có tour hoàn thành');
 }
 
-function renderRequests() {
-  const tbody = document.getElementById('req-tbody');
-  const empty = document.getElementById('req-empty');
-  let reqs = getAllRequests();
-  const search = document.getElementById('req-search')?.value.toLowerCase() || '';
-  const statusF = document.getElementById('req-status-filter')?.value || '';
-  if (search) reqs = reqs.filter(r => (r.name||'').toLowerCase().includes(search) || (r.email||'').toLowerCase().includes(search) || (r.destination||'').toLowerCase().includes(search));
-  if (statusF) reqs = reqs.filter(r => r.status === statusF);
+// ===== BOOKINGS =====
+function populateFilters() {
+  const reqs = getAllRequests();
+  const guideEl = document.getElementById('bk-guide');
+  const destEl  = document.getElementById('bk-dest');
+  const guides = [...new Set(reqs.map(r => r.guideName).filter(Boolean))].sort();
+  const dests   = [...new Set(reqs.map(r => r.destination).filter(Boolean))].sort();
+  guideEl.innerHTML = '<option value="">Tất cả HDV</option>' + guides.map(g => `<option value="${g}">${g}</option>`).join('');
+  destEl.innerHTML  = '<option value="">Tất cả điểm đến</option>' + dests.map(d => `<option value="${d}">${d}</option>`).join('');
+}
 
-  if (!reqs.length) {
-    tbody.innerHTML = '';
-    empty.style.display = 'block';
-    return;
-  }
+function clearFilters() {
+  document.getElementById('bk-search').value = '';
+  document.getElementById('bk-status').value = '';
+  document.getElementById('bk-date').value   = '';
+  document.getElementById('bk-guide').value  = '';
+  document.getElementById('bk-dest').value   = '';
+  renderBookings();
+}
+
+function renderBookings() {
+  let reqs = getAllRequests();
+  const search = (document.getElementById('bk-search')?.value || '').toLowerCase();
+  const status = document.getElementById('bk-status')?.value || '';
+  const date   = document.getElementById('bk-date')?.value   || '';
+  const guide  = document.getElementById('bk-guide')?.value  || '';
+  const dest   = document.getElementById('bk-dest')?.value   || '';
+
+  if (search) reqs = reqs.filter(r => (r.name||'').toLowerCase().includes(search) || (r.email||'').toLowerCase().includes(search) || (r.destination||'').toLowerCase().includes(search) || (r.id||'').toLowerCase().includes(search));
+  if (status) reqs = reqs.filter(r => r.status === status);
+  if (date)   reqs = reqs.filter(r => r.date === date);
+  if (guide)  reqs = reqs.filter(r => r.guideName === guide);
+  if (dest)   reqs = reqs.filter(r => r.destination === dest);
+
+  document.getElementById('booking-count').textContent = `${reqs.length} booking`;
+  const tbody = document.getElementById('bk-tbody');
+  const empty = document.getElementById('bk-empty');
+  if (!reqs.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
+
+  const payStatus = r => (r.status === 'accepted' || r.status === 'done') ? ['b-paid','Đã thanh toán'] : ['b-unpaid','Chưa thanh toán'];
+
   tbody.innerHTML = reqs.map(r => {
+    const [pCls, pLbl] = payStatus(r);
     const sc = STATUS_CLS[r.status] || 'b-pending';
     const sl = STATUS_LABEL[r.status] || r.status;
     return `<tr>
-      <td style="font-family:monospace;font-size:.78rem;color:#64748B">${r.id}</td>
+      <td style="font-family:monospace;font-size:.77rem;color:#64748B">${r.id}</td>
       <td>
-        <div style="font-weight:600">${r.name || '—'}</div>
-        <div style="font-size:.75rem;color:#94A3B8">${r.email || ''}</div>
+        <div style="font-weight:600">${r.name||'—'}</div>
+        <div style="font-size:.74rem;color:#94A3B8">${r.email||''}</div>
+        <div style="font-size:.74rem;color:#94A3B8">${r.phone||''}</div>
       </td>
-      <td>${r.guideName || '—'}</td>
-      <td>${r.destination || '—'}</td>
-      <td>${r.date || '—'}</td>
-      <td style="text-align:center">${r.days || 1}</td>
+      <td style="font-size:.82rem">${r.guideName||'<span style="color:#94A3B8">Chưa gán</span>'}</td>
+      <td style="font-size:.82rem">${r.destination||'—'}</td>
+      <td style="font-size:.82rem;white-space:nowrap">${r.date||'—'}</td>
+      <td style="text-align:center;font-size:.82rem">${r.days||1}N / ${r.people||1}K</td>
+      <td style="font-weight:600;font-size:.82rem">${r.totalAmount ? fmtV(r.totalAmount) : '—'}</td>
+      <td><span class="badge ${pCls}">${pLbl}</span></td>
       <td><span class="badge ${sc}">${sl}</span></td>
       <td>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
-          ${r.status === 'pending' ? `<button class="action-btn btn-green" onclick="setStatus('${r.id}','accepted')">✅ Xác nhận</button>` : ''}
-          ${r.status === 'accepted' ? `<button class="action-btn btn-blue" onclick="setStatus('${r.id}','done')">🏁 Hoàn thành</button>` : ''}
-          ${(r.status === 'pending' || r.status === 'accepted') ? `<button class="action-btn btn-red" onclick="setStatus('${r.id}','declined')">❌ Từ chối</button>` : ''}
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <button class="action-btn btn-gray" onclick="openBookingDetail('${r.id}')"><i class="fa-solid fa-eye"></i></button>
+          ${r.status==='pending' ? `<button class="action-btn btn-green" onclick="setStatus('${r.id}','accepted')">✅</button>` : ''}
+          ${r.status==='accepted' ? `<button class="action-btn btn-blue" onclick="setStatus('${r.id}','done')">🏁</button>` : ''}
+          ${(r.status==='pending'||r.status==='accepted') ? `<button class="action-btn btn-red" onclick="setStatus('${r.id}','declined')">❌</button>` : ''}
         </div>
       </td>
     </tr>`;
@@ -400,44 +478,118 @@ function renderRequests() {
 function setStatus(id, status) {
   const reqs = getAllRequests();
   const idx = reqs.findIndex(r => r.id === id);
-  if (idx > -1) { reqs[idx].status = status; localStorage.setItem('gt_requests', JSON.stringify(reqs)); SB.updateReq(id, {status, data: reqs[idx]}); }
-  renderStats();
-  renderRequests();
+  if (idx < 0) return;
+  if (!reqs[idx].history) reqs[idx].history = [];
+  reqs[idx].history.push({ time: new Date().toISOString(), from: reqs[idx].status, to: status, by: 'admin' });
+  reqs[idx].status = status;
+  localStorage.setItem('gt_requests', JSON.stringify(reqs));
+  SB.updateReq(id, { status, data: reqs[idx] });
+  renderDashboard();
+  renderBookings();
 }
 
+// ===== BOOKING DETAIL MODAL =====
+function openBookingDetail(id) {
+  const reqs = getAllRequests();
+  const r = reqs.find(x => x.id === id);
+  if (!r) return;
+  const notes = JSON.parse(localStorage.getItem('gt_admin_notes') || '{}');
+  const payLbl = (r.status === 'accepted' || r.status === 'done') ? 'Đã thanh toán' : 'Chưa thanh toán';
+  const payCls = (r.status === 'accepted' || r.status === 'done') ? 'color:#16A34A' : 'color:#F97316';
+  const hist = (r.history || []).map(h => `
+    <div class="history-item">
+      <div class="history-dot"></div>
+      <div>
+        <div style="font-size:.82rem;font-weight:600">${STATUS_LABEL[h.from]||h.from} → ${STATUS_LABEL[h.to]||h.to}</div>
+        <div style="font-size:.75rem;color:#94A3B8">${new Date(h.time).toLocaleString('vi-VN')} · ${h.by==='admin'?'Admin':'Hệ thống'}</div>
+      </div>
+    </div>`).join('') || '<div style="font-size:.82rem;color:#94A3B8;padding:8px 0">Chưa có lịch sử thay đổi</div>';
+
+  document.getElementById('modal-title').textContent = 'Chi tiết booking #' + r.id;
+  document.getElementById('modal-body').innerHTML = `
+    <div class="detail-section">
+      <div class="detail-section-head">Thông tin khách hàng</div>
+      <div class="detail-grid">
+        <div class="detail-row"><div class="detail-lbl">Tên khách</div><div class="detail-val">${r.name||'—'}</div></div>
+        <div class="detail-row"><div class="detail-lbl">Email</div><div class="detail-val">${r.email||'—'}</div></div>
+        <div class="detail-row"><div class="detail-lbl">Số điện thoại</div><div class="detail-val">${r.phone||'—'}</div></div>
+        <div class="detail-row"><div class="detail-lbl">User ID</div><div class="detail-val" style="font-family:monospace;font-size:.78rem">${r.userId||'—'}</div></div>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-head">Thông tin tour</div>
+      <div class="detail-grid">
+        <div class="detail-row"><div class="detail-lbl">Điểm đến</div><div class="detail-val">${r.destination||'—'}</div></div>
+        <div class="detail-row"><div class="detail-lbl">Ngày đi</div><div class="detail-val">${r.date||'—'}</div></div>
+        <div class="detail-row"><div class="detail-lbl">Số ngày</div><div class="detail-val">${r.days||1} ngày</div></div>
+        <div class="detail-row"><div class="detail-lbl">Số khách</div><div class="detail-val">${r.people||1} người</div></div>
+        <div class="detail-row"><div class="detail-lbl">HDV phụ trách</div><div class="detail-val">${r.guideName||'Chưa gán'}</div></div>
+        <div class="detail-row"><div class="detail-lbl">Sở thích</div><div class="detail-val">${(r.interests||[]).join(', ')||'—'}</div></div>
+      </div>
+      ${r.notes ? `<div class="detail-row" style="border-top:1px solid #F8FAFC"><div class="detail-lbl">Ghi chú của khách</div><div class="detail-val" style="white-space:pre-wrap">${r.notes}</div></div>` : ''}
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-head">Thanh toán</div>
+      <div class="detail-grid">
+        <div class="detail-row"><div class="detail-lbl">Tổng tiền</div><div class="detail-val" style="font-weight:700;font-size:1rem">${r.totalAmount ? fmtV(r.totalAmount) : '—'}</div></div>
+        <div class="detail-row"><div class="detail-lbl">Phương thức</div><div class="detail-val">${r.payMethod||'—'}</div></div>
+        <div class="detail-row"><div class="detail-lbl">Trạng thái TT</div><div class="detail-val" style="font-weight:700;${payCls}">${payLbl}</div></div>
+        <div class="detail-row"><div class="detail-lbl">Trạng thái booking</div><div class="detail-val"><span class="badge ${STATUS_CLS[r.status]||'b-pending'}">${STATUS_LABEL[r.status]||r.status}</span></div></div>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-head">Ghi chú nội bộ (Admin)</div>
+      <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px">
+        <textarea id="admin-note-input" rows="3" placeholder="Thêm ghi chú nội bộ..." style="width:100%;padding:9px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-size:.85rem;outline:none;resize:vertical;font-family:inherit">${notes[r.id]||''}</textarea>
+        <button onclick="saveAdminNote('${r.id}')" class="action-btn btn-blue" style="align-self:flex-start;padding:7px 16px">Lưu ghi chú</button>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-head">Lịch sử xử lý</div>
+      <div style="padding:8px 16px">${hist}</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      ${r.status==='pending' ? `<button class="action-btn btn-green" style="padding:8px 16px" onclick="setStatus('${r.id}','accepted');closeBookingModal()">✅ Xác nhận</button>` : ''}
+      ${r.status==='accepted' ? `<button class="action-btn btn-blue" style="padding:8px 16px" onclick="setStatus('${r.id}','done');closeBookingModal()">🏁 Hoàn thành</button>` : ''}
+      ${(r.status==='pending'||r.status==='accepted') ? `<button class="action-btn btn-red" style="padding:8px 16px" onclick="setStatus('${r.id}','declined');closeBookingModal()">❌ Từ chối</button>` : ''}
+    </div>`;
+  document.getElementById('booking-modal').style.display = 'flex';
+}
+
+function closeBookingModal() { document.getElementById('booking-modal').style.display = 'none'; }
+
+function saveAdminNote(id) {
+  const notes = JSON.parse(localStorage.getItem('gt_admin_notes') || '{}');
+  notes[id] = document.getElementById('admin-note-input').value;
+  localStorage.setItem('gt_admin_notes', JSON.stringify(notes));
+  const btn = event.target;
+  btn.textContent = '✓ Đã lưu';
+  setTimeout(() => { btn.textContent = 'Lưu ghi chú'; }, 1500);
+}
+
+// ===== HDV =====
 function renderNewHDV() {
   const profiles = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]')
     .filter(p => p.status === 'pending_review' && !GUIDES.find(g => g.email === p.email));
   const countEl = document.getElementById('new-hdv-count');
   const emptyEl = document.getElementById('new-hdv-empty');
-  const tbody = document.getElementById('new-hdv-tbody');
+  const tbody   = document.getElementById('new-hdv-tbody');
   if (countEl) countEl.textContent = profiles.length || '';
-  if (!profiles.length) {
-    if (tbody) tbody.innerHTML = '';
-    if (emptyEl) emptyEl.style.display = 'block';
-    return;
-  }
+  if (!profiles.length) { if (tbody) tbody.innerHTML = ''; if (emptyEl) emptyEl.style.display = 'block'; return; }
   if (emptyEl) emptyEl.style.display = 'none';
   tbody.innerHTML = profiles.map(p => `<tr>
-    <td>
-      <div style="display:flex;align-items:center;gap:10px">
-        <img src="${p.avatar}" style="width:36px;height:36px;border-radius:50%;object-fit:cover">
-        <div>
-          <div style="font-weight:600">${p.name}</div>
-          <div style="font-size:.75rem;color:#94A3B8">${p.email}</div>
-        </div>
-      </div>
-    </td>
-    <td>${p.location || '—'}</td>
-    <td style="font-weight:600">${fmtV(p.pricePerDay || 0)}</td>
-    <td><span style="font-weight:700;color:#7C3AED">${p.commission || 15}%</span></td>
+    <td><div style="display:flex;align-items:center;gap:10px">
+      <img src="${p.avatar}" style="width:36px;height:36px;border-radius:50%;object-fit:cover" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.name)}&background=0EA5E9&color=fff'">
+      <div><div style="font-weight:600">${p.name}</div><div style="font-size:.75rem;color:#94A3B8">${p.email}</div></div>
+    </div></td>
+    <td>${p.location||'—'}</td>
+    <td style="font-weight:600">${fmtV(p.pricePerDay||0)}</td>
+    <td><span style="font-weight:700;color:#7C3AED">${p.commission||15}%</span></td>
     <td style="font-size:.8rem;color:#94A3B8">${p.createdAt ? new Date(p.createdAt).toLocaleDateString('vi-VN') : '—'}</td>
-    <td>
-      <div style="display:flex;gap:6px">
-        <button onclick="approveHDV('${p.email}')" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0;padding:4px 12px;border-radius:6px;font-size:.8rem;cursor:pointer;font-weight:600"><i class="fa-solid fa-check"></i> Duyệt</button>
-        <button onclick="rejectHDV('${p.email}')" style="background:#FEF2F2;color:#DC2626;border:1px solid #FECACA;padding:4px 12px;border-radius:6px;font-size:.8rem;cursor:pointer;font-weight:600"><i class="fa-solid fa-xmark"></i> Từ chối</button>
-      </div>
-    </td>
+    <td><div style="display:flex;gap:6px">
+      <button onclick="approveHDV('${p.email}')" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0;padding:4px 12px;border-radius:6px;font-size:.8rem;cursor:pointer;font-weight:600"><i class="fa-solid fa-check"></i> Duyệt</button>
+      <button onclick="rejectHDV('${p.email}')" style="background:#FEF2F2;color:#DC2626;border:1px solid #FECACA;padding:4px 12px;border-radius:6px;font-size:.8rem;cursor:pointer;font-weight:600"><i class="fa-solid fa-xmark"></i> Từ chối</button>
+    </div></td>
   </tr>`).join('');
 }
 
@@ -453,12 +605,11 @@ async function approveHDV(email) {
     }
   }
   renderNewHDV();
-  renderStats();
   alert('✅ Đã duyệt — hồ sơ HDV sẽ hiển thị trên trang tìm HDV.');
 }
 
 async function rejectHDV(email) {
-  if (!confirm('Từ chối hồ sơ này? HDV sẽ không được hiển thị.')) return;
+  if (!confirm('Từ chối hồ sơ này?')) return;
   const profiles = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
   const idx = profiles.findIndex(p => p.email === email);
   if (idx > -1) { profiles[idx].status = 'rejected'; localStorage.setItem('gt_hdv_profiles', JSON.stringify(profiles)); }
@@ -474,68 +625,160 @@ async function rejectHDV(email) {
 
 function renderGuideTable() {
   const reqs = getAllRequests();
+  const today = new Date().toISOString().slice(0, 10);
   document.getElementById('guides-tbody').innerHTML = GUIDES.map(g => {
-    const pending = reqs.filter(r => r.guideId == g.id && r.status === 'pending').length;
-    const totalRevenue = reqs.filter(r => r.guideId == g.id && (r.status === 'accepted' || r.status === 'done'))
-      .reduce((s, r) => s + g.pricePerDay * parseInt(r.days || 1), 0);
+    const gReqs   = reqs.filter(r => r.guideId == g.id);
+    const pending  = gReqs.filter(r => r.status === 'pending').length;
+    const active   = gReqs.filter(r => r.status === 'accepted').length;
+    const isBusy   = gReqs.some(r => r.status === 'accepted' && r.date >= today);
     return `<tr>
-      <td>
-        <div style="display:flex;align-items:center;gap:10px">
-          <img src="${g.avatar}" style="width:36px;height:36px;border-radius:50%;object-fit:cover">
-          <div>
-            <div style="font-weight:600">${g.name}</div>
-            <div style="font-size:.75rem;color:#94A3B8">${g.location}</div>
-          </div>
-        </div>
-      </td>
-      <td>${g.regions.join(', ')}</td>
+      <td><div style="display:flex;align-items:center;gap:10px">
+        <img src="${g.avatar}" style="width:36px;height:36px;border-radius:50%;object-fit:cover">
+        <div><div style="font-weight:600">${g.name}</div><div style="font-size:.75rem;color:#94A3B8">${g.location}</div></div>
+      </div></td>
+      <td style="font-size:.82rem">${g.regions.join(', ')}</td>
       <td><span style="color:#F59E0B;font-weight:700">★ ${g.rating}</span> <span style="color:#94A3B8;font-size:.78rem">(${g.reviews})</span></td>
-      <td>${g.trips}+</td>
+      <td style="text-align:center">${g.trips}+</td>
+      <td style="text-align:center">${active > 0 ? `<span class="badge b-pending">${active} tour</span>` : '<span style="color:#94A3B8;font-size:.8rem">—</span>'}</td>
+      <td><span class="badge ${isBusy ? 'b-busy' : 'b-free'}">${isBusy ? 'Đang bận' : 'Rảnh'}</span></td>
       <td><span style="font-weight:700;color:#7C3AED">${g.commission}%</span></td>
-      <td>${pending > 0 ? `<span class="badge b-pending">${pending} chờ</span>` : '<span style="color:#94A3B8;font-size:.8rem">—</span>'}</td>
-      <td>${g.verified ? '<span style="color:#16A34A;font-weight:600"><i class="fa-solid fa-circle-check"></i> Đã xác minh</span>' : '<span style="color:#94A3B8">Chưa</span>'}</td>
+      <td>${g.verified ? '<span style="color:#16A34A;font-weight:600;font-size:.82rem"><i class="fa-solid fa-circle-check"></i> Xác minh</span>' : '<span style="color:#94A3B8;font-size:.82rem">Chưa</span>'}</td>
     </tr>`;
   }).join('');
 }
 
+// ===== REVENUE =====
+function setRevMode(mode, el) {
+  revMode = mode;
+  document.querySelectorAll('.rev-toggle button').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderRevenue();
+}
+
 function renderRevenue() {
-  const reqs = getAllRequests();
-  const maxRev = Math.max(...GUIDES.map(g => reqs.filter(r => r.guideId == g.id && (r.status === 'accepted' || r.status === 'done')).reduce((s, r) => s + g.pricePerDay * parseInt(r.days || 1), 0)), 1);
+  const reqs = getAllRequests().filter(r => r.status === 'accepted' || r.status === 'done');
+  const today = new Date();
+
+  if (revMode === 'day') {
+    const days = {};
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today.getTime() - i * 86400000).toISOString().slice(0, 10);
+      days[d] = 0;
+    }
+    reqs.forEach(r => {
+      const d = (r.createdAt||'').slice(0,10);
+      if (days[d] !== undefined) days[d] += (r.totalAmount||0);
+    });
+    const max = Math.max(...Object.values(days), 1);
+    document.getElementById('rev-summary').innerHTML = Object.entries(days).map(([d, v]) => `
+      <div class="revenue-bar">
+        <div class="rb-label" style="min-width:100px">${d.slice(5)}</div>
+        <div class="rb-track"><div class="rb-fill" style="width:${Math.round(v/max*100)}%"></div></div>
+        <div class="rb-val">${v ? fmtV(v) : '—'}</div>
+      </div>`).join('');
+  } else {
+    const months = {};
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+      const key = d.toISOString().slice(0, 7);
+      months[key] = 0;
+    }
+    reqs.forEach(r => {
+      const m = (r.createdAt||'').slice(0,7);
+      if (months[m] !== undefined) months[m] += (r.totalAmount||0);
+    });
+    const max = Math.max(...Object.values(months), 1);
+    document.getElementById('rev-summary').innerHTML = Object.entries(months).map(([m, v]) => `
+      <div class="revenue-bar">
+        <div class="rb-label" style="min-width:100px">Tháng ${m.slice(5)}/${m.slice(0,4)}</div>
+        <div class="rb-track"><div class="rb-fill" style="width:${Math.round(v/max*100)}%"></div></div>
+        <div class="rb-val">${v ? fmtV(v) : '—'}</div>
+      </div>`).join('');
+  }
+
+  const allReqs = getAllRequests();
+  const maxRev = Math.max(...GUIDES.map(g => allReqs.filter(r => r.guideId == g.id && (r.status==='accepted'||r.status==='done')).reduce((s,r) => s+(r.totalAmount||0), 0)), 1);
   document.getElementById('revenue-content').innerHTML = GUIDES.map(g => {
-    const rev = reqs.filter(r => r.guideId == g.id && (r.status === 'accepted' || r.status === 'done'))
-      .reduce((s, r) => s + g.pricePerDay * parseInt(r.days || 1), 0);
-    const pct = Math.round(rev / maxRev * 100);
+    const rev = allReqs.filter(r => r.guideId == g.id && (r.status==='accepted'||r.status==='done')).reduce((s,r) => s+(r.totalAmount||0), 0);
+    const cnt = allReqs.filter(r => r.guideId == g.id && r.status==='done').length;
     return `<div class="revenue-bar">
-      <div class="rb-label"><img src="${g.avatar}" style="width:24px;height:24px;border-radius:50%;object-fit:cover;display:inline-block;vertical-align:middle;margin-right:8px">${g.name}</div>
-      <div class="rb-track"><div class="rb-fill" style="width:${pct}%"></div></div>
+      <div class="rb-label"><img src="${g.avatar}" style="width:24px;height:24px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:8px">${g.name} <span style="color:#94A3B8;font-size:.75rem">(${cnt} tour)</span></div>
+      <div class="rb-track"><div class="rb-fill" style="width:${Math.round(rev/maxRev*100)}%"></div></div>
       <div class="rb-val">${rev ? fmtV(rev) : '—'}</div>
     </div>`;
   }).join('');
 }
 
+// ===== REVIEWS =====
 function renderReviews() {
   const reviews = JSON.parse(localStorage.getItem('gt_my_reviews') || '[]');
   const tbody = document.getElementById('reviews-tbody');
   const empty = document.getElementById('reviews-empty');
-  if (!reviews.length) {
-    tbody.innerHTML = '';
-    empty.style.display = 'block';
-    return;
-  }
+  if (!reviews.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
-  tbody.innerHTML = reviews.map(rv => `
-    <tr>
-      <td style="font-weight:600">${rv.guideName || '—'}</td>
-      <td>${rv.destination || '—'}</td>
-      <td><span style="color:#F59E0B">${'★'.repeat(rv.stars)}${'☆'.repeat(5-rv.stars)}</span></td>
-      <td style="max-width:300px;font-size:.82rem;color:#64748B">${rv.text || '<em style="color:#CBD5E1">Không có nhận xét</em>'}</td>
-      <td style="font-size:.78rem;color:#94A3B8">${new Date(rv.createdAt).toLocaleDateString('vi-VN')}</td>
-    </tr>`).join('');
+  tbody.innerHTML = reviews.map(rv => `<tr>
+    <td style="font-weight:600">${rv.guideName||'—'}</td>
+    <td>${rv.destination||'—'}</td>
+    <td><span style="color:#F59E0B">${'★'.repeat(rv.stars||0)}${'☆'.repeat(5-(rv.stars||0))}</span></td>
+    <td style="max-width:300px;font-size:.82rem;color:#64748B">${rv.text||'<em style="color:#CBD5E1">Không có nhận xét</em>'}</td>
+    <td style="font-size:.78rem;color:#94A3B8">${rv.createdAt ? new Date(rv.createdAt).toLocaleDateString('vi-VN') : '—'}</td>
+  </tr>`).join('');
 }
 
+// ===== BROADCAST =====
+async function sendBroadcast() {
+  const title = document.getElementById('bc-title').value.trim();
+  const body  = document.getElementById('bc-body').value.trim();
+  const targetType = document.getElementById('bc-target').value;
+  const type  = document.getElementById('bc-type').value;
+  const res   = document.getElementById('bc-result');
+  if (!title || !body) {
+    res.style.cssText = 'display:block;padding:12px 14px;border-radius:10px;font-size:.85rem;font-weight:600;background:#FEF2F2;color:#DC2626';
+    res.textContent = 'Vui lòng điền đầy đủ tiêu đề và nội dung!';
+    return;
+  }
+  const notif = { id:'N_'+Date.now(), type, title, body, targetType, time:new Date().toISOString(), read:false, actionUrl:null };
+  if (typeof sb !== 'undefined') {
+    const { error } = await sb.from('notifications').upsert({ id:notif.id, target_type:targetType, read:false, time:notif.time, data:notif });
+    if (error) {
+      res.style.cssText = 'display:block;padding:12px 14px;border-radius:10px;font-size:.85rem;font-weight:600;background:#FEF2F2;color:#DC2626';
+      res.textContent = 'Lỗi: ' + error.message;
+      return;
+    }
+  }
+  const hist = JSON.parse(localStorage.getItem('gt_admin_broadcasts') || '[]');
+  hist.unshift(notif);
+  localStorage.setItem('gt_admin_broadcasts', JSON.stringify(hist.slice(0, 50)));
+  document.getElementById('bc-title').value = '';
+  document.getElementById('bc-body').value  = '';
+  res.style.cssText = 'display:block;padding:12px 14px;border-radius:10px;font-size:.85rem;font-weight:600;background:#F0FDF4;color:#16A34A';
+  res.textContent = '✓ Đã gửi thông báo thành công!';
+  setTimeout(() => { res.style.display = 'none'; }, 3000);
+  renderBcHistory();
+}
+
+function renderBcHistory() {
+  const hist = JSON.parse(localStorage.getItem('gt_admin_broadcasts') || '[]');
+  const el = document.getElementById('bc-history');
+  if (!hist.length) { el.innerHTML = '<div style="text-align:center;padding:24px;color:#94A3B8;font-size:.85rem">Chưa có thông báo nào được gửi</div>'; return; }
+  const targetLabel = { all:'Tất cả', tourist:'Khách', guide:'HDV' };
+  const typeIcon = { policy:'📋', promo:'🏷️', system:'🔔' };
+  el.innerHTML = hist.slice(0,15).map(n => {
+    const ts = new Date(n.time).toLocaleString('vi-VN', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    return `<div style="padding:12px 20px;border-bottom:1px solid #F1F5F9;display:flex;gap:12px;align-items:flex-start">
+      <span style="font-size:1.1rem;flex-shrink:0">${typeIcon[n.type]||'🔔'}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:.85rem">${n.title}</div>
+        <div style="font-size:.78rem;color:#64748B;margin-top:2px">${n.body}</div>
+        <div style="font-size:.72rem;color:#94A3B8;margin-top:4px">${ts} · ${targetLabel[n.targetType]||n.targetType}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== INIT =====
 async function initAdmin() {
   if (typeof sb !== 'undefined') {
-    // Load hdv_profiles from Supabase
     const { data: sbProfiles } = await sb.from('hdv_profiles').select('data, status');
     if (sbProfiles && sbProfiles.length) {
       const local = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
@@ -546,7 +789,6 @@ async function initAdmin() {
       });
       localStorage.setItem('gt_hdv_profiles', JSON.stringify(local));
     }
-    // Load requests from Supabase
     const sbReqs = await SB.getAll();
     if (sbReqs && sbReqs.length) {
       const local = JSON.parse(localStorage.getItem('gt_requests') || '[]');
@@ -556,22 +798,16 @@ async function initAdmin() {
       localStorage.setItem('gt_requests', JSON.stringify(merged));
     }
   }
-  renderStats();
-  renderRequests();
+  renderDashboard();
   renderNewHDV();
 }
 
-// Auto-login if session exists
 if (sessionStorage.getItem('gt_admin') === '1') {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('admin-content').style.display = 'block';
   document.addEventListener('DOMContentLoaded', initAdmin);
 }
-
-// Enter key on password field
-document.getElementById('admin-pass')?.addEventListener('keydown', e => {
-  if (e.key === 'Enter') checkLogin();
-});
+document.getElementById('admin-pass')?.addEventListener('keydown', e => { if (e.key === 'Enter') checkLogin(); });
 </script>
 </body>
 </html>
