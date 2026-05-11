@@ -808,9 +808,18 @@ async function submitRegistration() {
   const hdvEmail = document.getElementById('hdv-email').value || (session ? session.email : '');
   const avatarFile = document.getElementById('file-avatar');
   const hasNewAvatar = avatarFile && avatarFile.files && avatarFile.files.length > 0;
-  const avatarUrl = (isEditing && existingProfile?.avatar && !hasNewAvatar)
+  let avatarUrl = (isEditing && existingProfile?.avatar && !hasNewAvatar)
     ? existingProfile.avatar
     : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(hdvName) + '&size=200&background=0284C7&color=fff';
+  if (hasNewAvatar && typeof sb !== 'undefined' && session?.id) {
+    const file = avatarFile.files[0];
+    const ext = file.name.split('.').pop() || 'jpg';
+    const { error: upErr } = await sb.storage.from('avatars').upload(session.id + '.' + ext, file, { upsert: true, contentType: file.type });
+    if (!upErr) {
+      const { data: urlData } = sb.storage.from('avatars').getPublicUrl(session.id + '.' + ext);
+      avatarUrl = urlData.publicUrl + '?t=' + Date.now();
+    }
+  }
 
   const profile = {
     id: isEditing ? existingProfile.id : ('HDV' + Date.now()),
