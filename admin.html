@@ -665,9 +665,10 @@ function getGuideStatus(id) {
 
 function setGuideStatus(id, status) {
   let reason = '';
-  if (status === 'suspended') reason = window.prompt('Lý do tạm dừng tài khoản:', '') ?? '';
-  if (status === 'locked')    reason = window.prompt('Lý do khoá tài khoản:', '') ?? '';
-  if (status !== 'active' && reason === null) return; // user cancelled prompt
+  if (status === 'suspended') reason = window.prompt('Lý do tạm dừng tài khoản:', '');
+  if (status === 'locked')    reason = window.prompt('Lý do khoá tài khoản:', '');
+  if (status !== 'active' && reason === null) return;
+  reason = reason || '';
   const s = JSON.parse(localStorage.getItem('gt_guide_status') || '{}');
   const key = String(id);
   if (status === 'active') delete s[key];
