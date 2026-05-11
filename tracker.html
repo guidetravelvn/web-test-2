@@ -72,7 +72,7 @@
 
 <script>
 const DATA = {
-  lastUpdate: '2026-05-11 (guides.html sync Supabase; review banner tourist-dashboard; admin gửi notif khi duyệt HDV; getAllGuides() trong admin)',
+  lastUpdate: '2026-05-11 (pre-fill form chỉnh sửa hồ sơ HDV; getGuide() merge self-registered; auto-open review modal; admin tạm dừng/khoá tài khoản HDV sync Supabase)',
   sections: [
     {
       title: '📄 Trang HTML',
@@ -133,6 +133,8 @@ const DATA = {
         { name: 'Chính sách hoàn tiền', file: 'chinh-sach.html', status: 'done', priority: 'high', note: '>7 ngày=100%, 3-7 ngày=50%, <3 ngày=0%' },
         { name: 'Trang admin quản lý', file: 'admin.html', status: 'done', priority: 'low', note: 'Login admin123, stats, bảng yêu cầu + action, HDV, doanh thu, đánh giá' },
         { name: 'Admin duyệt HDV mới', file: 'admin.html', status: 'done', priority: 'med', note: 'Bảng HDV mới đăng ký từ gt_hdv_profiles, nút Xóa để quản lý' },
+        { name: 'Admin tạm dừng / khoá tài khoản HDV', file: 'admin.html', status: 'done', priority: 'med', note: 'Nút Tạm dừng + Khoá + Kích hoạt lại, nhập lý do, sync accountStatus lên Supabase, banner cảnh báo trên HDV dashboard, ẩn khỏi danh sách công khai' },
+        { name: 'Chỉnh sửa hồ sơ HDV pre-fill', file: 'hdv-register.html', status: 'done', priority: 'med', note: 'Form tự điền sẵn dữ liệu cũ khi HDV đã có hồ sơ, bỏ validate file khi edit, giữ rating/status/trips' },
         { name: 'Blog / SEO content', file: 'blog.html', status: 'done', priority: 'low', note: 'blog.html (danh sách, filter, search), blog-post.html (chi tiết, TOC, related, CTA), 6 bài mẫu VI/EN' },
         { name: 'Hỗ trợ đa ngôn ngữ VI/EN', file: 'lang.js', status: 'done', priority: 'med', note: 'lang.js + data-i18n toàn trang, fmtPrice USD/VND, t() cho mọi chuỗi JS động, badge tier, toast, status đã dịch đầy đủ' },
         { name: 'i18n hdv-dashboard.html', file: 'hdv-dashboard.html', status: 'skip', priority: 'low', note: 'Dashboard HDV chỉ dành cho người Việt dùng — tạm bỏ qua' },
