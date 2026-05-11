@@ -230,6 +230,12 @@ const TRANS = {
     'int.beach':'Biển & Bơi lội','int.trekking':'Trekking','int.food':'Ẩm thực',
     'int.culture':'Văn hóa','int.photo':'Chụp ảnh','int.shopping':'Mua sắm',
     'int.relax':'Nghỉ dưỡng','int.village':'Bản làng','int.watersport':'Thể thao biển',
+    // SPECIALTIES (guide card tags)
+    'spec.bien':'Biển đảo','spec.trekking':'Trekking','spec.am-thuc':'Ẩm thực',
+    'spec.van-hoa':'Văn hóa','spec.chup-anh':'Chụp ảnh','spec.lan-bien':'Lặn biển',
+    'spec.ban-lang':'Bản làng','spec.nghi-duong':'Nghỉ dưỡng','spec.xe-may':'Motorbiking',
+    'spec.lich-su':'Lịch sử','spec.van-hoa-dan-toc':'Văn hóa dân tộc','spec.cam-trai':'Cắm trại',
+    'spec.kayak':'Kayak','spec.thien-nhien':'Thiên nhiên','spec.ca-phe':'Cà phê','spec.cau-ca':'Câu cá',
     // PAYMENT EXTRA
     'pay.page_title':'Xác nhận & Thanh toán',
     'pay.bank_transfer':'Chuyển khoản',
@@ -838,6 +844,12 @@ const TRANS = {
     'int.beach':'Beach & Swimming','int.trekking':'Trekking','int.food':'Food & Cuisine',
     'int.culture':'Culture','int.photo':'Photography','int.shopping':'Shopping',
     'int.relax':'Relaxation','int.village':'Village Life','int.watersport':'Water Sports',
+    // SPECIALTIES (guide card tags)
+    'spec.bien':'Islands & Sea','spec.trekking':'Trekking','spec.am-thuc':'Food & Cuisine',
+    'spec.van-hoa':'Culture','spec.chup-anh':'Photography','spec.lan-bien':'Scuba Diving',
+    'spec.ban-lang':'Village Life','spec.nghi-duong':'Relaxation','spec.xe-may':'Motorbiking',
+    'spec.lich-su':'History','spec.van-hoa-dan-toc':'Ethnic Culture','spec.cam-trai':'Camping',
+    'spec.kayak':'Kayaking','spec.thien-nhien':'Nature','spec.ca-phe':'Café & Coffee','spec.cau-ca':'Fishing',
     // PAYMENT EXTRA
     'pay.page_title':'Confirm & Pay',
     'pay.bank_transfer':'Bank Transfer',

@@ -47,7 +47,7 @@ const GUIDES = [
     responseTime: '< 2 giờ',
     verified: true,
     commission: 25,
-    specialties: ['Biển đảo', 'Lặn biển', 'Ẩm thực'],
+    specialties: ['bien', 'lan-bien', 'am-thuc'],
     bio: 'Sinh ra và lớn lên tại Nha Trang, tôi hiểu từng góc phố, từng con hẻm và những điểm đến ít người biết nhất. Với 7 năm kinh nghiệm dẫn tour, tôi cam kết mang đến hành trình cá nhân hóa 100% theo sở thích của bạn — từ lặn biển ngắm san hô đến thưởng thức bún cá buổi sáng cùng người địa phương.',
     bioEn: 'Born and raised in Nha Trang, I know every street corner, every alley and the most hidden local gems. With 7 years of guiding experience, I craft 100% personalized journeys — from coral reef diving to sharing a bowl of local fish noodle soup at sunrise with the fishermen.',
     sampleItineraries: [
@@ -90,7 +90,7 @@ const GUIDES = [
     responseTime: '< 1 giờ',
     verified: true,
     commission: 20,
-    specialties: ['Văn hóa', 'Lịch sử', 'Ẩm thực', 'Chụp ảnh'],
+    specialties: ['van-hoa', 'lich-su', 'am-thuc', 'chup-anh'],
     bio: 'Là hướng dẫn viên văn hóa được cấp phép tại Hội An, tôi đam mê chia sẻ câu chuyện ít người biết đằng sau mỗi ngôi nhà cổ, mỗi nghề truyền thống. Tôi giúp bạn trải nghiệm Hội An không phải như một khách du lịch, mà như một người dân địa phương.',
     bioEn: 'A licensed cultural guide in Hoi An, I love sharing the untold stories behind every ancient house and traditional craft. I help you experience Hoi An not as a tourist, but as a local — discovering the real soul of the town.',
     sampleItineraries: [
@@ -132,7 +132,7 @@ const GUIDES = [
     responseTime: '< 3 giờ',
     verified: true,
     commission: 30,
-    specialties: ['Trekking', 'Văn hóa dân tộc', 'Nhiếp ảnh', 'Cắm trại'],
+    specialties: ['trekking', 'van-hoa-dan-toc', 'chup-anh', 'cam-trai'],
     bio: 'Người dân tộc Tày, sinh ra ở vùng núi Tây Bắc. Tôi dẫn tour trekking 9 năm qua các bản làng H\'Mông, Dao, Tày — nơi ít hướng dẫn viên thành phố nào có thể đưa bạn đến. Tôi nói được 3 thứ tiếng dân tộc, giúp bạn giao tiếp thật sự với bà con địa phương.',
     bioEn: 'A Tay ethnic local, born in the Northwest mountains. I\'ve led trekking tours for 9 years through H\'Mong, Dao and Tay villages — places very few city guides can take you. I speak 3 ethnic languages, helping you connect authentically with the communities we visit.',
     sampleItineraries: [
@@ -174,7 +174,7 @@ const GUIDES = [
     responseTime: '< 2 giờ',
     verified: true,
     commission: 15,
-    specialties: ['Biển đảo', 'Kayak', 'Thiên nhiên', 'Nhiếp ảnh'],
+    specialties: ['bien', 'kayak', 'thien-nhien', 'chup-anh'],
     bio: 'Chuyên gia về vịnh Hạ Long với chứng chỉ hướng dẫn viên quốc tế. Tôi thiết kế tour khám phá những góc khuất của Hạ Long mà ít du khách biết đến — những hang động chưa được khai thác, làng chài yên tĩnh và những buổi bình minh tuyệt đẹp trên vịnh.',
     bioEn: 'Ha Long Bay specialist with an international guiding certification. I design tours exploring Ha Long\'s hidden corners — undiscovered caves, quiet floating villages and breathtaking sunrises over the bay that you won\'t find on any group tour.',
     sampleItineraries: [
@@ -207,7 +207,7 @@ const GUIDES = [
     responseTime: '< 1 giờ',
     verified: false,
     commission: 15,
-    specialties: ['Thiên nhiên', 'Ẩm thực', 'Cà phê', 'Chụp ảnh'],
+    specialties: ['thien-nhien', 'am-thuc', 'ca-phe', 'chup-anh'],
     bio: 'Sinh ra ở Đà Lạt, tôi biết nơi uống cà phê đẹp nhất lúc 6 giờ sáng, con đường hoa dã quỳ vàng rực vào tháng 11, và quán ăn chỉ người địa phương mới biết. Đà Lạt của tôi không phải phố đi bộ chen chúc — mà là những khoảnh khắc yên bình bạn sẽ nhớ mãi.',
     bioEn: 'A Da Lat native, I know the best café to catch the 6am mist rolling over the hills, the golden wildflower road in November, and the restaurants only locals know. My Da Lat isn\'t the crowded walking street — it\'s the peaceful moments you\'ll remember long after you leave.',
     sampleItineraries: [
@@ -240,7 +240,7 @@ const GUIDES = [
     responseTime: '< 4 giờ',
     verified: true,
     commission: 20,
-    specialties: ['Biển đảo', 'Lặn biển', 'Câu cá', 'Ẩm thực'],
+    specialties: ['bien', 'lan-bien', 'cau-ca', 'am-thuc'],
     bio: 'Người Phú Quốc chính gốc, tôi biết từng bãi biển, từng rạn san hô và những góc hoàng hôn đẹp nhất đảo ngọc. Tôi đặc biệt yêu thích đưa khách đến những điểm bình dị, chân thực — xa hàng quán du lịch, gần thiên nhiên hoang sơ.',
     bioEn: 'A born-and-bred Phu Quoc local, I know every beach, every coral reef and the best sunset spots on the island. I love taking guests to simple, authentic places — far from tourist traps and close to untouched nature only islanders know.',
     sampleItineraries: [
@@ -712,7 +712,7 @@ function guideCard(g) {
         </div>
       </div>
       <div class="guide-tags">
-        ${g.specialties.slice(0,3).map(s => `<span class="tag tag-gray">${s}</span>`).join('')}
+        ${g.specialties.slice(0,3).map(s => `<span class="tag tag-gray">${t('spec.'+s) || s}</span>`).join('')}
       </div>
       <div class="guide-card-footer">
         <div>
