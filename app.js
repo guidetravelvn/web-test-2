@@ -1166,6 +1166,23 @@ function submitRequest(e) {
     createdAt: new Date().toISOString()
   };
   DB.addRequest(req);
+  // Gửi email thông báo cho HDV
+  if (typeof emailjs !== 'undefined' && req.guideId) {
+    const guide = GUIDES.find(g => String(g.id) === String(req.guideId));
+    const guideEmail = guide?.email || '';
+    if (guideEmail) {
+      emailjs.send('service_tzjy78t', 'template_iwllqga', {
+        to_email: guideEmail,
+        guide_name: guide?.name || 'HDV',
+        tourist_name: req.name,
+        destination: req.destination,
+        date: req.date,
+        days: req.days,
+        people: req.people,
+        notes: req.notes || '—'
+      }).catch(() => {});
+    }
+  }
   location.href = `request.html?success=1&code=${req.id}`;
 }
 
