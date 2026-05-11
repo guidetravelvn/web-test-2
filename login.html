@@ -351,11 +351,11 @@ async function doLogin() {
     const localUsers = JSON.parse(localStorage.getItem('gt_users') || '[]');
     const localUser = localUsers.find(u => u.email === email);
     let hdvVerified = localUser?.verified || false;
-    if (!hdvVerified && (profile?.type || loginType) === 'guide') {
+    if ((profile?.type || loginType) === 'guide') {
       try {
         const { data: hdvRow } = await sb.from('hdv_profiles').select('status').eq('user_id', data.user.id).maybeSingle();
-        if (hdvRow && hdvRow.status === 'approved') hdvVerified = true;
-      } catch(e) {}
+        if (hdvRow && (hdvRow.status === 'approved' || hdvRow.status === 'pending_review')) hdvVerified = true;
+      } catch(e) { hdvVerified = localUser?.verified || false; }
     }
     const session = { id: data.user.id, email, name: profile?.name || '', phone: profile?.phone || '', type: profile?.type || loginType, avatar: localUser?.avatar || null, verified: hdvVerified };
     localStorage.setItem('gt_session', JSON.stringify(session));
