@@ -204,6 +204,17 @@
 
   <!-- HDV TAB -->
   <div id="tab-guides" style="display:none">
+    <!-- Tài khoản bị hạn chế -->
+    <div class="card" id="suspended-card" style="margin-bottom:20px;display:none;border-left:4px solid #DC2626">
+      <div class="card-head"><h3><i class="fa-solid fa-ban" style="color:#DC2626"></i> Tài khoản bị hạn chế <span id="suspended-count" style="background:#FEF2F2;color:#DC2626;border-radius:99px;padding:2px 10px;font-size:.8rem;margin-left:8px"></span></h3></div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>HDV</th><th>Trạng thái</th><th>Lý do</th><th>Ngày xử lý</th><th>Hành động</th></tr></thead>
+          <tbody id="suspended-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
     <div class="card" style="margin-bottom:20px">
       <div class="card-head"><h3><i class="fa-solid fa-user-clock" style="color:#F97316"></i> HDV mới đăng ký <span id="new-hdv-count" style="background:#FFF7ED;color:#F97316;border-radius:99px;padding:2px 10px;font-size:.8rem;margin-left:8px"></span></h3></div>
       <div style="overflow-x:auto">
@@ -219,7 +230,7 @@
       <div style="overflow-x:auto">
         <table>
           <thead><tr>
-            <th>HDV</th><th>Khu vực</th><th>Đánh giá</th><th>Số tour</th><th>Đang nhận</th><th>Trạng thái</th><th>Hoa hồng</th><th>Xác minh</th>
+            <th>HDV</th><th>Khu vực</th><th>Đánh giá</th><th>Số tour</th><th>Đang nhận</th><th>Trạng thái</th><th>Hoa hồng</th><th>Xác minh</th><th>Trạng thái TK</th><th>Hành động</th>
           </tr></thead>
           <tbody id="guides-tbody"></tbody>
         </table>
@@ -351,7 +362,7 @@ function showTab(name, el) {
   if (el) el.classList.add('active');
   if (name === 'dashboard') renderDashboard();
   if (name === 'bookings') { populateFilters(); renderBookings(); }
-  if (name === 'guides') { renderNewHDV(); renderGuideTable(); }
+  if (name === 'guides') { renderNewHDV(); renderGuideTable(); renderSuspendedGuides(); }
   if (name === 'revenue') renderRevenue();
   if (name === 'reviews') renderReviews();
   if (name === 'broadcast') renderBcHistory();
@@ -646,14 +657,73 @@ async function rejectHDV(email) {
   renderNewHDV();
 }
 
+function getGuideStatus(id) {
+  const s = JSON.parse(localStorage.getItem('gt_guide_status') || '{}');
+  const entry = s[String(id)];
+  return entry ? entry.status : 'active';
+}
+
+function setGuideStatus(id, status) {
+  let reason = '';
+  if (status === 'suspended') reason = window.prompt('Lý do tạm dừng tài khoản:', '') ?? '';
+  if (status === 'locked')    reason = window.prompt('Lý do khoá tài khoản:', '') ?? '';
+  if (status !== 'active' && reason === null) return; // user cancelled prompt
+  const s = JSON.parse(localStorage.getItem('gt_guide_status') || '{}');
+  const key = String(id);
+  if (status === 'active') delete s[key];
+  else s[key] = { status, reason, updatedAt: new Date().toISOString() };
+  localStorage.setItem('gt_guide_status', JSON.stringify(s));
+  renderGuideTable();
+  renderSuspendedGuides();
+  const msgs = { suspended: 'Đã tạm dừng tài khoản HDV.', locked: 'Đã khoá tài khoản HDV.', active: 'Đã kích hoạt lại tài khoản.' };
+  toast(msgs[status] || 'Đã cập nhật.', status === 'active' ? 'ok' : 'err');
+}
+
+function renderSuspendedGuides() {
+  const s = JSON.parse(localStorage.getItem('gt_guide_status') || '{}');
+  const entries = Object.entries(s).filter(([_, v]) => v.status && v.status !== 'active');
+  const card = document.getElementById('suspended-card');
+  const tbody = document.getElementById('suspended-tbody');
+  const count = document.getElementById('suspended-count');
+  if (!card || !tbody) return;
+  if (!entries.length) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  if (count) count.textContent = entries.length;
+  const allGuides = getAllGuides();
+  tbody.innerHTML = entries.map(([id, info]) => {
+    const g = allGuides.find(x => String(x.id) === id);
+    if (!g) return '';
+    const isSuspended = info.status === 'suspended';
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:10px">
+        <img src="${g.avatar}" style="width:32px;height:32px;border-radius:50%;object-fit:cover">
+        <div style="font-weight:600">${g.name}</div>
+      </div></td>
+      <td><span class="badge ${isSuspended ? 'b-pending' : 'b-declined'}">${isSuspended ? '<i class="fa-solid fa-pause"></i> Tạm dừng' : '<i class="fa-solid fa-lock"></i> Đã khoá'}</span></td>
+      <td style="font-size:.8rem;color:#64748B;max-width:200px">${info.reason || '—'}</td>
+      <td style="font-size:.78rem;color:#94A3B8">${info.updatedAt ? new Date(info.updatedAt).toLocaleDateString('vi-VN') : '—'}</td>
+      <td><button onclick="setGuideStatus('${id}','active')" class="action-btn btn-green"><i class="fa-solid fa-rotate-left"></i> Kích hoạt lại</button></td>
+    </tr>`;
+  }).join('');
+}
+
 function renderGuideTable() {
   const reqs = getAllRequests();
   const today = new Date().toISOString().slice(0, 10);
   document.getElementById('guides-tbody').innerHTML = getAllGuides().map(g => {
     const gReqs   = reqs.filter(r => r.guideId == g.id);
-    const pending  = gReqs.filter(r => r.status === 'pending').length;
     const active   = gReqs.filter(r => r.status === 'accepted').length;
     const isBusy   = gReqs.some(r => r.status === 'accepted' && r.date >= today);
+    const acStatus = getGuideStatus(g.id);
+    const statusBadge = acStatus === 'suspended'
+      ? `<span class="badge b-pending"><i class="fa-solid fa-pause"></i> Tạm dừng</span>`
+      : acStatus === 'locked'
+      ? `<span class="badge b-declined"><i class="fa-solid fa-lock"></i> Đã khoá</span>`
+      : `<span class="badge b-accepted">Hoạt động</span>`;
+    const actionBtns = acStatus !== 'active'
+      ? `<button class="action-btn btn-green" onclick="setGuideStatus('${g.id}','active')"><i class="fa-solid fa-rotate-left"></i> Khôi phục</button>`
+      : `<button class="action-btn" style="background:#FFF7ED;color:#F97316;border:1px solid #FED7AA;margin-right:4px" onclick="setGuideStatus('${g.id}','suspended')"><i class="fa-solid fa-pause"></i> Tạm dừng</button>
+         <button class="action-btn btn-red" onclick="setGuideStatus('${g.id}','locked')"><i class="fa-solid fa-lock"></i> Khoá</button>`;
     return `<tr>
       <td><div style="display:flex;align-items:center;gap:10px">
         <img src="${g.avatar}" style="width:36px;height:36px;border-radius:50%;object-fit:cover">
@@ -666,6 +736,8 @@ function renderGuideTable() {
       <td><span class="badge ${isBusy ? 'b-busy' : 'b-free'}">${isBusy ? 'Đang bận' : 'Rảnh'}</span></td>
       <td><span style="font-weight:700;color:#7C3AED">${g.commission}%</span></td>
       <td>${g.verified ? '<span style="color:#16A34A;font-weight:600;font-size:.82rem"><i class="fa-solid fa-circle-check"></i> Xác minh</span>' : '<span style="color:#94A3B8;font-size:.82rem">Chưa</span>'}</td>
+      <td>${statusBadge}</td>
+      <td><div style="display:flex;gap:4px;flex-wrap:nowrap">${actionBtns}</div></td>
     </tr>`;
   }).join('');
 }

@@ -821,7 +821,11 @@ function getFilteredGuides() {
       specialties: p.specialties || [], languages: p.languages || [],
       regions: p.regions || [p.region].filter(Boolean), reviewList: [], itineraries: [],
     }));
-  let list = [...GUIDES, ...localProfiles];
+  const guideStatusMap = JSON.parse(localStorage.getItem('gt_guide_status') || '{}');
+  let list = [...GUIDES, ...localProfiles].filter(g => {
+    const st = guideStatusMap[String(g.id)];
+    return !st || st.status === 'active';
+  });
   if (gFilters.search) list = list.filter(g => g.name.toLowerCase().includes(gFilters.search.toLowerCase()));
   if (gFilters.region) list = list.filter(g => g.regions.includes(gFilters.region));
   if (gFilters.lang) list = list.filter(g => g.languages.includes(gFilters.lang));
