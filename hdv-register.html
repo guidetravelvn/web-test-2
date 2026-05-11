@@ -707,21 +707,24 @@ document.getElementById('hdv-bio')?.addEventListener('input', function() {
 
 // Commission selector
 let selectedCommission = 15;
+function applyCommission(val) {
+  selectedCommission = val;
+  const colors = { 15: 'var(--gray)', 20: '#0284C7', 25: '#7C3AED', 30: 'var(--orange)' };
+  const bgs    = { 15: '#F8FAFC',     20: '#E0F2FE', 25: '#F5F3FF', 30: '#FFF7ED'       };
+  document.querySelectorAll('.comm-opt').forEach(o => {
+    const v = parseInt(o.dataset.val);
+    const sel = v === val;
+    o.style.borderColor = sel ? (colors[v] || 'var(--blue)') : 'var(--border)';
+    o.style.background  = sel ? (bgs[v]    || 'var(--blue-light)') : 'white';
+    o.style.transform   = sel ? 'translateY(-2px)' : 'none';
+    o.querySelector('input').checked = sel;
+  });
+  updatePricePreview();
+}
 document.querySelectorAll('.comm-opt').forEach(opt => {
-  opt.addEventListener('click', () => {
-    selectedCommission = parseInt(opt.dataset.val);
-    document.querySelectorAll('.comm-opt').forEach(o => {
-      o.style.borderColor = 'var(--border)';
-      o.style.background = 'white';
-      o.style.transform = 'none';
-    });
-    const colors = { 15: 'var(--gray)', 20: '#0284C7', 25: '#7C3AED', 30: 'var(--orange)' };
-    const bgs    = { 15: '#F8FAFC',     20: '#E0F2FE', 25: '#F5F3FF', 30: '#FFF7ED'       };
-    opt.style.borderColor = colors[selectedCommission] || 'var(--blue)';
-    opt.style.background  = bgs[selectedCommission]   || 'var(--blue-light)';
-    opt.style.transform   = 'translateY(-2px)';
-    opt.querySelector('input').checked = true;
-    updatePricePreview();
+  opt.addEventListener('click', e => {
+    e.preventDefault();
+    applyCommission(parseInt(opt.dataset.val));
   });
 });
 
@@ -934,21 +937,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Step 4
   setVal('hdv-price', p.pricePerDay || '');
-  if (p.commission) {
-    selectedCommission = p.commission;
-    const colors = { 15: 'var(--gray)', 20: '#0284C7', 25: '#7C3AED', 30: 'var(--orange)' };
-    const bgs    = { 15: '#F8FAFC',     20: '#E0F2FE', 25: '#F5F3FF', 30: '#FFF7ED'       };
-    document.querySelectorAll('.comm-opt').forEach(opt => {
-      const val = parseInt(opt.dataset.val);
-      const sel = val === selectedCommission;
-      opt.style.borderColor = sel ? (colors[val] || 'var(--blue)') : 'var(--border)';
-      opt.style.background  = sel ? (bgs[val] || 'var(--blue-light)') : 'white';
-      opt.style.transform   = sel ? 'translateY(-2px)' : 'none';
-      const input = opt.querySelector('input');
-      if (input) input.checked = sel;
-    });
-    updatePricePreview();
-  }
+  if (p.commission) applyCommission(p.commission);
 
   // Tự tick điều khoản
   const terms = document.getElementById('agree-terms');
