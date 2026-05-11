@@ -229,6 +229,7 @@
 
   <!-- REVENUE TAB -->
   <div id="tab-revenue" style="display:none">
+    <div id="rev-stat-cards" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px"></div>
     <div class="card" style="margin-bottom:20px">
       <div class="card-head">
         <h3><i class="fa-solid fa-chart-line" style="color:#7C3AED"></i> Tổng quan doanh thu</h3>
@@ -240,7 +241,7 @@
       <div style="padding:20px" id="rev-summary"></div>
     </div>
     <div class="card">
-      <div class="card-head"><h3><i class="fa-solid fa-chart-bar" style="color:#F97316"></i> Doanh thu theo HDV</h3></div>
+      <div class="card-head"><h3><i class="fa-solid fa-chart-bar" style="color:#F97316"></i> Doanh thu & Hoa hồng theo HDV</h3></div>
       <div style="padding:20px" id="revenue-content"></div>
     </div>
   </div>
@@ -656,8 +657,34 @@ function setRevMode(mode, el) {
 }
 
 function renderRevenue() {
-  const reqs = getAllRequests().filter(r => r.status === 'accepted' || r.status === 'done');
+  const allReqs = getAllRequests();
+  const reqs = allReqs.filter(r => r.status === 'accepted' || r.status === 'done');
   const today = new Date();
+  const thisMonth = today.toISOString().slice(0, 7);
+  const todayStr  = today.toISOString().slice(0, 10);
+
+  // Stat cards
+  const totalRev   = reqs.reduce((s,r) => s + (r.totalAmount||0), 0);
+  const totalComm  = reqs.reduce((s,r) => {
+    const g = GUIDES.find(x => x.id == r.guideId);
+    const comm = g ? g.commission : 15;
+    return s + Math.round((r.totalAmount||0) * comm / 100);
+  }, 0);
+  const monthComm  = reqs.filter(r => (r.createdAt||'').slice(0,7) === thisMonth).reduce((s,r) => {
+    const g = GUIDES.find(x => x.id == r.guideId);
+    const comm = g ? g.commission : 15;
+    return s + Math.round((r.totalAmount||0) * comm / 100);
+  }, 0);
+  const todayComm  = reqs.filter(r => (r.createdAt||'').slice(0,10) === todayStr).reduce((s,r) => {
+    const g = GUIDES.find(x => x.id == r.guideId);
+    const comm = g ? g.commission : 15;
+    return s + Math.round((r.totalAmount||0) * comm / 100);
+  }, 0);
+  document.getElementById('rev-stat-cards').innerHTML = `
+    <div class="dcard" style="--c:#7C3AED"><div class="dcard-val" style="font-size:1.3rem">${fmtV(totalRev)}</div><div class="dcard-lbl"><i class="fa-solid fa-sack-dollar" style="color:#7C3AED"></i> Tổng doanh thu</div></div>
+    <div class="dcard" style="--c:#16A34A"><div class="dcard-val" style="font-size:1.3rem">${fmtV(totalComm)}</div><div class="dcard-lbl"><i class="fa-solid fa-hand-holding-dollar" style="color:#16A34A"></i> Tổng hoa hồng nhận được</div></div>
+    <div class="dcard" style="--c:#0EA5E9"><div class="dcard-val" style="font-size:1.3rem">${fmtV(monthComm)}</div><div class="dcard-lbl"><i class="fa-solid fa-calendar-days" style="color:#0EA5E9"></i> Hoa hồng tháng này</div></div>
+    <div class="dcard" style="--c:#F97316"><div class="dcard-val" style="font-size:1.3rem">${fmtV(todayComm)}</div><div class="dcard-lbl"><i class="fa-solid fa-fire" style="color:#F97316"></i> Hoa hồng hôm nay</div></div>`;
 
   if (revMode === 'day') {
     const days = {};
@@ -696,15 +723,26 @@ function renderRevenue() {
       </div>`).join('');
   }
 
-  const allReqs = getAllRequests();
   const maxRev = Math.max(...GUIDES.map(g => allReqs.filter(r => r.guideId == g.id && (r.status==='accepted'||r.status==='done')).reduce((s,r) => s+(r.totalAmount||0), 0)), 1);
-  document.getElementById('revenue-content').innerHTML = GUIDES.map(g => {
-    const rev = allReqs.filter(r => r.guideId == g.id && (r.status==='accepted'||r.status==='done')).reduce((s,r) => s+(r.totalAmount||0), 0);
-    const cnt = allReqs.filter(r => r.guideId == g.id && r.status==='done').length;
-    return `<div class="revenue-bar">
-      <div class="rb-label"><img src="${g.avatar}" style="width:24px;height:24px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:8px">${g.name} <span style="color:#94A3B8;font-size:.75rem">(${cnt} tour)</span></div>
-      <div class="rb-track"><div class="rb-fill" style="width:${Math.round(rev/maxRev*100)}%"></div></div>
-      <div class="rb-val">${rev ? fmtV(rev) : '—'}</div>
+  document.getElementById('revenue-content').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr auto auto;gap:0;background:#F8FAFC;border-radius:8px;padding:8px 16px;margin-bottom:10px;font-size:.74rem;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.04em">
+      <span>HDV</span><span style="text-align:right;padding-right:24px">Doanh thu</span><span style="text-align:right;min-width:110px">Hoa hồng (${''}<i class="fa-solid fa-hand-holding-dollar" style="color:#16A34A"></i>)</span>
+    </div>` +
+  GUIDES.map(g => {
+    const gReqs = allReqs.filter(r => r.guideId == g.id && (r.status==='accepted'||r.status==='done'));
+    const rev  = gReqs.reduce((s,r) => s+(r.totalAmount||0), 0);
+    const comm = gReqs.reduce((s,r) => s+Math.round((r.totalAmount||0)*g.commission/100), 0);
+    const cnt  = allReqs.filter(r => r.guideId == g.id && r.status==='done').length;
+    return `<div style="display:flex;align-items:center;gap:12px;background:#F8FAFC;border-radius:10px;padding:11px 16px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
+        <img src="${g.avatar}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">
+        <div>
+          <div style="font-size:.85rem;font-weight:600">${g.name} <span style="color:#94A3B8;font-size:.75rem">${g.commission}% • ${cnt} tour</span></div>
+          <div style="background:#E2E8F0;border-radius:99px;height:6px;margin-top:5px;overflow:hidden;width:160px"><div style="height:100%;border-radius:99px;background:linear-gradient(90deg,#0EA5E9,#7C3AED);width:${Math.round(rev/maxRev*100)}%"></div></div>
+        </div>
+      </div>
+      <div style="text-align:right;min-width:90px;font-weight:700;font-size:.85rem">${rev ? fmtV(rev) : '—'}</div>
+      <div style="text-align:right;min-width:110px;font-weight:700;font-size:.85rem;color:#16A34A">${comm ? '+'+fmtV(comm) : '—'}</div>
     </div>`;
   }).join('');
 }
