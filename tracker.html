@@ -72,7 +72,7 @@
 
 <script>
 const DATA = {
-  lastUpdate: '2026-05-11 (pre-fill form chỉnh sửa hồ sơ HDV; getGuide() merge self-registered; auto-open review modal; admin tạm dừng/khoá tài khoản HDV sync Supabase)',
+  lastUpdate: '2026-05-13 (chat sensitive filter: block SĐT + STK ngân hàng VI+EN warning; open requests first-come-first-served cho HDV theo area; dropdown điểm đến; chính sách phí dịch vụ, escrow 24h, phí xử lý thanh toán quốc tế)',
   sections: [
     {
       title: '📄 Trang HTML',
@@ -143,7 +143,7 @@ const DATA = {
         { name: 'OTP đăng ký tài khoản', file: 'login.html', status: 'done', priority: 'high', note: 'Supabase Auth gửi OTP email thật qua Resend SMTP. Giới hạn 100 email/ngày free tier.' },
         { name: 'Quên mật khẩu + OTP reset', file: 'login.html', status: 'done', priority: 'high', note: 'Supabase resetPasswordForEmail thật: nhập email → link gửi email thật → click link → đặt mật khẩu mới (updateUser)' },
         { name: 'Guard đăng nhập sai loại tài khoản', file: 'login.html', status: 'done', priority: 'high', note: 'Báo lỗi rõ nếu khách đăng nhập tab HDV hoặc ngược lại' },
-        { name: 'Tin nhắn khách ↔ HDV', file: 'tourist-dashboard.html, hdv-dashboard.html', status: 'done', priority: 'high', note: 'Chat 2 chiều, polling 3s, DB.requests() fresh, filter booking theo email, prefill form từ session' },
+        { name: 'Tin nhắn khách ↔ HDV', file: 'tourist-dashboard.html, hdv-dashboard.html', status: 'done', priority: 'high', note: 'Chat 2 chiều, polling 3s, DB.requests() fresh, filter booking theo email, prefill form từ session. Filter số điện thoại + số tài khoản ngân hàng (VI+EN warning, có nút Gửi dù vậy).' },
         { name: 'Thông báo real-time', file: 'app.js, tourist-dashboard.html, hdv-dashboard.html', status: 'done', priority: 'low', note: 'Supabase Realtime cho requests+notifications, sync messages+reviews khi load. EmailJS gửi email khi có yêu cầu tour mới.' },
         { name: 'Lịch hẹn / Calendar HDV', file: 'hdv-dashboard.html', status: 'done', priority: 'med', note: 'Calendar tháng trong HDV dashboard, highlight ngày có tour, click xem chi tiết' },
         { name: 'Xác nhận hoàn thành tour + ảnh bằng chứng', file: 'tourist-dashboard.html, hdv-dashboard.html', status: 'done', priority: 'med', note: 'Nút Hoàn thành trên accepted bookings, upload ảnh selfie, lưu base64, chống chargeback' },

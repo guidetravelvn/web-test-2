@@ -979,6 +979,15 @@ function openChat(requestId) {
         </div>`;
       }).join('') : '<div style="text-align:center;color:var(--gray-2);font-size:.82rem;padding:20px 0">Chưa có tin nhắn. Hãy bắt đầu cuộc trò chuyện!</div>'}
     </div>
+    <div id="chat-warn" style="display:none;background:#fff8e1;border:1px solid #f59e0b;border-radius:8px;padding:10px 14px;margin:6px 12px;font-size:.82rem;color:#92400e">
+      <div style="font-weight:600;margin-bottom:4px">⚠️ Cảnh báo bảo mật / Security Warning</div>
+      <div>Tin nhắn có thể chứa số điện thoại hoặc tài khoản ngân hàng. Vui lòng giao dịch qua nền tảng để được bảo vệ.</div>
+      <div style="font-style:italic;margin-top:3px;color:#b45309">Message may contain phone or bank account number. Please transact through GuideTravel platform for protection.</div>
+      <div style="margin-top:8px;display:flex;gap:8px">
+        <button class="btn btn-sm" style="background:#e5e7eb;color:#374151;padding:4px 12px;font-size:.8rem" onclick="dismissChatWarn()">Hủy / Cancel</button>
+        <button class="btn btn-primary btn-sm" style="padding:4px 12px;font-size:.8rem" onclick="sendMsgForce()">Gửi dù vậy / Send anyway</button>
+      </div>
+    </div>
     <div class="chat-input-row">
       <textarea id="chat-input" placeholder="Nhập tin nhắn..." rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"></textarea>
       <button class="btn btn-primary btn-sm" onclick="sendMsg()" style="flex-shrink:0;height:fit-content"><i class="fa-solid fa-paper-plane"></i></button>
@@ -1044,10 +1053,37 @@ function closeChatMobile() {
   document.getElementById('chat-panel').classList.add('mob-chat-hidden');
 }
 
+let _forceSend = false;
+
+function detectSensitive(text) {
+  const phoneRe = /(0[3-9]\d{8}|\+84[3-9]\d{8})/;
+  const bankRe = /\b\d{9,16}\b/;
+  return phoneRe.test(text) || bankRe.test(text);
+}
+
+function dismissChatWarn() {
+  _forceSend = false;
+  const w = document.getElementById('chat-warn');
+  if (w) w.style.display = 'none';
+}
+
+function sendMsgForce() {
+  _forceSend = true;
+  const w = document.getElementById('chat-warn');
+  if (w) w.style.display = 'none';
+  sendMsg();
+}
+
 function sendMsg() {
   const input = document.getElementById('chat-input');
   const text = input?.value.trim();
   if (!text || !currentChatReqId) return;
+  if (!_forceSend && detectSensitive(text)) {
+    const w = document.getElementById('chat-warn');
+    if (w) w.style.display = 'block';
+    return;
+  }
+  _forceSend = false;
   const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
   const msgs = getMessages();
   const newMsg = { id:'MSG_'+Date.now(), requestId:currentChatReqId, fromEmail:session.email, fromType:'tourist', fromName:session.name, text, time:new Date().toISOString(), read:false };
