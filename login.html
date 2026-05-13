@@ -436,7 +436,8 @@ async function verifyRegOtp() {
 
   pendingRegData = null;
   toast(t('login.register_success'), 'ok');
-  setTimeout(() => { location.href = type === 'guide' ? 'hdv-register.html' : 'index.html'; }, 800);
+  const rd = new URLSearchParams(location.search).get('redirect');
+  setTimeout(() => { location.href = type === 'guide' ? 'hdv-register.html' : (rd || 'index.html'); }, 800);
 }
 
 // ===== FORGOT PASSWORD =====

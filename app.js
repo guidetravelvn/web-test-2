@@ -1052,6 +1052,11 @@ function initBookingForm(g) {
 let selectedInterests = [];
 
 function initRequestPage() {
+  const session = Auth.session();
+  if (!session || session.type !== 'tourist') {
+    location.href = 'login.html?redirect=' + encodeURIComponent('request.html' + location.search);
+    return;
+  }
   const params = new URLSearchParams(location.search);
   const guideIdRaw = params.get('guideId');
   const guideIdNum = parseInt(guideIdRaw);
