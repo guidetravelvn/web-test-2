@@ -173,20 +173,24 @@
         <div id="methods-intl" class="method-grid" style="display:none">
           <div class="method-opt" onclick="selectMethod(this,'stripe')">
             <div class="method-icon">💳</div>
-            <div><div class="method-name">Visa / Mastercard</div><div class="method-fee">2.9% + 30¢</div></div>
+            <div><div class="method-name">Visa / Mastercard</div><div class="method-fee" style="color:#F97316">+ Phí xử lý ~3.5%</div></div>
           </div>
           <div class="method-opt" onclick="selectMethod(this,'paypal')">
             <div class="method-icon" style="background:#EFF6FF">🅿️</div>
-            <div><div class="method-name">PayPal</div><div class="method-fee">3.49%</div></div>
+            <div><div class="method-name">PayPal</div><div class="method-fee" style="color:#F97316">+ Phí xử lý ~3.5%</div></div>
           </div>
           <div class="method-opt" onclick="selectMethod(this,'wise')">
             <div class="method-icon" style="background:#ECFDF5">💚</div>
-            <div><div class="method-name">Wise</div><div class="method-fee" data-i18n="pay.wise_fee">Phí thấp nhất</div></div>
+            <div><div class="method-name">Wise</div><div class="method-fee" style="color:#F97316">+ Phí xử lý ~1.5%</div></div>
           </div>
           <div class="method-opt" onclick="selectMethod(this,'crypto')">
             <div class="method-icon">₿</div>
-            <div><div class="method-name">Crypto</div><div class="method-fee">USDT / BTC</div></div>
+            <div><div class="method-name">Crypto</div><div class="method-fee" style="color:#16A34A">Không phí xử lý</div></div>
           </div>
+        </div>
+        <div id="intl-fee-tip" style="display:none;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--radius);padding:10px 14px;margin-top:12px;font-size:.82rem;color:#065F46">
+          <i class="fa-solid fa-lightbulb" style="margin-right:6px"></i>
+          <strong>Tiết kiệm phí:</strong> Bạn là người Việt? Chuyển sang tab <strong>Trong nước</strong> để dùng VNPay / Chuyển khoản — miễn phí xử lý giao dịch.
         </div>
 
         <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:var(--radius);padding:12px 14px;margin-top:16px;font-size:.82rem;color:#92400E" data-i18n="pay.escrow">
@@ -230,7 +234,12 @@
         <div class="order-row"><span data-i18n="pay.people">Số người</span><strong id="ord-people">—</strong></div>
         <div class="order-row"><span data-i18n="pay.unit_price">Đơn giá</span><strong id="ord-price">—</strong></div>
         <div class="order-row"><span data-i18n="pay.service_fee">Phí dịch vụ</span><strong style="color:#16A34A" data-i18n="pay.free">Miễn phí</strong></div>
+        <div class="order-row" id="processing-fee-row" style="display:none">
+          <span>Phí xử lý giao dịch <i class="fa-solid fa-circle-question" style="font-size:.75rem;color:var(--gray-2)" title="Phí do cổng thanh toán quốc tế tính"></i></span>
+          <strong id="ord-processing-fee" style="color:#F97316">—</strong>
+        </div>
         <div class="order-total"><span data-i18n="pay.total">Tổng cộng</span><span id="ord-total">—</span></div>
+        <div id="processing-fee-note" style="display:none;font-size:.73rem;color:var(--gray-2);margin-top:4px;text-align:right">* Phí xử lý do cổng thanh toán quốc tế quy định</div>
 
         <div style="margin-top:20px">
           <div class="trust-row"><i class="fa-solid fa-circle-check"></i><span data-i18n="pay.trust1">Hoàn tiền 100% nếu hủy trước 7 ngày</span></div>
@@ -303,27 +312,53 @@
 // Replace with your sandbox Client ID from developer.paypal.com → My Apps & Credentials → Sandbox
 const PAYPAL_SANDBOX_CLIENT_ID = 'YOUR_SANDBOX_CLIENT_ID_HERE';
 const VND_TO_USD = 25000;
+const PROCESSING_FEES = { vnpay:0, momo:0, zalopay:0, bank:0, stripe:0.035, paypal:0.035, wise:0.015, crypto:0 };
 
 let selectedMethod = 'vnpay';
 let orderData = {};
 let _paypalSDKLoaded = false;
 let _paypalValidationFailed = false;
 
+function updateProcessingFee() {
+  const fee = PROCESSING_FEES[selectedMethod] || 0;
+  const feeRow = document.getElementById('processing-fee-row');
+  const feeNote = document.getElementById('processing-fee-note');
+  const feeEl = document.getElementById('ord-processing-fee');
+  const totalEl = document.getElementById('ord-total');
+  if (!orderData.total) return;
+  if (fee > 0) {
+    const feeAmt = Math.round(orderData.total * fee);
+    feeRow.style.display = '';
+    feeNote.style.display = '';
+    feeEl.textContent = '+' + fmtPrice(feeAmt);
+    totalEl.textContent = fmtPrice(orderData.total + feeAmt);
+    orderData.grandTotal = orderData.total + feeAmt;
+  } else {
+    feeRow.style.display = 'none';
+    feeNote.style.display = 'none';
+    totalEl.textContent = fmtPrice(orderData.total);
+    orderData.grandTotal = orderData.total;
+  }
+}
+
 function switchPayTab(tab) {
   document.getElementById('methods-vn').style.display = tab === 'vn' ? 'grid' : 'none';
   document.getElementById('methods-intl').style.display = tab === 'intl' ? 'grid' : 'none';
+  document.getElementById('intl-fee-tip').style.display = tab === 'intl' ? 'block' : 'none';
   document.getElementById('tab-vn').classList.toggle('active', tab === 'vn');
   document.getElementById('tab-intl').classList.toggle('active', tab === 'intl');
   document.querySelectorAll('.method-opt').forEach(o => o.classList.remove('sel'));
   selectedMethod = tab === 'vn' ? 'vnpay' : 'stripe';
   document.getElementById('confirm-pay-btn').style.display = '';
   document.getElementById('paypal-btn-wrap').style.display = 'none';
+  updateProcessingFee();
 }
 
 function selectMethod(el, method) {
   document.querySelectorAll('.method-opt').forEach(o => o.classList.remove('sel'));
   el.classList.add('sel');
   selectedMethod = method;
+  updateProcessingFee();
   const confirmBtn = document.getElementById('confirm-pay-btn');
   const paypalWrap = document.getElementById('paypal-btn-wrap');
   if (method === 'paypal') {
@@ -448,6 +483,7 @@ function initPayment() {
   document.getElementById('ord-people').textContent = people;
   document.getElementById('ord-price').textContent = fmtPrice(guide.pricePerDay);
   document.getElementById('ord-total').textContent = fmtPrice(total);
+  updateProcessingFee();
   const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
   if (session) {
     document.getElementById('p-name').value = session.name || '';
