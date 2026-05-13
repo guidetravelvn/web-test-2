@@ -233,6 +233,7 @@
         <h3><i class="fa-solid fa-inbox" style="color:var(--blue)"></i> Yêu cầu từ khách</h3>
         <div class="req-tabs">
           <div class="req-tab active" onclick="filterReqs('all',this)">Tất cả</div>
+          <div class="req-tab" onclick="filterReqs('open',this)">Yêu cầu mở <span id="badge-open" style="background:#FFF7ED;color:#F97316;border-radius:99px;padding:1px 7px;font-size:.72rem;margin-left:4px"></span></div>
           <div class="req-tab" onclick="filterReqs('pending',this)">Chờ xử lý <span id="badge-pending" style="background:#FFF7ED;color:#F97316;border-radius:99px;padding:1px 7px;font-size:.72rem;margin-left:4px"></span></div>
           <div class="req-tab" onclick="filterReqs('accepted',this)">Đã chấp nhận</div>
           <div class="req-tab" onclick="filterReqs('declined',this)">Đã từ chối</div>
@@ -410,11 +411,87 @@ let currentFilter = 'all';
 let dashGuide = null;
 let selectedWorkDays = new Set();
 
+let openReqs = [];
+
+function updateOpenBadge() {
+  const b = document.getElementById('badge-open');
+  if (b) b.textContent = openReqs.length || '';
+}
+
+function renderOpenReqs() {
+  const list = document.getElementById('req-list');
+  if (!openReqs.length) {
+    list.innerHTML = `<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>Không có yêu cầu mở cho khu vực của bạn</p></div>`;
+    return;
+  }
+  list.innerHTML = openReqs.map(r => `
+    <div class="req-card" style="border-left:3px solid #F97316">
+      <div class="req-card-head">
+        <div>
+          <div class="req-tourist">
+            <div class="req-tourist-ava">${(r.name||'K')[0].toUpperCase()}</div>
+            <div>
+              <div class="req-tourist-name">${r.name || 'Khách'}</div>
+              <div class="req-tourist-contact">${r.destination} · ${r.days} ngày · ${r.people} người</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+          <span class="req-status st-pending">Chưa có HDV</span>
+          <span class="req-code">#${r.id}</span>
+        </div>
+      </div>
+      <div class="req-info">
+        <span><i class="fa-solid fa-location-dot"></i> <strong>${r.destination}</strong></span>
+        <span><i class="fa-regular fa-calendar"></i> <strong>${r.date || '—'}</strong></span>
+        <span><i class="fa-solid fa-moon"></i> <strong>${r.days || 1} ngày</strong></span>
+        <span><i class="fa-solid fa-users"></i> <strong>${r.people || 1} người</strong></span>
+        ${r.budget ? `<span><i class="fa-solid fa-wallet"></i> <strong>${r.budget}</strong></span>` : ''}
+        ${r.interests && r.interests.length ? `<span><i class="fa-solid fa-tags"></i> <strong>${r.interests.slice(0,3).join(', ')}</strong></span>` : ''}
+      </div>
+      ${r.notes ? `<div style="font-size:.82rem;color:var(--gray);background:#F8FAFC;border-radius:6px;padding:8px 10px;margin-bottom:10px"><i class="fa-solid fa-quote-left" style="margin-right:4px"></i>${r.notes}</div>` : ''}
+      <div class="req-actions">
+        <button class="btn btn-sm" style="background:#FFF7ED;color:#F97316;border:1px solid #FED7AA;font-weight:700" onclick="claimOpenReq('${r.id}')"><i class="fa-solid fa-hand"></i> Nhận ngay</button>
+      </div>
+    </div>`).join('');
+}
+
+async function claimOpenReq(reqId) {
+  const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
+  if (!session || !dashGuide) return;
+  const ok = await SB.claimReq(reqId, String(session.id));
+  if (!ok) {
+    toast('Đã có HDV khác nhận yêu cầu này rồi!', 'err');
+    openReqs = openReqs.filter(r => r.id !== reqId);
+    updateOpenBadge();
+    renderOpenReqs();
+    return;
+  }
+  const req = openReqs.find(r => r.id === reqId);
+  openReqs = openReqs.filter(r => r.id !== reqId);
+  if (req) {
+    req.guideId = String(session.id);
+    req.guideName = dashGuide.name;
+    allReqs.unshift(req);
+    const all = JSON.parse(localStorage.getItem('gt_requests') || '[]');
+    const idx = all.findIndex(r => r.id === req.id);
+    if (idx > -1) all[idx] = req; else all.unshift(req);
+    localStorage.setItem('gt_requests', JSON.stringify(all));
+  }
+  updateOpenBadge();
+  renderReqs();
+  updateStats();
+  updateNavBadge();
+  toast('Đã nhận yêu cầu! Hãy liên hệ với khách sớm.', 'ok');
+  filterReqs('pending', document.querySelector('.req-tab:nth-child(3)'));
+}
+
 function filterReqs(f, el) {
   currentFilter = f;
   document.querySelectorAll('.req-tab').forEach(t => t.classList.remove('active'));
   if (el) el.classList.add('active');
-  renderReqs();
+  if (f === 'open') renderOpenReqs();
+  else renderReqs();
 }
 
 function renderReqs() {
@@ -717,11 +794,20 @@ async function initDash() {
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'requests' }, payload => {
         const newReq = payload.new?.data;
         if (!newReq) return;
-        // Only show if it belongs to this guide
+        // Open request (no guideId) → thêm vào tab yêu cầu mở nếu đúng khu vực
+        if (!newReq.guideId && newReq.destSlug === guide.area) {
+          if (!openReqs.find(r => r.id === newReq.id)) {
+            openReqs.unshift(newReq);
+            updateOpenBadge();
+            if (currentFilter === 'open') renderOpenReqs();
+            toast('📋 Có yêu cầu tour mới tại ' + newReq.destination + '!', 'ok');
+          }
+          return;
+        }
+        // Only show assigned requests belonging to this guide
         if (!isDemoGuide && newReq.guideId != guide.id) return;
         if (allReqs.find(r => r.id === newReq.id)) return;
         allReqs.unshift(newReq);
-        // Save to localStorage without overwriting other guides' data
         const all = JSON.parse(localStorage.getItem('gt_requests') || '[]');
         if (!all.find(r => r.id === newReq.id)) { all.unshift(newReq); localStorage.setItem('gt_requests', JSON.stringify(all)); }
         renderReqs();
@@ -729,6 +815,26 @@ async function initDash() {
         updateNavBadge();
       })
       .subscribe();
+
+    // Realtime: remove open request khi HDV khác đã nhận
+    sb.channel('open_req_claimed')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'requests' }, payload => {
+        const updated = payload.new;
+        if (!updated || !updated.id || updated.guide_id === '' || updated.guide_id === String(session.id)) return;
+        openReqs = openReqs.filter(r => r.id !== updated.id);
+        updateOpenBadge();
+        if (currentFilter === 'open') renderOpenReqs();
+      })
+      .subscribe();
+
+    // Load open requests cho khu vực HDV
+    if (guide.area) {
+      SB.getOpenReqs(guide.area).then(reqs => {
+        openReqs = reqs || [];
+        updateOpenBadge();
+        if (currentFilter === 'open') renderOpenReqs();
+      });
+    }
   }
 
   // Earnings calc

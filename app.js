@@ -481,6 +481,8 @@ function toast(msg, type = 'ok') {
   setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 300); }, 3000);
 }
 
+const AREA_LABELS = {'nha-trang':'Nha Trang','hoi-an':'Hội An','da-nang':'Đà Nẵng','sapa':'Sapa','ha-long':'Hạ Long','da-lat':'Đà Lạt','phu-quoc':'Phú Quốc','ha-giang':'Hà Giang'};
+
 // ===== STORAGE =====
 const DB = {
   requests: () => JSON.parse(localStorage.getItem('gt_requests') || '[]'),
@@ -508,6 +510,8 @@ const SB = {
   // Reports
   async saveReport(r) { if (typeof sb==='undefined') return; try { await sb.from('reports').upsert({id:r.id,reporter_email:r.reporterEmail||'',guide_id:String(r.guideId||''),type:r.type||'',description:r.description||'',status:r.status||'pending',data:r}); } catch(e){} },
   async getReports() { if (typeof sb==='undefined') return null; try { const{data}=await sb.from('reports').select('data'); return data?data.map(r=>r.data):[]; } catch(e){return null;} },
+  async getOpenReqs(area) { if (typeof sb==='undefined') return []; try { const{data}=await sb.from('requests').select('data').eq('guide_id','').eq('status','pending'); if(!data) return []; return data.map(r=>r.data).filter(r=>r.destSlug===area); } catch(e){return[];} },
+  async claimReq(reqId,guideId) { if (typeof sb==='undefined') return false; try { const{data}=await sb.from('requests').update({guide_id:guideId}).eq('id',reqId).eq('guide_id','').select('id'); return !!(data&&data.length>0); } catch(e){return false;} },
 };
 
 // ===== AUTH =====
@@ -1140,7 +1144,7 @@ function submitRequest(e) {
   [['req-name', 'err-name', v => v.trim().length >= 2],
    ['req-phone', 'err-phone', v => /^[0-9]{10,11}$/.test(v.trim())],
    ['req-email', 'err-email', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())],
-   ['req-dest', 'err-dest', v => v.trim().length >= 2],
+   ['req-dest', 'err-dest', v => !!v],
    ['req-date', 'err-date', v => !!v],
   ].forEach(([fid, eid, check]) => {
     const f = $(fid); const err = $(eid);
@@ -1152,6 +1156,7 @@ function submitRequest(e) {
   });
   if (!ok) { toast(t('err.fill_form'), 'err'); return; }
 
+  const destSlug = $('req-dest')?.value || '';
   const req = {
     id: 'GT' + Date.now().toString().slice(-8),
     guideId: $('req-guide-id')?.value || null,
@@ -1160,7 +1165,8 @@ function submitRequest(e) {
     name: $('req-name').value,
     phone: $('req-phone').value,
     email: $('req-email').value,
-    destination: $('req-dest').value,
+    destSlug,
+    destination: AREA_LABELS[destSlug] || destSlug,
     date: $('req-date').value,
     days: $('req-days')?.value || 1,
     people: $('req-people')?.value || 1,
