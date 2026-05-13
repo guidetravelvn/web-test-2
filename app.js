@@ -1052,8 +1052,8 @@ function initBookingForm(g) {
 let selectedInterests = [];
 
 function initRequestPage() {
-  const session = Auth.session();
-  if (!session || session.type !== 'tourist') {
+  const reqSession = Auth.session();
+  if (!reqSession || reqSession.type !== 'tourist') {
     location.href = 'login.html?redirect=' + encodeURIComponent('request.html' + location.search);
     return;
   }
