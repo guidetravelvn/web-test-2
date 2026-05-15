@@ -1171,6 +1171,7 @@ function submitRequest(e) {
     days: $('req-days')?.value || 1,
     people: $('req-people')?.value || 1,
     budget: $('req-budget')?.value || '',
+    hdvRate: $('req-hdv-rate')?.value || '',
     interests: selectedInterests,
     notes: $('req-notes')?.value || '',
     status: 'pending',
