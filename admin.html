@@ -716,7 +716,21 @@ function saveAdminNote(id) {
 }
 
 // ===== HDV =====
-function renderNewHDV() {
+async function renderNewHDV() {
+  if (typeof sb !== 'undefined') {
+    try {
+      const { data: rows } = await sb.from('hdv_profiles').select('data').eq('status', 'pending_review');
+      if (rows && rows.length) {
+        const existing = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+        rows.forEach(row => {
+          if (row.data && !existing.find(p => p.email === row.data.email)) {
+            existing.push({ ...row.data, status: 'pending_review' });
+          }
+        });
+        localStorage.setItem('gt_hdv_profiles', JSON.stringify(existing));
+      }
+    } catch(e) {}
+  }
   const profiles = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]')
     .filter(p => p.status === 'pending_review' && !GUIDES.find(g => g.email === p.email));
   const countEl = document.getElementById('new-hdv-count');
