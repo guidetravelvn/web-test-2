@@ -872,6 +872,7 @@ async function submitRegistration() {
   // Save to Supabase
   if (typeof sb !== 'undefined' && session?.id) {
     const { error: sbErr } = await sb.from('hdv_profiles').upsert({
+      id: profile.id,
       user_id: session.id,
       email: profile.email,
       name: profile.name,
