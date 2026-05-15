@@ -874,10 +874,15 @@ async function submitRegistration() {
     const { error: sbErr } = await sb.from('hdv_profiles').upsert({
       user_id: session.id,
       email: profile.email,
+      name: profile.name,
+      phone: profile.phone,
       status: profile.status,
       data: profile
-    });
-    if (sbErr) console.error('hdv_profiles upsert:', sbErr.message);
+    }, { onConflict: 'user_id' });
+    if (sbErr) {
+      console.error('hdv_profiles upsert:', sbErr.message, sbErr.code, sbErr.details);
+      toast('Lỗi lưu hồ sơ: ' + sbErr.message, 'err');
+    }
   }
 
   // Mark session as verified
