@@ -1138,6 +1138,11 @@ function renderSideGuides() {
 
 function submitRequest(e) {
   e.preventDefault();
+  const _sess = Auth.session();
+  if (_sess && _sess.type === 'guide') {
+    toast('Tài khoản HDV không thể đặt tour. Vui lòng dùng tài khoản khách.', 'err');
+    return;
+  }
   const form = e.target;
   // Validate
   let ok = true;
