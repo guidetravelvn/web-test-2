@@ -458,7 +458,7 @@ function renderOpenReqs() {
         <span><i class="fa-regular fa-calendar"></i> <strong>${r.date || '—'}</strong></span>
         <span><i class="fa-solid fa-moon"></i> <strong>${r.days || 1} ngày</strong></span>
         <span><i class="fa-solid fa-users"></i> <strong>${r.people || 1} người</strong></span>
-        ${r.budget ? `<span><i class="fa-solid fa-wallet"></i> <strong>${r.budget}</strong></span>` : ''}
+        ${r.budget ? `<span><i class="fa-solid fa-wallet"></i> <strong>${Number(r.budget).toLocaleString('vi-VN')}đ/người</strong></span>` : ''}
         ${r.hdvRate ? `<span><i class="fa-solid fa-tag"></i> <strong>${Number(r.hdvRate).toLocaleString('vi-VN')}đ/ngày</strong></span>` : ''}
         ${r.interests && r.interests.length ? `<span><i class="fa-solid fa-tags"></i> <strong>${r.interests.slice(0,3).join(', ')}</strong></span>` : ''}
       </div>
@@ -543,7 +543,7 @@ function renderReqs() {
         <span><i class="fa-regular fa-calendar"></i> <strong>${r.date || '—'}</strong></span>
         <span><i class="fa-solid fa-moon"></i> <strong>${r.days || 1} ${t('unit.days')}</strong></span>
         <span><i class="fa-solid fa-users"></i> <strong>${r.people || 1} ${t('unit.people')}</strong></span>
-        ${r.budget ? `<span><i class="fa-solid fa-wallet"></i> <strong>${r.budget}</strong></span>` : ''}
+        ${r.budget ? `<span><i class="fa-solid fa-wallet"></i> <strong>${Number(r.budget).toLocaleString('vi-VN')}đ/người</strong></span>` : ''}
         ${r.hdvRate ? `<span><i class="fa-solid fa-tag"></i> <strong>${Number(r.hdvRate).toLocaleString('vi-VN')}đ/ngày</strong></span>` : ''}
         ${r.interests && r.interests.length ? `<span><i class="fa-solid fa-tags"></i> <strong>${r.interests.slice(0,3).join(', ')}</strong></span>` : ''}
       </div>
