@@ -838,7 +838,7 @@ async function submitRegistration() {
   const hasNewCover = coverFile && coverFile.files && coverFile.files.length > 0;
   let coverUrl = (isEditing && existingProfile?.coverImg && !hasNewCover)
     ? existingProfile.coverImg
-    : 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=800&q=80';
+    : 'https://images.unsplash.com/photo-1528127269322-539801943592?w=800&q=80';
   if (hasNewCover) {
     coverUrl = await new Promise(res => {
       const reader = new FileReader();

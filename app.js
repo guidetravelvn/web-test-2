@@ -823,7 +823,7 @@ function getFilteredGuides() {
     .filter(p => p.status === 'approved' && !GUIDES.find(g => g.email === p.email))
     .map(p => ({
       ...p,
-      coverImg: p.coverImg || 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=800&q=80',
+      coverImg: p.coverImg || 'https://images.unsplash.com/photo-1528127269322-539801943592?w=800&q=80',
       reviews: p.reviews || 0, trips: p.trips || 0, rating: p.rating || 0,
       responseTime: p.responseTime || '',
       specialties: p.specialties || [], languages: p.languages || [],
