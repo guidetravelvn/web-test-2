@@ -462,6 +462,23 @@
 <script>
 const fmtV = n => new Intl.NumberFormat('vi-VN').format(n) + 'đ';
 
+function switchPayTab(reqId, tab) {
+  const ckPanel = document.getElementById('ppanel-ck-' + reqId);
+  const ppPanel = document.getElementById('ppanel-pp-' + reqId);
+  const ckTab   = document.getElementById('ptab-ck-'   + reqId);
+  const ppTab   = document.getElementById('ptab-pp-'   + reqId);
+  if (!ckPanel || !ppPanel) return;
+  if (tab === 'ck') {
+    ckPanel.style.display = ''; ppPanel.style.display = 'none';
+    ckTab.style.color = '#15803D'; ckTab.style.borderBottomColor = '#15803D';
+    ppTab.style.color = '#64748B'; ppTab.style.borderBottomColor = 'transparent';
+  } else {
+    ckPanel.style.display = 'none'; ppPanel.style.display = '';
+    ppTab.style.color = '#003087'; ppTab.style.borderBottomColor = '#003087';
+    ckTab.style.color = '#64748B'; ckTab.style.borderBottomColor = 'transparent';
+  }
+}
+
 let allBookings = [];
 let currentFilter = 'all';
 let reviewingId = null;
@@ -599,15 +616,27 @@ function renderBookings() {
         ${isTouristConfirmed ? `<button class="btn btn-sm" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="openCompleteModal('${r.id}')"><i class="fa-solid fa-flag-checkered"></i> ${t('tdash.card.mark_done')}</button>` : ''}
         ${isTouristConfirmed ? `<button class="btn btn-sm btn-primary" onclick="gotoChat('${r.id}')"><i class="fa-solid fa-comment-dots"></i> ${t('tdash.card.chat')}</button>` : ''}
         ${isAwaitingPayment ? `<div style="background:#F0FDF4;border:1.5px solid #BBF7D0;border-radius:10px;padding:12px 14px;margin-top:4px;width:100%">
-          <div style="font-weight:700;font-size:.85rem;color:#15803D;margin-bottom:8px"><i class="fa-solid fa-building-columns"></i> Thông tin chuyển khoản</div>
-          <div style="display:grid;gap:5px;font-size:.81rem">
-            <div style="display:flex;justify-content:space-between"><span style="color:#64748B">Ngân hàng</span><strong>MB Bank</strong></div>
-            <div style="display:flex;justify-content:space-between"><span style="color:#64748B">Số tài khoản</span><strong>0123456789012</strong></div>
-            <div style="display:flex;justify-content:space-between"><span style="color:#64748B">Chủ tài khoản</span><strong>GUIDETRAVEL JSC</strong></div>
-            <div style="display:flex;justify-content:space-between"><span style="color:#64748B">Nội dung CK</span><strong style="color:#7C3AED">GT${r.id}</strong></div>
-            <div style="display:flex;justify-content:space-between"><span style="color:#64748B">Số tiền</span><strong style="color:#DC2626">${r.proposal && r.proposal.totalPrice ? fmtV(r.proposal.totalPrice) : (price ? fmtV(price) : '—')}</strong></div>
+          <div style="display:flex;gap:0;border-bottom:1.5px solid #BBF7D0;margin-bottom:12px">
+            <button id="ptab-ck-${r.id}" onclick="switchPayTab('${r.id}','ck')" style="padding:6px 14px;font-size:.8rem;font-weight:600;border:none;background:none;cursor:pointer;color:#15803D;border-bottom:2.5px solid #15803D;margin-bottom:-1.5px;transition:.15s"><i class="fa-solid fa-building-columns"></i> Chuyển khoản</button>
+            <button id="ptab-pp-${r.id}" onclick="switchPayTab('${r.id}','pp')" style="padding:6px 14px;font-size:.8rem;font-weight:600;border:none;background:none;cursor:pointer;color:#64748B;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;transition:.15s"><i class="fa-brands fa-paypal"></i> PayPal</button>
           </div>
-          <div style="font-size:.73rem;color:#059669;margin-top:8px;background:#DCFCE7;border-radius:6px;padding:6px 9px"><i class="fa-solid fa-circle-info"></i> Sau khi chuyển khoản, admin sẽ xác nhận trong vòng 24h.</div>
+          <div id="ppanel-ck-${r.id}">
+            <div style="display:grid;gap:5px;font-size:.81rem">
+              <div style="display:flex;justify-content:space-between"><span style="color:#64748B">Ngân hàng</span><strong>MB Bank</strong></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:#64748B">Số tài khoản</span><strong>0123456789012</strong></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:#64748B">Chủ tài khoản</span><strong>GUIDETRAVEL JSC</strong></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:#64748B">Nội dung CK</span><strong style="color:#7C3AED">GT${r.id}</strong></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:#64748B">Số tiền</span><strong style="color:#DC2626">${r.proposal && r.proposal.totalPrice ? fmtV(r.proposal.totalPrice) : (price ? fmtV(price) : '—')}</strong></div>
+            </div>
+            <div style="font-size:.73rem;color:#059669;margin-top:8px;background:#DCFCE7;border-radius:6px;padding:6px 9px"><i class="fa-solid fa-circle-info"></i> Sau khi chuyển khoản, admin sẽ xác nhận trong vòng 24h.</div>
+          </div>
+          <div id="ppanel-pp-${r.id}" style="display:none">
+            <div style="text-align:center;padding:8px 0">
+              <div style="font-size:.82rem;color:#64748B;margin-bottom:6px">Tổng thanh toán</div>
+              <div style="font-size:1.1rem;font-weight:800;color:#003087;margin-bottom:12px">$${r.proposal && r.proposal.totalPrice ? Math.round(r.proposal.totalPrice/25000) : (price ? Math.round(price/25000) : 0)}</div>
+              <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;padding:10px;font-size:.78rem;color:#92400E"><i class="fa-solid fa-clock"></i> Tính năng PayPal đang được tích hợp. Vui lòng dùng chuyển khoản nội địa trong lúc chờ.</div>
+            </div>
+          </div>
         </div>` : ''}
         ${isAccepted ? `<button class="btn btn-sm btn-primary" onclick="gotoChat('${r.id}')"><i class="fa-solid fa-comment-dots"></i> ${t('tdash.card.chat')}</button>` : ''}
         ${isAccepted ? `<button class="btn btn-sm" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="openCompleteModal('${r.id}')"><i class="fa-solid fa-flag-checkered"></i> ${t('tdash.card.mark_done')}</button>` : ''}
