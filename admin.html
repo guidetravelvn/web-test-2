@@ -719,8 +719,10 @@ function saveAdminNote(id) {
 async function renderNewHDV() {
   if (typeof sb !== 'undefined') {
     try {
-      const { data: rows } = await sb.from('hdv_profiles').select('data').eq('status', 'pending_review');
-      if (rows && rows.length) {
+      const { data: rows, error: sbErr } = await sb.from('hdv_profiles').select('data').eq('status', 'pending_review');
+      if (sbErr) { console.warn('[Admin] Supabase hdv_profiles error:', sbErr.message, sbErr.code); }
+      else if (rows && rows.length) {
+        console.log('[Admin] Supabase hdv_profiles fetched:', rows.length, 'rows');
         const existing = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
         rows.forEach(row => {
           if (row.data && !existing.find(p => p.email === row.data.email)) {
@@ -728,8 +730,10 @@ async function renderNewHDV() {
           }
         });
         localStorage.setItem('gt_hdv_profiles', JSON.stringify(existing));
+      } else {
+        console.log('[Admin] Supabase hdv_profiles: no pending_review rows found');
       }
-    } catch(e) {}
+    } catch(e) { console.warn('[Admin] Supabase fetch failed:', e); }
   }
   const profiles = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]')
     .filter(p => p.status === 'pending_review' && !GUIDES.find(g => g.email === p.email));
