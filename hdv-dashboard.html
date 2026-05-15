@@ -215,6 +215,7 @@
         <a href="guide-profile.html" id="d-profile-link"><i class="fa-solid fa-eye"></i> Xem hồ sơ công khai</a>
         <a href="javascript:;" onclick="return showSection('calendar',this)"><i class="fa-solid fa-calendar-days"></i> Lịch hẹn tour</a>
         <a href="javascript:;" onclick="return showSection('messages',this)" id="nav-messages"><i class="fa-solid fa-comment-dots"></i> Tin nhắn <span id="msg-badge-nav" style="background:#EF4444;color:white;font-size:.65rem;font-weight:800;min-width:16px;height:16px;border-radius:99px;display:none;align-items:center;justify-content:center;padding:0 4px;margin-left:auto"></span></a>
+        <a href="javascript:;" onclick="return showSection('notifications',this)" id="nav-notifications"><i class="fa-solid fa-bell"></i> Thông báo <span id="notif-badge-nav" style="background:#EF4444;color:white;font-size:.65rem;font-weight:800;min-width:16px;height:16px;border-radius:99px;display:none;align-items:center;justify-content:center;padding:0 4px;margin-left:auto"></span></a>
         <a href="chinh-sach.html"><i class="fa-solid fa-file-contract"></i> Chính sách hoàn tiền</a>
       </nav>
     </div>
@@ -311,6 +312,14 @@
         </div>
       </div>
 
+      <!-- NOTIFICATIONS SECTION -->
+      <div class="section-card" id="sec-notifications" style="display:none">
+        <h3><i class="fa-solid fa-bell" style="color:var(--orange)"></i> Thông báo
+          <button onclick="markAllNotifsRead()" style="margin-left:auto;font-size:.75rem;font-weight:500;color:var(--blue);background:none;border:none;cursor:pointer;padding:0">Đánh dấu đã đọc</button>
+        </h3>
+        <div id="notif-list"></div>
+      </div>
+
       <!-- PROFILE SECTION -->
       <div class="section-card" id="sec-profile" style="display:none">
         <h3><i class="fa-solid fa-user" style="color:var(--blue)"></i> Thông tin hồ sơ</h3>
@@ -329,8 +338,9 @@
   <button class="mob-nav-item active" id="mobnav-requests" onclick="showSection('requests',null,'requests')">
     <i class="fa-solid fa-inbox"></i>Yêu cầu
   </button>
-  <button class="mob-nav-item" id="mobnav-earnings" onclick="showSection('earnings',null,'earnings')">
-    <i class="fa-solid fa-chart-line"></i>Thu nhập
+  <button class="mob-nav-item" id="mobnav-notifications" onclick="showSection('notifications',null,'notifications')">
+    <i class="fa-solid fa-bell"></i>Thông báo
+    <span class="mob-nav-badge" id="mob-notif-badge"></span>
   </button>
   <button class="mob-nav-item" id="mobnav-messages" onclick="showSection('messages',null,'messages')">
     <i class="fa-solid fa-comment-dots"></i>Tin nhắn
@@ -430,12 +440,13 @@ function logout() {
 
 function showSection(name, el, mobKey) {
   try {
-    ['requests','earnings','profile','messages','calendar'].forEach(s => {
+    ['requests','earnings','profile','messages','calendar','notifications'].forEach(s => {
       const sec = document.getElementById('sec-' + s);
       if (sec) sec.style.display = s === name ? 'block' : 'none';
     });
     if (name === 'calendar') { renderCalendar(); loadWorkDays(); }
-    ['requests','earnings','messages','calendar','profile'].forEach(s => {
+    if (name === 'notifications') renderNotifs();
+    ['requests','notifications','messages','calendar','profile'].forEach(s => {
       const btn = document.getElementById('mobnav-' + s);
       if (btn) btn.classList.toggle('active', s === (mobKey || name));
     });
@@ -1009,13 +1020,60 @@ function updateNotifBadge() {
   const count = getNotifs().filter(n => (n.targetType === session.type || n.targetType === 'all') && !n.read).length;
   const badge = document.getElementById('notif-badge-nav');
   if (badge) { badge.textContent = count > 0 ? count : ''; badge.style.display = count > 0 ? 'inline-flex' : 'none'; }
-  // Cập nhật chuông trên navbar top
+  const mobBadge = document.getElementById('mob-notif-badge');
+  if (mobBadge) { mobBadge.textContent = count > 0 ? (count > 9 ? '9+' : count) : ''; mobBadge.style.display = count > 0 ? 'inline-flex' : 'none'; }
   const btn = document.getElementById('nav-notif-btn');
   if (btn) {
     const old = btn.querySelector('span');
     if (old) old.remove();
     if (count > 0) btn.insertAdjacentHTML('beforeend', `<span style="position:absolute;top:-4px;right:-4px;background:#EF4444;color:white;font-size:.6rem;font-weight:800;min-width:16px;height:16px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 3px;border:2px solid white">${count>9?'9+':count}</span>`);
   }
+}
+
+function renderNotifs() {
+  const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
+  const el = document.getElementById('notif-list');
+  if (!el) return;
+  const all = getNotifs().filter(n => !session || n.targetType === session.type || n.targetType === 'all');
+  if (!all.length) {
+    el.innerHTML = '<div class="empty-state"><i class="fa-solid fa-bell-slash"></i><p>Chưa có thông báo nào</p></div>';
+    return;
+  }
+  const iconMap = { booking:'fa-calendar-check', message:'fa-comment-dots', policy:'fa-file-contract', system:'fa-circle-info', promo:'fa-tag' };
+  const colorMap = { booking:'booking', message:'message', policy:'policy', system:'system', promo:'promo' };
+  el.innerHTML = all.map((n, i) => `
+    <div class="notif-item${n.read ? '' : ' unread'}" onclick="readNotif(${i})">
+      <div class="notif-icon-wrap ${colorMap[n.type]||'system'}">
+        <i class="fa-solid ${iconMap[n.type]||'fa-bell'}"></i>
+      </div>
+      <div class="notif-body">
+        <div class="notif-title">${n.title||''}</div>
+        <div class="notif-text">${n.body||''}</div>
+        <div class="notif-time">${n.time ? new Date(n.time).toLocaleString('vi-VN') : ''}</div>
+      </div>
+      ${!n.read ? '<div style="width:8px;height:8px;border-radius:50%;background:#EF4444;flex-shrink:0;margin-top:6px"></div>' : ''}
+    </div>
+  `).join('');
+}
+
+function readNotif(idx) {
+  const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
+  const all = getNotifs();
+  const filtered = all.filter(n => !session || n.targetType === session.type || n.targetType === 'all');
+  const notif = filtered[idx];
+  if (!notif) return;
+  const realIdx = all.findIndex(n => n.id === notif.id);
+  if (realIdx > -1) { all[realIdx].read = true; saveNotifs(all); }
+  updateNotifBadge();
+  renderNotifs();
+  if (notif.actionUrl) window.location.href = notif.actionUrl;
+}
+
+function markAllNotifsRead() {
+  const all = getNotifs().map(n => ({ ...n, read: true }));
+  saveNotifs(all);
+  updateNotifBadge();
+  renderNotifs();
 }
 
 // ===== CHAT =====
