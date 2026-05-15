@@ -47,7 +47,7 @@
     .req-info { display:grid; grid-template-columns:1fr 1fr; gap:6px 16px; font-size:.83rem; color:var(--gray); margin-bottom:12px; }
     .req-info span { display:flex; align-items:center; gap:5px; }
     .req-info strong { color:var(--dark); }
-    .req-actions { display:flex; gap:8px; }
+    .req-actions { display:flex; gap:8px; flex-wrap:wrap; }
     .req-tourist { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
     .req-tourist-ava { width:36px; height:36px; border-radius:50%; background:var(--blue); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.95rem; flex-shrink:0; }
     .req-tourist-name { font-weight:600; font-size:.9rem; color:var(--dark); }
@@ -100,7 +100,7 @@
     .notif-time { font-size:.72rem; color:var(--gray-2); margin-top:4px; }
     /* Mobile bottom nav */
     .mob-bottom-nav { display:none; position:fixed; bottom:0; left:0; right:0; z-index:998; background:white; border-top:1px solid var(--border); grid-template-columns:repeat(4,1fr); }
-    @media(max-width:900px){ .mob-bottom-nav { display:grid; } .dash-wrap { padding-bottom:72px; } }
+    @media(max-width:900px){ .mob-bottom-nav { display:grid; } .dash-wrap { padding-bottom:72px; } #toast-container { bottom:76px; } }
     .mob-nav-item { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 4px 8px; gap:3px; font-size:.6rem; font-weight:600; color:var(--gray-2); cursor:pointer; transition:.15s; background:none; border:none; width:100%; position:relative; }
     .mob-nav-item.active { color:var(--blue); }
     .mob-nav-item i { font-size:1.1rem; }
