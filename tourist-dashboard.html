@@ -1308,13 +1308,33 @@ setInterval(() => {
   if (!box) return;
   const rMsgs = msgs.filter(m => m.requestId === currentChatReqId);
   const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 60;
-  box.innerHTML = rMsgs.length ? rMsgs.map(m => {
-    const mine = m.fromType === 'tourist';
-    const ts = new Date(m.time);
-    return `<div class="msg-bubble ${mine ? 'mine' : 'theirs'}"><div class="msg-text">${m.text}</div><div class="msg-time">${ts.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})} ${ts.toLocaleDateString('vi-VN')}</div></div>`;
-  }).join('') : '<div style="text-align:center;color:var(--gray-2);font-size:.82rem;padding:20px 0">Chưa có tin nhắn. Hãy bắt đầu cuộc trò chuyện!</div>';
-  if (atBottom) box.scrollTop = box.scrollHeight;
+  // Chỉ rebuild khi số tin nhắn thay đổi để tránh flicker liên tục
+  if (box.querySelectorAll('.msg-bubble').length !== rMsgs.length) {
+    box.innerHTML = rMsgs.length ? rMsgs.map(m => {
+      const mine = m.fromType === 'tourist';
+      const ts = new Date(m.time);
+      return `<div class="msg-bubble ${mine ? 'mine' : 'theirs'}"><div class="msg-text">${m.text}</div><div class="msg-time">${ts.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})} ${ts.toLocaleDateString('vi-VN')}</div></div>`;
+    }).join('') : '<div style="text-align:center;color:var(--gray-2);font-size:.82rem;padding:20px 0">Chưa có tin nhắn. Hãy bắt đầu cuộc trò chuyện!</div>';
+    if (atBottom) box.scrollTop = box.scrollHeight;
+  }
 }, 3000);
+
+// Sync tin nhắn từ Supabase mỗi 10 giây để bắt event realtime bị miss
+setInterval(() => {
+  if (!currentChatReqId || typeof sb === 'undefined') return;
+  const msgSec = document.getElementById('sec-messages');
+  if (!msgSec || msgSec.style.display === 'none') return;
+  SB.getMsgsByReqId(currentChatReqId).then(sbMsgs => {
+    if (!sbMsgs || !sbMsgs.length) return;
+    const local = getMessages();
+    const idSet = new Set(local.map(m => m.id));
+    const newMsgs = sbMsgs.filter(m => !idSet.has(m.id));
+    if (!newMsgs.length) return;
+    newMsgs.forEach(m => local.push(m));
+    saveMessages(local);
+    updateMsgBadge();
+  });
+}, 10000);
 </script>
 </body>
 </html>
