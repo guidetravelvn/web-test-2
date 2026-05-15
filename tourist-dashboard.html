@@ -567,7 +567,7 @@ function renderBookings() {
     const isDone = r.status === 'done';
     const reviews = JSON.parse(localStorage.getItem('gt_my_reviews') || '[]');
     const alreadyReviewed = reviews.some(rv => rv.requestId === r.id);
-    const price = guide ? guide.pricePerDay * parseInt(r.days || 1) : 0;
+    const price = guide ? guide.pricePerDay * parseInt(r.days || 1) : (r.totalAmount || parseInt(r.budget) || 0);
 
     return `
     <div class="booking-card">
@@ -627,14 +627,14 @@ function renderBookings() {
 
 function renderHistory() {
   const el = document.getElementById('history-list');
-  const done = allBookings.filter(r => r.status === 'done' || r.status === 'accepted');
+  const done = allBookings.filter(r => r.status === 'done');
   if (!done.length) {
     el.innerHTML = `<div class="empty-state"><i class="fa-solid fa-map"></i><p>${t('tdash.hist.empty')}</p></div>`;
     return;
   }
   el.innerHTML = done.map(r => {
     const guide = getGuide(r.guideId);
-    const price = guide ? guide.pricePerDay * parseInt(r.days || 1) : 0;
+    const price = guide ? guide.pricePerDay * parseInt(r.days || 1) : (r.totalAmount || parseInt(r.budget) || 0);
     return `
     <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border)">
       <img src="${guide?.avatar || ''}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--border)" onerror="this.style.display='none'">
