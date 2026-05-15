@@ -1195,7 +1195,11 @@ function submitRequest(e) {
       }).catch(() => {});
     }
   }
-  location.href = `request.html?success=1&code=${req.id}`;
+  $('request-form-section')?.classList.add('hidden');
+  const ss = $('request-success-section');
+  if (ss) ss.classList.remove('hidden');
+  const codeEl = $('req-code'); if (codeEl) codeEl.textContent = req.id;
+  window.scrollTo(0, 0);
 }
 
 function initRequestSuccess() {
