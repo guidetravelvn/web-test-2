@@ -627,10 +627,9 @@ function validateStep(s) {
     });
     // Validate CCCD file upload — bỏ qua khi đang chỉnh sửa
     if (!isEditing) {
-      const fileInput = document.getElementById('file-id');
       const fileErr = document.getElementById('err-hdv-file');
       const uploadBox = document.getElementById('upload-id-box');
-      const hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
+      const hasFile = _idCardPreviews.length > 0;
       if (fileErr) fileErr.classList.toggle('show', !hasFile);
       if (uploadBox) uploadBox.style.borderColor = hasFile ? '' : 'var(--red)';
       if (!hasFile) ok = false;
@@ -753,19 +752,30 @@ function updatePricePreview() {
 }
 
 // File preview
+let _idCardPreviews = [];
 function previewFiles(input, previewId) {
   const container = document.getElementById(previewId);
-  container.innerHTML = '';
   Array.from(input.files).forEach(file => {
     const reader = new FileReader();
     reader.onload = e => {
-      const img = document.createElement('img');
-      img.src = e.target.result;
-      img.style.cssText = 'width:70px;height:70px;object-fit:cover;border-radius:8px;border:2px solid var(--border)';
-      container.appendChild(img);
+      _idCardPreviews.push(e.target.result);
+      _renderIdPreviews(container);
     };
     reader.readAsDataURL(file);
   });
+  input.value = '';
+}
+function _renderIdPreviews(container) {
+  container.innerHTML = _idCardPreviews.map((src, i) =>
+    `<div style="position:relative;display:inline-block">
+      <img src="${src}" style="width:70px;height:70px;object-fit:cover;border-radius:8px;border:2px solid var(--border)">
+      <button type="button" onclick="_removeIdFile(${i})" style="position:absolute;top:-6px;right:-6px;background:#EF4444;color:white;border:none;border-radius:50%;width:18px;height:18px;font-size:.75rem;cursor:pointer;line-height:1">×</button>
+    </div>`
+  ).join('');
+}
+function _removeIdFile(i) {
+  _idCardPreviews.splice(i, 1);
+  _renderIdPreviews(document.getElementById('preview-id'));
 }
 
 function previewSingle(input, previewId) {
