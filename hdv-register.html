@@ -164,8 +164,9 @@
           <div class="reg-card">
             <h3><i class="fa-solid fa-certificate" style="color:var(--yellow)"></i> Chứng Chỉ & Giấy Phép</h3>
             <div class="fg">
-              <label>Số thẻ hướng dẫn viên (nếu có)</label>
+              <label>Số thẻ hướng dẫn viên <span style="color:var(--red)">*</span></label>
               <input type="text" id="hdv-license" class="form-input" placeholder="VD: VN-2024-XXXX">
+              <div class="err-msg" id="err-hdv-license">Vui lòng nhập số thẻ hướng dẫn viên</div>
               <div style="font-size:.76rem;color:var(--gray-2);margin-top:5px">Có thẻ HDV sẽ được hiển thị badge "Đã xác minh" trên hồ sơ</div>
             </div>
             <div class="fg" style="margin-bottom:0">
@@ -614,6 +615,7 @@ function validateStep(s) {
       ...(!isEditing ? [
         ['hdv-address', 'err-hdv-address', v => v.trim().length >= 5],
         ['hdv-idcard', 'err-hdv-idcard', v => v.trim().length >= 9],
+        ['hdv-license', 'err-hdv-license', v => v.trim().length >= 3],
       ] : []),
     ];
     let ok = true;
