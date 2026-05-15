@@ -459,7 +459,7 @@ function renderOpenReqs() {
         <span><i class="fa-solid fa-moon"></i> <strong>${r.days || 1} ngày</strong></span>
         <span><i class="fa-solid fa-users"></i> <strong>${r.people || 1} người</strong></span>
         ${r.budget ? `<span><i class="fa-solid fa-wallet"></i> <strong>${r.budget}</strong></span>` : ''}
-        ${r.hdvRate ? `<span><i class="fa-solid fa-tag"></i> <strong>${r.hdvRate}/ngày</strong></span>` : ''}
+        ${r.hdvRate ? `<span><i class="fa-solid fa-tag"></i> <strong>${Number(r.hdvRate).toLocaleString('vi-VN')}đ/ngày</strong></span>` : ''}
         ${r.interests && r.interests.length ? `<span><i class="fa-solid fa-tags"></i> <strong>${r.interests.slice(0,3).join(', ')}</strong></span>` : ''}
       </div>
       ${r.notes ? `<div style="font-size:.82rem;color:var(--gray);background:#F8FAFC;border-radius:6px;padding:8px 10px;margin-bottom:10px"><i class="fa-solid fa-quote-left" style="margin-right:4px"></i>${r.notes}</div>` : ''}
@@ -544,7 +544,7 @@ function renderReqs() {
         <span><i class="fa-solid fa-moon"></i> <strong>${r.days || 1} ${t('unit.days')}</strong></span>
         <span><i class="fa-solid fa-users"></i> <strong>${r.people || 1} ${t('unit.people')}</strong></span>
         ${r.budget ? `<span><i class="fa-solid fa-wallet"></i> <strong>${r.budget}</strong></span>` : ''}
-        ${r.hdvRate ? `<span><i class="fa-solid fa-tag"></i> <strong>${r.hdvRate}/ngày</strong></span>` : ''}
+        ${r.hdvRate ? `<span><i class="fa-solid fa-tag"></i> <strong>${Number(r.hdvRate).toLocaleString('vi-VN')}đ/ngày</strong></span>` : ''}
         ${r.interests && r.interests.length ? `<span><i class="fa-solid fa-tags"></i> <strong>${r.interests.slice(0,3).join(', ')}</strong></span>` : ''}
       </div>
       ${r.notes ? `<div style="font-size:.82rem;color:var(--gray);background:#F8FAFC;border-radius:6px;padding:8px 10px;margin-bottom:10px"><i class="fa-solid fa-quote-left" style="margin-right:4px"></i>${r.notes}</div>` : ''}

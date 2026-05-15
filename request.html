@@ -127,28 +127,13 @@
               </div>
               <div class="fg">
                 <label data-i18n="req.days">Số ngày</label>
-                <select id="req-days" class="form-input">
-                  <option value="1">1</option>
-                  <option value="2" selected>2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="7">7</option>
-                  <option value="10">10+</option>
-                </select>
+                <input type="number" id="req-days" class="form-input" min="1" max="365" value="2">
               </div>
             </div>
             <div class="form-grid">
               <div class="fg">
                 <label data-i18n="req.people">Số người</label>
-                <select id="req-people" class="form-input">
-                  <option value="1">1</option>
-                  <option value="2" selected>2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5-6</option>
-                  <option value="7">7-10</option>
-                </select>
+                <input type="number" id="req-people" class="form-input" min="1" max="100" value="2">
               </div>
               <div class="fg">
                 <label data-i18n="req.budget">Ngân sách / người</label>
@@ -164,14 +149,8 @@
             </div>
             <div class="fg">
               <label data-i18n="req.hdv_rate">Giá HDV / ngày</label>
-              <select id="req-hdv-rate" class="form-input">
-                <option value="">— Không yêu cầu —</option>
-                <option value="duoi-500k">Dưới 500.000đ / &lt;$20</option>
-                <option value="500-800k">500.000 – 800.000đ / $20–32</option>
-                <option value="800k-1.2tr">800.000 – 1.200.000đ / $32–48</option>
-                <option value="1.2-2tr">1.200.000 – 2.000.000đ / $48–80</option>
-                <option value="tren-2tr">Trên 2.000.000đ / $80+</option>
-              </select>
+              <input type="number" id="req-hdv-rate" class="form-input" min="0" step="50000" placeholder="VD: 650000">
+              <div class="hint" style="font-size:.76rem;color:var(--gray-2);margin-top:5px" data-i18n="req.hdv_rate_hint">Đơn vị VNĐ — bỏ trống nếu không yêu cầu</div>
             </div>
           </div>
 
