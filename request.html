@@ -15,6 +15,11 @@
   <meta name="twitter:image" content="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1200&h=630&fit=crop">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .input-currency { position:relative; }
+    .input-currency .form-input { padding-right:52px; }
+    .currency-unit { position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:.78rem; font-weight:600; color:var(--gray-2); pointer-events:none; }
+  </style>
 </head>
 <body>
 
@@ -137,14 +142,20 @@
               </div>
               <div class="fg">
                 <label data-i18n="req.budget">Chi phí khác / người</label>
-                <input type="number" id="req-budget" class="form-input" min="0" step="100000" placeholder="VD: 3000000">
+                <div class="input-currency">
+                  <input type="text" id="req-budget" class="form-input" inputmode="numeric" placeholder="VD: 3.000.000" oninput="fmtVNDInput(this)">
+                  <span class="currency-unit">VNĐ</span>
+                </div>
                 <div class="hint" style="font-size:.76rem;color:var(--gray-2);margin-top:5px" data-i18n="req.budget_hint">Ăn uống, lưu trú, di chuyển — chưa bao gồm phí HDV</div>
               </div>
             </div>
             <div class="fg">
               <label data-i18n="req.hdv_rate">Giá HDV / ngày</label>
-              <input type="number" id="req-hdv-rate" class="form-input" min="0" step="50000" placeholder="VD: 650000">
-              <div class="hint" style="font-size:.76rem;color:var(--gray-2);margin-top:5px" data-i18n="req.hdv_rate_hint">Đơn vị VNĐ — bỏ trống nếu không yêu cầu</div>
+              <div class="input-currency">
+                <input type="text" id="req-hdv-rate" class="form-input" inputmode="numeric" placeholder="VD: 650.000" oninput="fmtVNDInput(this)">
+                <span class="currency-unit">VNĐ</span>
+              </div>
+              <div class="hint" style="font-size:.76rem;color:var(--gray-2);margin-top:5px" data-i18n="req.hdv_rate_hint">Bỏ trống nếu không yêu cầu</div>
             </div>
           </div>
 

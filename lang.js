@@ -1299,6 +1299,15 @@ function fmtPrice(n) {
   return new Intl.NumberFormat('vi-VN').format(n) + 'đ';
 }
 
+function fmtVNDInput(input) {
+  const raw = input.value.replace(/\./g, '').replace(/\D/g, '');
+  input.value = raw ? new Intl.NumberFormat('vi-VN').format(Number(raw)) : '';
+}
+
+function rawVND(input) {
+  return Number((input?.value || '').replace(/\./g, '')) || '';
+}
+
 function setLang(lang) {
   localStorage.setItem('gt_lang', lang);
   document.documentElement.lang = lang;
