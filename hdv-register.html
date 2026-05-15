@@ -785,14 +785,14 @@ function previewSingle(input, previewId) {
 async function submitRegistration() {
   if (!validateStep(4)) return;
   if (!document.getElementById('agree-terms').checked) {
-    toast('Vui lòng đồng ý với điều khoản dịch vụ!', 'err');
+    toast(t('login.err.terms'), 'err');
     return;
   }
   const price = document.getElementById('hdv-price').value;
   if (!price || parseInt(price) < 200000) {
     document.getElementById('hdv-price').classList.add('err');
     document.getElementById('err-hdv-price').classList.add('show');
-    toast('Vui lòng nhập giá dịch vụ!', 'err');
+    toast(t('reg.err.price'), 'err');
     return;
   }
   // Save HDV profile to localStorage

@@ -316,7 +316,7 @@ function share(platform) {
 }
 
 function copyLink() {
-  navigator.clipboard.writeText(location.href).then(() => toast('Đã copy link!', 'ok'));
+  navigator.clipboard.writeText(location.href).then(() => toast(t('profile.link_copied'), 'ok'));
 }
 
 document.addEventListener('DOMContentLoaded', initPost);
