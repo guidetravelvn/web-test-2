@@ -45,9 +45,13 @@
     .bc-status { display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
     .status-badge { font-size:.72rem; font-weight:700; padding:4px 10px; border-radius:99px; }
     .st-pending  { background:#FFF7ED; color:#F97316; }
+    .st-proposal { background:#F5F3FF; color:#7C3AED; }
+    .st-confirmed { background:#ECFDF5; color:#059669; }
     .st-accepted { background:#F0FDF4; color:#16A34A; }
     .st-declined { background:#FEF2F2; color:#DC2626; }
     .st-done     { background:#EFF6FF; color:#0EA5E9; }
+    .proposal-view-modal { position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px; }
+    .proposal-view-box { background:white;border-radius:var(--radius-lg);padding:28px;max-width:520px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto; }
     .bc-code { font-size:.72rem; font-family:monospace; color:var(--gray-2); }
     .bc-details { display:grid; grid-template-columns:1fr 1fr; gap:6px 16px; font-size:.82rem; color:var(--gray); margin-bottom:12px; }
     .bc-details span { display:flex; align-items:center; gap:5px; }
@@ -239,6 +243,7 @@
         <div class="filter-tabs">
           <div class="filter-tab active" onclick="filterBookings('all',this)" data-i18n="tdash.filter.all">Tất cả</div>
           <div class="filter-tab" onclick="filterBookings('pending',this)"><span data-i18n="tdash.filter.pending">Chờ phản hồi</span> <span id="badge-p" style="background:#FFF7ED;color:#F97316;border-radius:99px;padding:1px 7px;font-size:.7rem;margin-left:3px"></span></div>
+          <div class="filter-tab" onclick="filterBookings('proposal_sent',this)"><span data-i18n="tdash.filter.proposal">Chờ xác nhận</span> <span id="badge-prop" style="background:#F5F3FF;color:#7C3AED;border-radius:99px;padding:1px 7px;font-size:.7rem;margin-left:3px"></span></div>
           <div class="filter-tab" onclick="filterBookings('accepted',this)" data-i18n="tdash.filter.accepted">Đã xác nhận</div>
           <div class="filter-tab" onclick="filterBookings('done',this)" data-i18n="tdash.filter.done">Hoàn thành</div>
           <div class="filter-tab" onclick="filterBookings('declined',this)" data-i18n="tdash.filter.declined">Bị từ chối</div>
@@ -389,6 +394,31 @@
   </div>
 </div>
 
+<!-- PROPOSAL VIEW MODAL -->
+<div class="proposal-view-modal" id="proposal-view-modal" style="display:none" onclick="if(event.target===this)closeProposalView()">
+  <div class="proposal-view-box" onclick="event.stopPropagation()">
+    <h3 style="margin-bottom:4px"><i class="fa-solid fa-map" style="color:#7C3AED"></i> <span data-i18n="tdash.proposal.title">Lịch trình từ HDV</span></h3>
+    <p id="pv-trip-sub" style="font-size:.82rem;color:var(--gray-2);margin-bottom:20px"></p>
+    <input type="hidden" id="pv-req-id">
+    <div style="border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px">
+      <div style="font-size:.78rem;font-weight:700;color:var(--gray-2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px" data-i18n="tdash.proposal.itinerary">Lịch trình chi tiết</div>
+      <div id="pv-itinerary" style="font-size:.88rem;color:var(--dark);white-space:pre-line;line-height:1.7"></div>
+    </div>
+    <div id="pv-price-wrap" style="border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;display:none">
+      <div style="font-size:.78rem;font-weight:700;color:var(--gray-2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px" data-i18n="tdash.proposal.price">Giá HDV đề xuất</div>
+      <div id="pv-price" style="font-size:1.2rem;font-weight:800;color:#7C3AED"></div>
+    </div>
+    <div id="pv-notes-wrap" style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--radius);padding:14px;margin-bottom:20px;display:none">
+      <div style="font-size:.78rem;font-weight:700;color:#92400E;margin-bottom:6px" data-i18n="tdash.proposal.notes">Ghi chú từ HDV</div>
+      <div id="pv-notes" style="font-size:.85rem;color:#78350F"></div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-block" style="background:#059669;color:white;border:none" onclick="confirmProposal()"><i class="fa-solid fa-circle-check"></i> <span data-i18n="tdash.card.confirm_proposal">Xác nhận lịch trình</span></button>
+      <button class="btn btn-outline" onclick="requestChanges()" style="white-space:nowrap"><i class="fa-solid fa-comment-dots"></i> <span data-i18n="tdash.card.request_changes">Yêu cầu chỉnh sửa</span></button>
+    </div>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer class="footer">
   <div class="container">
@@ -474,12 +504,14 @@ function filterBookings(f, el) {
 function getStatusLabel(status) {
   const map = {
     pending: t('tdash.status.pending'), 'Chờ xác nhận': t('tdash.status.pending'),
+    proposal_sent: t('tdash.status.proposal_sent'), tourist_confirmed: t('tdash.status.tourist_confirmed'),
     accepted: t('tdash.status.accepted'), declined: t('tdash.status.declined'), done: t('tdash.status.done')
   };
   return map[status] || status;
 }
 const STATUS_CLS = {
   pending: 'st-pending', 'Chờ xác nhận': 'st-pending',
+  proposal_sent: 'st-proposal', tourist_confirmed: 'st-confirmed',
   accepted: 'st-accepted', declined: 'st-declined', done: 'st-done'
 };
 
@@ -494,6 +526,7 @@ function renderBookings() {
   const el = document.getElementById('booking-list');
   let list = allBookings;
   if (currentFilter === 'pending') list = list.filter(r => r.status === 'pending' || r.status === 'Chờ xác nhận');
+  else if (currentFilter === 'proposal_sent') list = list.filter(r => r.status === 'proposal_sent');
   else if (currentFilter !== 'all') list = list.filter(r => r.status === currentFilter);
 
   // Banner nhắc đánh giá tour đã hoàn thành
@@ -524,6 +557,8 @@ function renderBookings() {
     const sc = STATUS_CLS[r.status] || 'st-pending';
     const sl = getStatusLabel(r.status);
     const isPending = r.status === 'pending' || r.status === 'Chờ xác nhận';
+    const isProposalSent = r.status === 'proposal_sent';
+    const isTouristConfirmed = r.status === 'tourist_confirmed';
     const isAccepted = r.status === 'accepted';
     const isDone = r.status === 'done';
     const reviews = JSON.parse(localStorage.getItem('gt_my_reviews') || '[]');
@@ -555,6 +590,10 @@ function renderBookings() {
       <div class="bc-actions">
         ${guide ? `<a href="guide-profile.html?id=${guide.id}" class="btn btn-sm btn-outline"><i class="fa-solid fa-user"></i> ${t('tdash.card.view_guide')}</a>` : ''}
         ${isPending ? `<button class="btn btn-sm" style="background:#FEF2F2;color:#DC2626;border:1px solid #FECACA" onclick="cancelRequest('${r.id}')"><i class="fa-solid fa-xmark"></i> ${t('tdash.card.cancel')}</button>` : ''}
+        ${isProposalSent ? `<button class="btn btn-sm" style="background:#7C3AED;color:white;border:none" onclick="openProposalView('${r.id}')"><i class="fa-solid fa-eye"></i> ${t('tdash.card.view_proposal')}</button>` : ''}
+        ${isProposalSent ? `<button class="btn btn-sm btn-outline" onclick="gotoChat('${r.id}')"><i class="fa-solid fa-comment-dots"></i> ${t('tdash.card.request_changes')}</button>` : ''}
+        ${isTouristConfirmed ? `<button class="btn btn-sm" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="openCompleteModal('${r.id}')"><i class="fa-solid fa-flag-checkered"></i> ${t('tdash.card.mark_done')}</button>` : ''}
+        ${isTouristConfirmed ? `<button class="btn btn-sm btn-primary" onclick="gotoChat('${r.id}')"><i class="fa-solid fa-comment-dots"></i> ${t('tdash.card.chat')}</button>` : ''}
         ${isAccepted ? `<button class="btn btn-sm btn-primary" onclick="gotoChat('${r.id}')"><i class="fa-solid fa-comment-dots"></i> ${t('tdash.card.chat')}</button>` : ''}
         ${isAccepted ? `<button class="btn btn-sm" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="openCompleteModal('${r.id}')"><i class="fa-solid fa-flag-checkered"></i> ${t('tdash.card.mark_done')}</button>` : ''}
         ${isDone && r.completionPhoto ? `<button class="btn btn-sm btn-outline" onclick="viewCompletionPhoto('${r.id}')"><i class="fa-solid fa-image"></i> ${t('tdash.card.view_photo')}</button>` : ''}
@@ -632,6 +671,52 @@ function cancelRequest(id) {
   toast(t('tdash.cancel.success'), 'ok');
 }
 
+function openProposalView(reqId) {
+  const req = allBookings.find(r => r.id === reqId);
+  if (!req || !req.proposal) { toast('Không tìm thấy lịch trình', 'err'); return; }
+  const p = req.proposal;
+  document.getElementById('pv-req-id').value = reqId;
+  document.getElementById('pv-trip-sub').textContent = (req.guideName||'HDV') + ' — ' + (req.destination||'') + ' · ' + (req.days||1) + ' ngày';
+  document.getElementById('pv-itinerary').textContent = p.itinerary || '—';
+  const priceWrap = document.getElementById('pv-price-wrap');
+  if (p.totalPrice) {
+    document.getElementById('pv-price').textContent = new Intl.NumberFormat('vi-VN').format(p.totalPrice) + 'đ';
+    priceWrap.style.display = 'block';
+  } else { priceWrap.style.display = 'none'; }
+  const notesWrap = document.getElementById('pv-notes-wrap');
+  if (p.notes) {
+    document.getElementById('pv-notes').textContent = p.notes;
+    notesWrap.style.display = 'block';
+  } else { notesWrap.style.display = 'none'; }
+  document.getElementById('proposal-view-modal').style.display = 'flex';
+}
+
+function closeProposalView() {
+  document.getElementById('proposal-view-modal').style.display = 'none';
+}
+
+function confirmProposal() {
+  const reqId = document.getElementById('pv-req-id').value;
+  const reqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
+  const idx = reqs.findIndex(r => r.id === reqId);
+  if (idx < 0) return;
+  reqs[idx].status = 'tourist_confirmed';
+  localStorage.setItem('gt_requests', JSON.stringify(reqs));
+  SB.updateReq(reqId, { status:'tourist_confirmed', data: reqs[idx] });
+  addNotif('booking', 'Khách đã xác nhận lịch trình!', (reqs[idx].name||'Khách') + ' đã xác nhận lịch trình chuyến ' + (reqs[idx].destination||'') + '. Chuẩn bị cho tour nhé!', 'guide', 'requests');
+  allBookings = allBookings.map(r => r.id === reqId ? reqs[idx] : r);
+  closeProposalView();
+  renderBookings();
+  updateStats();
+  toast(t('tdash.proposal.confirmed'), 'ok');
+}
+
+function requestChanges() {
+  const reqId = document.getElementById('pv-req-id').value;
+  closeProposalView();
+  gotoChat(reqId);
+}
+
 function contactGuide(guideId) {
   const guide = getGuide(guideId);
   if (guide) location.href = 'guide-profile.html?id=' + guide.id;
@@ -704,6 +789,9 @@ function updateStats() {
   document.getElementById('u-done').textContent = done;
   const badge = document.getElementById('badge-p');
   if (badge) badge.textContent = pending || '';
+  const propCount = allBookings.filter(r => r.status === 'proposal_sent').length;
+  const badgeProp = document.getElementById('badge-prop');
+  if (badgeProp) badgeProp.textContent = propCount || '';
 }
 
 function setAvatarDisplay(session) {
