@@ -1219,7 +1219,17 @@ function sendMsg() {
   SB.saveMsg(newMsg);
   addNotif('message', 'Tin nhắn mới từ ' + session.name, text.slice(0,60), 'guide', 'messages');
   input.value = '';
-  openChat(currentChatReqId);
+  // Append bubble trực tiếp thay vì re-render toàn bộ panel
+  const b = document.getElementById('chat-msgs-box');
+  if (b) {
+    const tm = new Date(newMsg.time);
+    const d = document.createElement('div');
+    d.className = 'msg-bubble mine';
+    d.innerHTML = `<div class="msg-text">${newMsg.text}</div><div class="msg-time">${tm.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})} ${tm.toLocaleDateString('vi-VN')}</div>`;
+    b.appendChild(d);
+    b.scrollTop = b.scrollHeight;
+  }
+  renderChatList();
 }
 
 // ===== TOUR COMPLETION =====

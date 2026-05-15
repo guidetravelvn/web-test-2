@@ -1270,7 +1270,16 @@ function sendMsg() {
   SB.saveMsg(newMsg);
   addNotif('message', 'HDV ' + session.name + ' vừa nhắn tin', text.slice(0,60), 'tourist', 'messages');
   input.value = '';
-  openChat(currentChatReqId);
+  const b = document.getElementById('chat-msgs-box');
+  if (b) {
+    const tm = new Date(newMsg.time);
+    const d = document.createElement('div');
+    d.className = 'msg-bubble mine';
+    d.innerHTML = `<div class="msg-text">${newMsg.text}</div><div class="msg-time">${tm.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})} ${tm.toLocaleDateString('vi-VN')}</div>`;
+    b.appendChild(d);
+    b.scrollTop = b.scrollHeight;
+  }
+  renderChatList();
 }
 
 // ===== WORK DAYS =====
