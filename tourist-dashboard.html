@@ -1049,7 +1049,7 @@ function renderChatList() {
   const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
   const myEmail = session ? session.email : '';
   const myId = session ? session.id : null;
-  const convos = DB.requests().filter(r => (r.status === 'accepted' || r.status === 'pending') && ((myEmail && r.email === myEmail) || (myId && r.userId === myId)));
+  const convos = DB.requests().filter(r => r.status !== 'cancelled' && r.status !== 'rejected' && ((myEmail && r.email === myEmail) || (myId && r.userId === myId)));
   if (!convos.length) {
     el.innerHTML = '<div class="chat-list-empty"><i class="fa-solid fa-comment-slash" style="font-size:1.5rem;display:block;margin-bottom:8px;color:var(--border)"></i>Chưa có cuộc hội thoại</div>';
     return;
