@@ -72,7 +72,7 @@
         <h2 data-i18n="req.form_title">Thông Tin Chuyến Đi</h2>
         <p data-i18n="req.form_sub">Càng chi tiết, HDV càng dễ thiết kế lịch trình phù hợp cho bạn</p>
 
-        <form id="request-form">
+        <form id="request-form" onsubmit="submitRequest(event); return false">
           <!-- Hidden fields -->
           <input type="hidden" id="req-guide-id">
           <input type="hidden" id="req-guide-name-f">
