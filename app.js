@@ -933,7 +933,8 @@ function renderProfile(g) {
 
   set('p-bio', (lang === 'en' && g.bioEn) ? g.bioEn : g.bio);
   const allLocalReqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
-  const doneTrips = allLocalReqs.filter(r => String(r.guideId) === String(g.id) && r.status === 'done').length;
+  const completedStatuses = new Set(['done', 'awaiting_payment', 'paid']);
+  const doneTrips = allLocalReqs.filter(r => String(r.guideId) === String(g.id) && completedStatuses.has(r.status)).length;
   const totalTrips = Math.max(doneTrips, g.trips || 0);
   set('p-trips', totalTrips > 0 ? totalTrips + '+' : '0');
   set('p-reviews-count', g.reviews);
@@ -974,6 +975,10 @@ function renderProfile(g) {
     }));
     const combined = [...uRevs, ...(g.reviewList || [])];
     set('p-reviews-count', combined.length);
+    if (combined.length) {
+      const avgRating = (combined.reduce((s, r) => s + r.stars, 0) / combined.length).toFixed(1);
+      set('p-rating', `${avgRating} (${combined.length} ${t('card.reviews')})`);
+    }
     return combined.map(r => `
     <div class="review-item">
       <div class="review-top">
