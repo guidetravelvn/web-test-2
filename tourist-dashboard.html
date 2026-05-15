@@ -799,6 +799,7 @@ function submitReview() {
     destination: req.destination,
     stars: selectedStar,
     text,
+    touristName: session0?.name || '',
     touristEmail: session0?.email || '',
     createdAt: new Date().toISOString()
   };

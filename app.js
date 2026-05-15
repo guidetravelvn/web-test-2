@@ -932,7 +932,7 @@ function renderProfile(g) {
   }
 
   set('p-bio', (lang === 'en' && g.bioEn) ? g.bioEn : g.bio);
-  set('p-trips', g.trips + '+');
+  set('p-trips', g.trips > 0 ? g.trips + '+' : '0');
   set('p-reviews-count', g.reviews);
   set('p-price-from', fmtPrice(g.pricePerDay));
   set('sb-price', fmtPrice(g.pricePerDay));
@@ -964,12 +964,14 @@ function renderProfile(g) {
   // Reviews — merge hardcoded + user-submitted
   function buildReviewHTML(localRevs) {
     const uRevs = localRevs.filter(rv => rv.guideName === g.name).map(rv => ({
-      name: t('review.you') || 'Bạn',
+      name: rv.touristName || t('review.you') || 'Khách',
       date: new Date(rv.createdAt).toLocaleDateString('vi-VN'),
       stars: rv.stars,
       text: rv.text || ''
     }));
-    return [...uRevs, ...(g.reviewList || [])].map(r => `
+    const combined = [...uRevs, ...(g.reviewList || [])];
+    set('p-reviews-count', combined.length);
+    return combined.map(r => `
     <div class="review-item">
       <div class="review-top">
         <div class="reviewer">
