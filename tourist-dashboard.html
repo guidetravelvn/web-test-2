@@ -123,11 +123,16 @@
       .chat-list.mob-chat-hidden, .chat-panel.mob-chat-hidden { display:none !important; }
       .chat-msgs { max-height:calc(60vh - 60px) !important; }
     }
-    @media(max-width:480px){
-      .dstat { padding:14px; }
-      .dstat-val { font-size:1.05rem; }
-      .filter-tab { padding:8px 10px; font-size:.78rem; }
-      .bc-details { grid-template-columns:1fr; }
+    @media(max-width:540px){
+      .section-card { padding:16px; }
+      .dstat { padding:12px; min-width:0; }
+      .dstat-val { font-size:.95rem; word-break:break-all; }
+      .dstat-lbl { font-size:.7rem; }
+      .filter-tab { padding:7px 9px; font-size:.76rem; }
+      .booking-card { padding:14px; }
+      .bc-details { grid-template-columns:1fr; gap:5px; }
+      .bc-guide-name { font-size:.85rem; }
+      .bc-head { flex-wrap:wrap; }
     }
   </style>
 </head>
