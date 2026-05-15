@@ -809,6 +809,7 @@ async function initDash() {
   }
 
   dashGuide = guide;
+  guide.area = guide.region || (guide.regions && guide.regions[0]) || null;
 
   // Update greeting
   document.getElementById('dash-greeting').textContent = 'Xin chào, ' + guide.name + '!';
