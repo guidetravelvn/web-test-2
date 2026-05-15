@@ -516,7 +516,7 @@ function renderOpenReqs() {
 async function claimOpenReq(reqId) {
   const session = JSON.parse(localStorage.getItem('gt_session') || 'null');
   if (!session || !dashGuide) return;
-  const ok = await SB.claimReq(reqId, String(session.id));
+  const ok = await SB.claimReq(reqId, String(dashGuide.id || session.id));
   if (!ok) {
     toast(t('hdash.claim.taken'), 'err');
     openReqs = openReqs.filter(r => r.id !== reqId);
@@ -527,13 +527,14 @@ async function claimOpenReq(reqId) {
   const req = openReqs.find(r => r.id === reqId);
   openReqs = openReqs.filter(r => r.id !== reqId);
   if (req) {
-    req.guideId = String(session.id);
+    req.guideId = dashGuide.id;
     req.guideName = dashGuide.name;
     allReqs.unshift(req);
     const all = JSON.parse(localStorage.getItem('gt_requests') || '[]');
     const idx = all.findIndex(r => r.id === req.id);
     if (idx > -1) all[idx] = req; else all.unshift(req);
     localStorage.setItem('gt_requests', JSON.stringify(all));
+    SB.updateReq(reqId, { guide_id: String(dashGuide.id), data: req });
   }
   updateOpenBadge();
   renderReqs();
@@ -842,7 +843,7 @@ async function initDash() {
     allReqs = demo;
   } else {
     // Filter: only show requests belonging to this guide
-    allReqs = storedReqs.filter(r => isDemoGuide || r.guideId == guide.id);
+    allReqs = storedReqs.filter(r => isDemoGuide || r.guideId == guide.id || r.guideId == String(session.id));
   }
 
   renderReqs();
@@ -860,7 +861,7 @@ async function initDash() {
       sbReqs.forEach(r => { if (!mergedAll.find(m => m.id === r.id)) mergedAll.unshift(r); });
       localStorage.setItem('gt_requests', JSON.stringify(mergedAll));
       // Display only this guide's requests
-      allReqs = mergedAll.filter(r => isDemoGuide || r.guideId == guide.id);
+      allReqs = mergedAll.filter(r => isDemoGuide || r.guideId == guide.id || r.guideId == String(session.id));
       renderReqs();
       updateStats();
       updateNavBadge();
