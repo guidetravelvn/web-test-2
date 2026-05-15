@@ -203,7 +203,11 @@ const TRANS = {
     'login.err.otp_invalid':'OTP không đúng hoặc đã hết hạn. Vui lòng thử lại!',
     'login.err.reset_success':'Đặt lại mật khẩu thành công!',
     'login.err.pass_mismatch':'Mật khẩu xác nhận không khớp!',
+    'login.err.pass_short':'Mật khẩu tối thiểu 6 ký tự!',
+    'login.err.wrong_type':'Tài khoản này là {type}. Vui lòng chọn đúng loại tài khoản!',
     'login.err.email_not_found':'Email không tồn tại trong hệ thống!',
+    'notif.title':'Thông báo',
+    'notif.empty':'Chưa có thông báo',
     // CALENDAR
     'cal.m0':'Tháng 1','cal.m1':'Tháng 2','cal.m2':'Tháng 3','cal.m3':'Tháng 4',
     'cal.m4':'Tháng 5','cal.m5':'Tháng 6','cal.m6':'Tháng 7','cal.m7':'Tháng 8',
@@ -817,7 +821,11 @@ const TRANS = {
     'login.err.otp_invalid':'Invalid or expired OTP. Please try again!',
     'login.err.reset_success':'Password reset successful!',
     'login.err.pass_mismatch':'Passwords do not match!',
+    'login.err.pass_short':'Password must be at least 6 characters!',
+    'login.err.wrong_type':'This account is {type}. Please select the correct account type!',
     'login.err.email_not_found':'Email not found in the system!',
+    'notif.title':'Notifications',
+    'notif.empty':'No notifications',
     // CALENDAR
     'cal.m0':'January','cal.m1':'February','cal.m2':'March','cal.m3':'April',
     'cal.m4':'May','cal.m5':'June','cal.m6':'July','cal.m7':'August',

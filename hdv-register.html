@@ -958,7 +958,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Step 4
   setVal('hdv-price', p.pricePerDay || '');
-  if (p.commission) applyCommission(p.commission);
+  applyCommission((p && p.commission) || 15);
 
   // Tự tick điều khoản
   const terms = document.getElementById('agree-terms');

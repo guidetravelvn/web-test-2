@@ -661,12 +661,12 @@ function openNotifDropdown() {
         <div style="font-size:.7rem;color:#94A3B8;margin-top:3px">${ts}</div>
       </div>
     </div>`;
-  }).join('') : '<div style="padding:36px;text-align:center;color:#94A3B8;font-size:.85rem"><i class="fa-solid fa-bell-slash" style="font-size:1.8rem;display:block;margin-bottom:10px"></i>Chưa có thông báo</div>';
+  }).join('') : `<div style="padding:36px;text-align:center;color:#94A3B8;font-size:.85rem"><i class="fa-solid fa-bell-slash" style="font-size:1.8rem;display:block;margin-bottom:10px"></i>${t('notif.empty')}</div>`;
   const drop = document.createElement('div');
   drop.id = 'notif-dropdown';
   drop.style.cssText = 'position:fixed;right:16px;top:62px;width:340px;background:white;border:1px solid #E2E8F0;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.13);z-index:9999;overflow:hidden';
   drop.innerHTML = `<div style="padding:13px 16px;border-bottom:1px solid #F1F5F9;display:flex;justify-content:space-between;align-items:center">
-    <span style="font-weight:700;font-size:.9rem;color:#0F172A"><i class="fa-solid fa-bell" style="color:var(--blue);margin-right:6px"></i>Thông báo</span>
+    <span style="font-weight:700;font-size:.9rem;color:#0F172A"><i class="fa-solid fa-bell" style="color:var(--blue);margin-right:6px"></i>${t('notif.title')}</span>
     <button onclick="document.getElementById('notif-dropdown').remove()" style="border:none;background:none;cursor:pointer;color:#94A3B8;font-size:1.2rem;line-height:1">&times;</button>
   </div>
   <div style="max-height:400px;overflow-y:auto">${items}</div>`;
@@ -1020,7 +1020,7 @@ function initBookingForm(g) {
   form.addEventListener('submit', e => {
     e.preventDefault();
     const termsCheck = form.querySelector('#bf-terms');
-    if (termsCheck && !termsCheck.checked) { toast('Vui lòng đồng ý với điều khoản trước khi đặt tour!', 'err'); return; }
+    if (termsCheck && !termsCheck.checked) { toast(t('login.err.terms'), 'err'); return; }
     const date = form.querySelector('#bf-date')?.value;
     if (!date) { toast(t('err.select_date'), 'err'); return; }
     const session = Auth.session();

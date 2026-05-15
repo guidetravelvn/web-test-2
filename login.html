@@ -343,8 +343,8 @@ async function doLogin() {
     // Lấy profile từ Supabase
     const { data: profile } = await sb.from('profiles').select('*').eq('id', data.user.id).single();
     if (profile && profile.type !== loginType) {
-      const correct = profile.type === 'guide' ? 'Hướng dẫn viên' : 'Du khách';
-      toast('Tài khoản này là ' + correct + '. Vui lòng chọn đúng loại tài khoản!', 'err');
+      const typeKey = profile.type === 'guide' ? 'nav.guide_label' : 'nav.customer';
+      toast(t('login.err.wrong_type').replace('{type}', t(typeKey)), 'err');
       await sb.auth.signOut();
       return;
     }
@@ -381,9 +381,9 @@ async function sendRegOtp() {
     return;
   }
   if (termsErr) termsErr.classList.remove('show');
-  if (!name || !email || !pass) { toast('Vui lòng điền đầy đủ thông tin!', 'err'); return; }
-  if (pass.length < 6) { toast('Mật khẩu tối thiểu 6 ký tự!', 'err'); return; }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast('Email không hợp lệ!', 'err'); return; }
+  if (!name || !email || !pass) { toast(t('err.fill_form'), 'err'); return; }
+  if (pass.length < 6) { toast(t('login.err.pass_short'), 'err'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast(t('pay.email_invalid'), 'err'); return; }
 
   pendingRegData = { name, email, pass, phone, type: regType };
 
@@ -460,7 +460,7 @@ async function doResetPass() {
   const pass  = document.getElementById('np-pass').value;
   const pass2 = document.getElementById('np-pass2').value;
   if (!pass || !pass2) { toast(t('login.err.otp_empty'), 'err'); return; }
-  if (pass.length < 6) { toast('Mật khẩu tối thiểu 6 ký tự!', 'err'); return; }
+  if (pass.length < 6) { toast(t('login.err.pass_short'), 'err'); return; }
   if (pass !== pass2) { toast(t('login.err.pass_mismatch'), 'err'); return; }
 
   const { error } = await sb.auth.updateUser({ password: pass });
