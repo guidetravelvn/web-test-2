@@ -834,6 +834,27 @@ async function submitRegistration() {
     }
   }
 
+  const coverFile = document.getElementById('file-cover');
+  const hasNewCover = coverFile && coverFile.files && coverFile.files.length > 0;
+  let coverUrl = (isEditing && existingProfile?.coverImg && !hasNewCover)
+    ? existingProfile.coverImg
+    : 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=800&q=80';
+  if (hasNewCover) {
+    if (typeof sb !== 'undefined' && session?.id) {
+      const file = coverFile.files[0];
+      const ext = file.name.split('.').pop() || 'jpg';
+      const { error: upErr } = await sb.storage.from('avatars').upload('cover-' + session.id + '.' + ext, file, { upsert: true, contentType: file.type });
+      if (!upErr) {
+        const { data: urlData } = sb.storage.from('avatars').getPublicUrl('cover-' + session.id + '.' + ext);
+        coverUrl = urlData.publicUrl + '?t=' + Date.now();
+      } else {
+        await new Promise(res => { const r = new FileReader(); r.onload = e => { coverUrl = e.target.result; res(); }; r.readAsDataURL(coverFile.files[0]); });
+      }
+    } else {
+      await new Promise(res => { const r = new FileReader(); r.onload = e => { coverUrl = e.target.result; res(); }; r.readAsDataURL(coverFile.files[0]); });
+    }
+  }
+
   const profile = {
     id: isEditing ? existingProfile.id : ('HDV' + Date.now()),
     userId: session ? session.id : (isEditing ? existingProfile.userId : null),
@@ -858,7 +879,7 @@ async function submitRegistration() {
     itineraries: isEditing ? (existingProfile.itineraries || []) : [],
     sampleItineraries: isEditing ? (existingProfile.sampleItineraries || []) : [],
     avatar: avatarUrl,
-    coverImg: existingProfile?.coverImg || 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=800&q=80',
+    coverImg: coverUrl,
     verified: true,
     status: isEditing ? existingProfile.status : 'pending_review',
     createdAt: isEditing ? existingProfile.createdAt : new Date().toISOString()
