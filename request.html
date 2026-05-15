@@ -132,7 +132,7 @@
               </div>
               <div class="fg">
                 <label data-i18n="req.days">Số ngày</label>
-                <input type="number" id="req-days" class="form-input" min="1" max="365" value="2">
+                <input type="number" id="req-days" class="form-input" min="1" max="365" value="2" oninput="calcTotal()">
               </div>
             </div>
             <div class="form-grid">
@@ -143,7 +143,7 @@
               <div class="fg">
                 <label data-i18n="req.budget">Chi phí khác / người</label>
                 <div class="input-currency">
-                  <input type="text" id="req-budget" class="form-input" inputmode="numeric" placeholder="VD: 3.000.000" oninput="fmtVNDInput(this)">
+                  <input type="text" id="req-budget" class="form-input" inputmode="numeric" placeholder="VD: 3.000.000" oninput="fmtVNDInput(this); calcTotal()">
                   <span class="currency-unit">VNĐ</span>
                 </div>
                 <div class="hint" style="font-size:.76rem;color:var(--gray-2);margin-top:5px" data-i18n="req.budget_hint">Ăn uống, lưu trú, di chuyển — chưa bao gồm phí HDV</div>
@@ -152,10 +152,18 @@
             <div class="fg">
               <label data-i18n="req.hdv_rate">Giá HDV / ngày</label>
               <div class="input-currency">
-                <input type="text" id="req-hdv-rate" class="form-input" inputmode="numeric" placeholder="VD: 650.000" oninput="fmtVNDInput(this)">
+                <input type="text" id="req-hdv-rate" class="form-input" inputmode="numeric" placeholder="VD: 650.000" oninput="fmtVNDInput(this); calcTotal()">
                 <span class="currency-unit">VNĐ</span>
               </div>
               <div class="hint" style="font-size:.76rem;color:var(--gray-2);margin-top:5px" data-i18n="req.hdv_rate_hint">Bỏ trống nếu không yêu cầu</div>
+            </div>
+            <div class="fg" id="fg-total" style="display:none">
+              <label data-i18n="req.total_est">Tổng ước tính</label>
+              <div class="input-currency">
+                <input type="text" id="req-total" class="form-input" readonly style="background:var(--bg);color:var(--dark);font-weight:600;cursor:default">
+                <span class="currency-unit">VNĐ</span>
+              </div>
+              <div class="hint" style="font-size:.76rem;color:var(--gray-2);margin-top:5px" data-i18n="req.total_hint">Giá HDV × số ngày + ngân sách chuyến đi</div>
             </div>
           </div>
 
@@ -322,6 +330,20 @@
 <script src="app.js"></script>
 <script>
 document.getElementById('req-date').min = new Date().toISOString().split('T')[0];
+
+function calcTotal() {
+  var days = parseInt(document.getElementById('req-days').value) || 0;
+  var hdvRate = Number((document.getElementById('req-hdv-rate').value || '').replace(/\./g, '')) || 0;
+  var budget = Number((document.getElementById('req-budget').value || '').replace(/\./g, '')) || 0;
+  var total = (hdvRate * days) + budget;
+  var fg = document.getElementById('fg-total');
+  if (total > 0) {
+    fg.style.display = '';
+    document.getElementById('req-total').value = new Intl.NumberFormat('vi-VN').format(total);
+  } else {
+    fg.style.display = 'none';
+  }
+}
 </script>
 </body>
 </html>
