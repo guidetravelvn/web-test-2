@@ -932,7 +932,10 @@ function renderProfile(g) {
   }
 
   set('p-bio', (lang === 'en' && g.bioEn) ? g.bioEn : g.bio);
-  set('p-trips', g.trips > 0 ? g.trips + '+' : '0');
+  const allLocalReqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
+  const doneTrips = allLocalReqs.filter(r => String(r.guideId) === String(g.id) && r.status === 'done').length;
+  const totalTrips = Math.max(doneTrips, g.trips || 0);
+  set('p-trips', totalTrips > 0 ? totalTrips + '+' : '0');
   set('p-reviews-count', g.reviews);
   set('p-price-from', fmtPrice(g.pricePerDay));
   set('sb-price', fmtPrice(g.pricePerDay));
