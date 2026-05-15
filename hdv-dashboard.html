@@ -43,6 +43,7 @@
     .st-pending { background:#FFF7ED; color:#F97316; }
     .st-proposal { background:#F5F3FF; color:#7C3AED; }
     .st-confirmed { background:#ECFDF5; color:#059669; }
+    .st-awaiting  { background:#EFF6FF; color:#0284C7; }
     .st-accepted { background:#F0FDF4; color:#16A34A; }
     .st-declined { background:#FEF2F2; color:#DC2626; }
     .st-done { background:#EFF6FF; color:#0EA5E9; }
@@ -542,19 +543,23 @@ function filterReqs(f, el) {
 function renderReqs() {
   const list = document.getElementById('req-list');
   let reqs = allReqs;
-  if (currentFilter !== 'all') reqs = reqs.filter(r => r.status === currentFilter);
+  if (currentFilter !== 'all') {
+    if (currentFilter === 'accepted') reqs = reqs.filter(r => r.status === 'accepted' || r.status === 'awaiting_payment');
+    else reqs = reqs.filter(r => r.status === currentFilter);
+  }
   if (!reqs.length) {
     list.innerHTML = `<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>${t('hdash.req.empty')}</p></div>`;
     return;
   }
   list.innerHTML = reqs.map(r => {
-    const statusMap = { pending:'st-pending', proposal_sent:'st-proposal', tourist_confirmed:'st-confirmed', accepted:'st-accepted', declined:'st-declined', done:'st-done' };
-    const statusLabel = { pending:t('hdash.status.pending'), proposal_sent:t('hdash.status.proposal_sent'), tourist_confirmed:t('hdash.status.tourist_confirmed'), accepted:t('hdash.status.accepted'), declined:t('hdash.status.declined'), done:t('hdash.status.done') };
+    const statusMap = { pending:'st-pending', proposal_sent:'st-proposal', tourist_confirmed:'st-confirmed', awaiting_payment:'st-awaiting', accepted:'st-accepted', declined:'st-declined', done:'st-done' };
+    const statusLabel = { pending:t('hdash.status.pending'), proposal_sent:t('hdash.status.proposal_sent'), tourist_confirmed:t('hdash.status.tourist_confirmed'), awaiting_payment:t('hdash.status.awaiting_payment'), accepted:t('hdash.status.accepted'), declined:t('hdash.status.declined'), done:t('hdash.status.done') };
     const sc = statusMap[r.status] || 'st-pending';
     const sl = statusLabel[r.status] || r.status;
     const isPending = r.status === 'pending' || r.status === 'Chờ xác nhận';
     const isProposalSent = r.status === 'proposal_sent';
     const isTouristConfirmed = r.status === 'tourist_confirmed';
+    const isAwaitingPayment = r.status === 'awaiting_payment';
     return `
     <div class="req-card">
       <div class="req-card-head">
@@ -591,6 +596,10 @@ function renderReqs() {
       <div class="req-actions">
         <span style="font-size:.8rem;color:var(--gray-2);display:flex;align-items:center;gap:5px"><i class="fa-solid fa-clock"></i> Đang chờ khách xác nhận...</span>
         <button class="btn btn-sm btn-outline" onclick="gotoChat('${r.id}')"><i class="fa-solid fa-comment-dots"></i> ${t('hdash.req.chat')}</button>
+      </div>` : isAwaitingPayment ? `
+      <div class="req-actions">
+        <span style="font-size:.8rem;color:#0284C7;display:flex;align-items:center;gap:5px"><i class="fa-solid fa-money-bill-wave"></i> Đang chờ khách thanh toán...</span>
+        <button class="btn btn-sm btn-outline" onclick="gotoChat('${r.id}')"><i class="fa-solid fa-comment-dots"></i> ${t('hdash.req.chat')}</button>
       </div>` : isTouristConfirmed ? `
       <div class="req-actions">
         <button class="btn btn-sm" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="openCompleteModal('${r.id}')"><i class="fa-solid fa-flag-checkered"></i> ${t('hdash.req.complete')}</button>
@@ -608,13 +617,13 @@ function renderReqs() {
 function acceptReq(id) {
   const reqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
   const idx = reqs.findIndex(r => r.id === id);
-  if (idx > -1) { reqs[idx].status = 'accepted'; localStorage.setItem('gt_requests', JSON.stringify(reqs)); SB.updateReq(id, {status:'accepted', data: reqs[idx]}); }
+  if (idx > -1) { reqs[idx].status = 'awaiting_payment'; localStorage.setItem('gt_requests', JSON.stringify(reqs)); SB.updateReq(id, {status:'awaiting_payment', data: reqs[idx]}); }
   const req = allReqs.find(r => r.id === id);
-  allReqs = allReqs.map(r => r.id === id ? {...r, status:'accepted'} : r);
+  allReqs = allReqs.map(r => r.id === id ? {...r, status:'awaiting_payment'} : r);
   renderReqs();
   updateStats();
   updateNavBadge();
-  if (req) addNotif('booking', 'Yêu cầu được chấp nhận!', 'HDV đã chấp nhận yêu cầu tour ' + (req.destination||'') + ' của bạn. Hãy liên hệ để thảo luận chi tiết.', 'tourist', 'messages');
+  if (req) addNotif('booking', 'Yêu cầu được chấp nhận!', 'HDV đã chấp nhận yêu cầu tour ' + (req.destination||'') + '. Vui lòng chuyển khoản để xác nhận tour.', 'tourist', 'bookings');
   toast(t('hdash.req.accepted'), 'ok');
 }
 
@@ -678,7 +687,7 @@ function contactTourist(phone, name) {
 
 function updateStats() {
   const pending = allReqs.filter(r => r.status === 'pending' || r.status === 'Chờ xác nhận').length;
-  const accepted = allReqs.filter(r => r.status === 'accepted').length;
+  const accepted = allReqs.filter(r => r.status === 'accepted' || r.status === 'awaiting_payment').length;
   document.getElementById('st-new').textContent = pending;
   document.getElementById('st-accepted').textContent = accepted;
   const badge = document.getElementById('badge-pending');
@@ -1308,7 +1317,7 @@ function renderCalDayDetail(bookings) {
           <div style="font-size:.78rem;color:var(--gray-2);margin-top:2px"><i class="fa-solid fa-location-dot"></i> ${r.destination} &nbsp;·&nbsp; ${r.days||1} ${t('unit.days')} &nbsp;·&nbsp; ${r.people||1} ${t('unit.people')}</div>
           ${r.phone ? `<div style="font-size:.78rem;color:var(--gray-2);margin-top:2px"><i class="fa-solid fa-phone"></i> ${r.phone}</div>` : ''}
         </div>
-        <span class="req-status ${r.status==='done'?'st-done':'st-accepted'}">${r.status==='done'?t('hdash.status.done'):t('hdash.status.accepted')}</span>
+        <span class="req-status ${r.status==='done'?'st-done':r.status==='awaiting_payment'?'st-awaiting':'st-accepted'}">${r.status==='done'?t('hdash.status.done'):r.status==='awaiting_payment'?t('hdash.status.awaiting_payment'):t('hdash.status.accepted')}</span>
       </div>
       ${r.status==='accepted'?`<div style="margin-top:10px"><button class="btn btn-sm" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="openCompleteModal('${r.id}')"><i class="fa-solid fa-flag-checkered"></i> ${t('hdash.req.complete')}</button></div>`:''}
     </div>`).join('')}

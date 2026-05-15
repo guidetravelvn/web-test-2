@@ -53,6 +53,7 @@
     .b-done{background:#EFF6FF;color:#0EA5E9}
     .b-paid{background:#F0FDF4;color:#16A34A}
     .b-unpaid{background:#FFF7ED;color:#F97316}
+    .b-awaiting{background:#EFF6FF;color:#0284C7}
     .b-free{background:#F0FDF4;color:#16A34A}
     .b-busy{background:#FFF7ED;color:#F97316}
     /* Filters */
@@ -135,13 +136,17 @@
   <!-- DASHBOARD TAB -->
   <div id="tab-dashboard">
     <div class="dash-grid" id="dash-grid"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
       <div class="card">
         <div class="card-head"><h3><i class="fa-solid fa-clock" style="color:#F97316"></i> Booking chờ xử lý</h3></div>
         <div id="dash-pending-list"></div>
       </div>
       <div class="card">
-        <div class="card-head"><h3><i class="fa-solid fa-plane-departure" style="color:#0EA5E9"></i> Sắp khởi hành (7 ngày tới)</h3></div>
+        <div class="card-head"><h3><i class="fa-solid fa-money-bill-wave" style="color:#0284C7"></i> Chờ xác nhận TT</h3></div>
+        <div id="dash-awaiting-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3><i class="fa-solid fa-plane-departure" style="color:#0EA5E9"></i> Sắp khởi hành (7 ngày)</h3></div>
         <div id="dash-upcoming-list"></div>
       </div>
     </div>
@@ -170,6 +175,7 @@
         <select id="bk-status" onchange="renderBookings()">
           <option value="">Tất cả trạng thái</option>
           <option value="pending">Chờ xử lý</option>
+          <option value="awaiting_payment">Chờ thanh toán</option>
           <option value="accepted">Đã xác nhận</option>
           <option value="done">Hoàn thành</option>
           <option value="declined">Từ chối</option>
@@ -358,8 +364,8 @@
 <script>
 const ADMIN_PASS = 'admin123';
 const fmtV = n => new Intl.NumberFormat('vi-VN').format(n) + 'đ';
-const STATUS_LABEL = { pending:'Chờ xử lý', accepted:'Đã xác nhận', done:'Hoàn thành', declined:'Từ chối' };
-const STATUS_CLS   = { pending:'b-pending', accepted:'b-accepted', done:'b-done', declined:'b-declined' };
+const STATUS_LABEL = { pending:'Chờ xử lý', awaiting_payment:'Chờ TT', accepted:'Đã xác nhận', done:'Hoàn thành', declined:'Từ chối' };
+const STATUS_CLS   = { pending:'b-pending', awaiting_payment:'b-awaiting', accepted:'b-accepted', done:'b-done', declined:'b-declined' };
 let revMode = 'month';
 
 function checkLogin() {
@@ -418,6 +424,7 @@ function renderDashboard() {
   const thisMonth = today.slice(0, 7);
 
   const pending   = reqs.filter(r => r.status === 'pending').length;
+  const awaitingPayment = reqs.filter(r => r.status === 'awaiting_payment').length;
   const accepted  = reqs.filter(r => r.status === 'accepted').length;
   const done      = reqs.filter(r => r.status === 'done').length;
   const upcoming  = reqs.filter(r => r.status === 'accepted' && r.date >= today && r.date <= in7.toISOString().slice(0,10));
@@ -430,6 +437,7 @@ function renderDashboard() {
 
   document.getElementById('dash-grid').innerHTML = `
     <div class="dcard" style="--c:#F97316"><div class="dcard-val">${pending}</div><div class="dcard-lbl"><i class="fa-solid fa-clock" style="color:#F97316"></i> Chờ xử lý</div></div>
+    <div class="dcard" style="--c:#0284C7"><div class="dcard-val">${awaitingPayment}</div><div class="dcard-lbl"><i class="fa-solid fa-money-bill-wave" style="color:#0284C7"></i> Chờ thanh toán</div></div>
     <div class="dcard" style="--c:#16A34A"><div class="dcard-val">${accepted}</div><div class="dcard-lbl"><i class="fa-solid fa-circle-check" style="color:#16A34A"></i> Đã xác nhận</div></div>
     <div class="dcard" style="--c:#0EA5E9"><div class="dcard-val">${done}</div><div class="dcard-lbl"><i class="fa-solid fa-flag-checkered" style="color:#0EA5E9"></i> Hoàn thành</div></div>
     <div class="dcard" style="--c:#7C3AED"><div class="dcard-val">${revToday ? fmtV(revToday) : '0đ'}</div><div class="dcard-lbl"><i class="fa-solid fa-fire" style="color:#7C3AED"></i> Doanh thu hôm nay</div></div>
@@ -449,6 +457,7 @@ function renderDashboard() {
     : `<div class="empty" style="padding:20px">${emptyText}</div>`;
 
   document.getElementById('dash-pending-list').innerHTML = mkList(reqs.filter(r=>r.status==='pending'), 'Không có booking chờ');
+  document.getElementById('dash-awaiting-list').innerHTML = mkList(reqs.filter(r=>r.status==='awaiting_payment'), 'Không có booking chờ TT');
   document.getElementById('dash-upcoming-list').innerHTML = mkList(upcoming, 'Không có chuyến sắp tới');
   document.getElementById('dash-unassigned-list').innerHTML = mkList(unassigned, 'Không có booking chưa gán');
   document.getElementById('dash-done-list').innerHTML = mkList(reqs.filter(r=>r.status==='done').slice().reverse(), 'Chưa có tour hoàn thành');
@@ -580,7 +589,7 @@ function renderBookings() {
   if (!reqs.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
 
-  const payStatus = r => (r.status === 'accepted' || r.status === 'done') ? ['b-paid','Đã thanh toán'] : ['b-unpaid','Chưa thanh toán'];
+  const payStatus = r => (r.status === 'accepted' || r.status === 'done') ? ['b-paid','Đã thanh toán'] : r.status === 'awaiting_payment' ? ['b-awaiting','Chờ xác nhận'] : ['b-unpaid','Chưa thanh toán'];
 
   tbody.innerHTML = reqs.map(r => {
     const [pCls, pLbl] = payStatus(r);
@@ -604,8 +613,9 @@ function renderBookings() {
         <div style="display:flex;gap:5px;flex-wrap:wrap">
           <button class="action-btn btn-gray" onclick="openBookingDetail('${r.id}')"><i class="fa-solid fa-eye"></i></button>
           ${r.status==='pending' ? `<button class="action-btn btn-green" onclick="setStatus('${r.id}','accepted')">✅</button>` : ''}
+          ${r.status==='awaiting_payment' ? `<button class="action-btn btn-green" onclick="setStatus('${r.id}','accepted')" title="Xác nhận đã thanh toán"><i class="fa-solid fa-money-bill-wave"></i> Xác nhận TT</button>` : ''}
           ${r.status==='accepted' ? `<button class="action-btn btn-blue" onclick="setStatus('${r.id}','done')">🏁</button>` : ''}
-          ${(r.status==='pending'||r.status==='accepted') ? `<button class="action-btn btn-red" onclick="setStatus('${r.id}','declined')">❌</button>` : ''}
+          ${(r.status==='pending'||r.status==='awaiting_payment'||r.status==='accepted') ? `<button class="action-btn btn-red" onclick="setStatus('${r.id}','declined')">❌</button>` : ''}
         </div>
       </td>
     </tr>`;
@@ -631,8 +641,8 @@ function openBookingDetail(id) {
   const r = reqs.find(x => x.id === id);
   if (!r) return;
   const notes = JSON.parse(localStorage.getItem('gt_admin_notes') || '{}');
-  const payLbl = (r.status === 'accepted' || r.status === 'done') ? 'Đã thanh toán' : 'Chưa thanh toán';
-  const payCls = (r.status === 'accepted' || r.status === 'done') ? 'color:#16A34A' : 'color:#F97316';
+  const payLbl = (r.status === 'accepted' || r.status === 'done') ? 'Đã thanh toán' : r.status === 'awaiting_payment' ? 'Chờ xác nhận' : 'Chưa thanh toán';
+  const payCls = (r.status === 'accepted' || r.status === 'done') ? 'color:#16A34A' : r.status === 'awaiting_payment' ? 'color:#0284C7' : 'color:#F97316';
   const hist = (r.history || []).map(h => `
     <div class="history-item">
       <div class="history-dot"></div>
@@ -687,8 +697,9 @@ function openBookingDetail(id) {
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       ${r.status==='pending' ? `<button class="action-btn btn-green" style="padding:8px 16px" onclick="setStatus('${r.id}','accepted');closeBookingModal()">✅ Xác nhận</button>` : ''}
+      ${r.status==='awaiting_payment' ? `<button class="action-btn btn-green" style="padding:8px 16px;background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="setStatus('${r.id}','accepted');closeBookingModal()"><i class="fa-solid fa-money-bill-wave"></i> Xác nhận đã thanh toán</button>` : ''}
       ${r.status==='accepted' ? `<button class="action-btn btn-blue" style="padding:8px 16px" onclick="setStatus('${r.id}','done');closeBookingModal()">🏁 Hoàn thành</button>` : ''}
-      ${(r.status==='pending'||r.status==='accepted') ? `<button class="action-btn btn-red" style="padding:8px 16px" onclick="setStatus('${r.id}','declined');closeBookingModal()">❌ Từ chối</button>` : ''}
+      ${(r.status==='pending'||r.status==='awaiting_payment'||r.status==='accepted') ? `<button class="action-btn btn-red" style="padding:8px 16px" onclick="setStatus('${r.id}','declined');closeBookingModal()">❌ Từ chối</button>` : ''}
     </div>`;
   document.getElementById('booking-modal').style.display = 'flex';
 }

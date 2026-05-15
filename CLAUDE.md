@@ -33,6 +33,7 @@ Pure HTML/CSS/JS — không framework, không build step.
 ## Quy trình làm việc
 - Khi nhận lệnh: làm đến hoàn thiện, tự kiểm tra lại toàn bộ trước khi báo kết quả
 - Không hỏi giữa chừng, không báo cáo từng bước nhỏ — chỉ đưa kết quả cuối cùng
+- Khi tìm lỗi/bug: grep toàn bộ codebase TRƯỚC, tổng hợp danh sách đầy đủ, sửa tất cả trong 1 lần, push 1 lần — không sửa từng phần rồi mới tìm tiếp
 - Sau mỗi task: trace qua luồng người dùng liên quan (vd: đăng ký → đăng nhập → dashboard) để phát hiện side effect
 - Khi viết fallback `|| someDefault`: dừng lại, kiểm tra xem fallback đó có gây hiển thị sai dữ liệu không
 - Khi người dùng hỏi ý kiến hoặc đề xuất → trả lời bằng lời trước, chờ xác nhận rồi mới thực thi — không tự ý sửa/thêm file khi chưa được cho phép
