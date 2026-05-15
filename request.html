@@ -157,7 +157,7 @@
               </div>
               <div class="hint" style="font-size:.76rem;color:var(--gray-2);margin-top:5px" data-i18n="req.hdv_rate_hint">Bỏ trống nếu không yêu cầu</div>
             </div>
-            <div class="fg" id="fg-total" style="display:none">
+            <div class="fg" id="fg-total">
               <label data-i18n="req.total_est">Tổng ước tính</label>
               <div class="input-currency">
                 <input type="text" id="req-total" class="form-input" readonly style="background:var(--bg);color:var(--dark);font-weight:600;cursor:default">
@@ -336,13 +336,7 @@ function calcTotal() {
   var hdvRate = Number((document.getElementById('req-hdv-rate').value || '').replace(/\./g, '')) || 0;
   var budget = Number((document.getElementById('req-budget').value || '').replace(/\./g, '')) || 0;
   var total = (hdvRate * days) + budget;
-  var fg = document.getElementById('fg-total');
-  if (total > 0) {
-    fg.style.display = '';
-    document.getElementById('req-total').value = new Intl.NumberFormat('vi-VN').format(total);
-  } else {
-    fg.style.display = 'none';
-  }
+  document.getElementById('req-total').value = total > 0 ? new Intl.NumberFormat('vi-VN').format(total) : '';
 }
 </script>
 </body>
