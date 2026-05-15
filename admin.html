@@ -537,7 +537,7 @@ async function updateReport(id, status) {
     try { await sb.from('reports').update({ status }).eq('id', id); } catch(e) {}
   }
   renderReports();
-  toast(status==='resolved'?'Đã đánh dấu xử lý.':status==='dismissed'?'Đã bỏ qua báo cáo.':'Đã hoàn tác.', 'ok');
+  toast(status==='resolved'?t('admin.report.resolved'):status==='dismissed'?t('admin.report.dismissed'):t('admin.report.undone'), 'ok');
 }
 
 // ===== BOOKINGS =====
@@ -805,8 +805,8 @@ async function setGuideStatus(id, status) {
 
   renderGuideTable();
   renderSuspendedGuides();
-  const msgs = { suspended: 'Đã tạm dừng tài khoản HDV.', locked: 'Đã khoá tài khoản HDV.', active: 'Đã kích hoạt lại tài khoản.' };
-  toast(msgs[status] || 'Đã cập nhật.', status === 'active' ? 'ok' : 'err');
+  const msgs = { suspended: t('admin.guide.suspended'), locked: t('admin.guide.locked'), active: t('admin.guide.activated') };
+  toast(msgs[status] || t('admin.guide.updated'), status === 'active' ? 'ok' : 'err');
 }
 
 function renderSuspendedGuides() {

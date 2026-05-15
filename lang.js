@@ -303,6 +303,8 @@ const TRANS = {
     // TOAST / VALIDATION
     'err.select_date':'Vui lòng chọn ngày bắt đầu!',
     'err.fill_form':'Vui lòng điền đầy đủ thông tin!',
+    'err.login_required':'Vui lòng đăng nhập để đặt tour!',
+    'err.generic':'Có lỗi xảy ra!',
     'booking.sent':'Đã gửi yêu cầu! HDV sẽ phản hồi trong 24h.',
     // COMMISSION TIERS
     'tier.top':'🏆 Nổi bật #1','tier.featured':'⭐ Đề xuất','tier.priority':'👍 Ưu tiên',
@@ -631,6 +633,14 @@ const TRANS = {
     'cs.email_resp':'Phản hồi trong 2 giờ',
     'cs.messenger_addr':'m.me/GuideTravel',
     'cs.s7_note':'Khi liên hệ, vui lòng cung cấp <strong>mã đơn hàng</strong> và <strong>mô tả vấn đề</strong> để được hỗ trợ nhanh nhất. Đối với khiếu nại, hãy đính kèm bằng chứng (ảnh, video, tin nhắn) để chúng tôi xử lý chính xác.',
+    // ADMIN
+    'admin.report.resolved':'Đã đánh dấu xử lý.',
+    'admin.report.dismissed':'Đã bỏ qua báo cáo.',
+    'admin.report.undone':'Đã hoàn tác.',
+    'admin.guide.suspended':'Đã tạm dừng tài khoản HDV.',
+    'admin.guide.locked':'Đã khoá tài khoản HDV.',
+    'admin.guide.activated':'Đã kích hoạt lại tài khoản.',
+    'admin.guide.updated':'Đã cập nhật.',
   },
 
   en: {
@@ -934,6 +944,8 @@ const TRANS = {
     // TOAST / VALIDATION
     'err.select_date':'Please select a start date!',
     'err.fill_form':'Please fill in all required fields!',
+    'err.login_required':'Please log in to book a tour!',
+    'err.generic':'An error occurred!',
     'booking.sent':'Request sent! The guide will respond within 24h.',
     // COMMISSION TIERS
     'tier.top':'🏆 Top #1','tier.featured':'⭐ Featured','tier.priority':'👍 Priority',
@@ -1262,6 +1274,14 @@ const TRANS = {
     'cs.email_resp':'Response within 2 hours',
     'cs.messenger_addr':'m.me/GuideTravel',
     'cs.s7_note':'When contacting us, please provide your <strong>order ID</strong> and <strong>description of the issue</strong> for the fastest support. For complaints, attach evidence (photos, videos, messages) so we can handle it accurately.',
+    // ADMIN
+    'admin.report.resolved':'Marked as resolved.',
+    'admin.report.dismissed':'Report dismissed.',
+    'admin.report.undone':'Action undone.',
+    'admin.guide.suspended':'Guide account suspended.',
+    'admin.guide.locked':'Guide account locked.',
+    'admin.guide.activated':'Account reactivated.',
+    'admin.guide.updated':'Updated.',
   }
 };
 

@@ -1025,7 +1025,7 @@ function initBookingForm(g) {
     if (!date) { toast(t('err.select_date'), 'err'); return; }
     const session = Auth.session();
     if (!session || session.type !== 'tourist') {
-      toast(t('err.login_required') || 'Vui lòng đăng nhập để đặt tour!', 'err');
+      toast(t('err.login_required'), 'err');
       setTimeout(() => { location.href = 'login.html'; }, 1500);
       return;
     }
@@ -1047,7 +1047,7 @@ function initBookingForm(g) {
       createdAt: new Date().toISOString()
     };
     DB.addRequest(req);
-    toast(t('booking.sent') || 'Đã gửi yêu cầu! HDV sẽ phản hồi trong 24h.', 'ok');
+    toast(t('booking.sent'), 'ok');
     setTimeout(() => { location.href = 'tourist-dashboard.html'; }, 1500);
   });
 }
