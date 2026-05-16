@@ -462,6 +462,7 @@ const TRANS = {
     'hdash.proposal.sent':'Đã gửi lịch trình cho khách!',
     'tdash.avatar.updated':'Đã cập nhật ảnh đại diện!',
     'tdash.avatar.too_large':'Ảnh tối đa 2MB!',
+    'tdash.photo.not_found':'Không tìm thấy ảnh tour này',
     // HDV REGISTER PAGE
     'hdv_reg.breadcrumb':'Đăng ký HDV',
     'hdv_reg.h1':'Trở Thành Hướng Dẫn Viên',
@@ -1122,6 +1123,7 @@ const TRANS = {
     'hdash.proposal.sent':'Itinerary sent to tourist!',
     'tdash.avatar.updated':'Profile photo updated!',
     'tdash.avatar.too_large':'Image must be under 2MB!',
+    'tdash.photo.not_found':'Tour photo not found',
     // HDV REGISTER PAGE
     'hdv_reg.breadcrumb':'Register as Guide',
     'hdv_reg.h1':'Become a Tour Guide',

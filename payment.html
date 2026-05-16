@@ -476,7 +476,9 @@ function initPayment() {
   const people = parseInt(params.get('people') || 1);
   const total = guide.pricePerDay * days;
   orderData = { guideId: guide.id, guideName: guide.name, destination: guide.location, date, days, people, total };
-  document.getElementById('ord-avatar').src = guide.avatar;
+  const ordAva = document.getElementById('ord-avatar');
+  ordAva.src = guide.avatar;
+  ordAva.onerror = () => { ordAva.onerror = null; ordAva.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(guide.name) + '&size=120&background=0284C7&color=fff'; };
   document.getElementById('ord-name').textContent = guide.name;
   document.getElementById('ord-loc').textContent = guide.location;
   document.getElementById('ord-date').textContent = date;

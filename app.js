@@ -941,8 +941,16 @@ function renderProfile(g) {
   set('p-price-from', fmtPrice(g.pricePerDay));
   set('sb-price', fmtPrice(g.pricePerDay));
 
-  const ava = $('p-avatar'); if (ava) { ava.src = g.avatar; ava.alt = g.name; }
-  const cover = $('p-cover'); if (cover) { cover.src = g.coverImg; cover.alt = g.name; }
+  const ava = $('p-avatar');
+  if (ava) {
+    ava.src = g.avatar; ava.alt = g.name;
+    ava.onerror = () => { ava.onerror = null; ava.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(g.name) + '&size=200&background=0284C7&color=fff'; };
+  }
+  const cover = $('p-cover');
+  if (cover) {
+    cover.src = g.coverImg; cover.alt = g.name;
+    cover.onerror = () => { cover.onerror = null; cover.src = 'https://images.unsplash.com/photo-1528127269322-539801943592?w=800&q=80'; };
+  }
 
   setHTML('p-langs', (g.languages || []).map(l => `<span class="tag tag-blue">${l}</span>`).join(''));
   setHTML('p-specs', (g.specialties || []).map(s => `<span class="tag tag-gray">${t('spec.' + s) || s}</span>`).join(''));
