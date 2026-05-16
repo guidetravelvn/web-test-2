@@ -6,6 +6,11 @@
   <title>📋 Tracker - GuideTravel</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
+    :root {
+      --orange-warm: #F97316;
+      --blue-bright: #2563EB;
+      --green-dark: #16A34A;
+    }
     * { box-sizing:border-box; margin:0; padding:0; }
     body { font-family:'Segoe UI',sans-serif; background:#F1F5F9; color:#0F172A; }
     .top-bar { background:linear-gradient(135deg,#0F172A,#1E3A5F); padding:20px 32px; display:flex; align-items:center; justify-content:space-between; }
@@ -60,9 +65,9 @@
 
 <div class="wrap">
   <div class="summary-row">
-    <div class="scard"><div class="scard-val" id="cnt-done" style="color:#16A34A">0</div><div class="scard-lbl">Đã hoàn thành</div></div>
-    <div class="scard"><div class="scard-val" id="cnt-todo" style="color:#F97316">0</div><div class="scard-lbl">Cần làm</div></div>
-    <div class="scard"><div class="scard-val" id="cnt-inprog" style="color:#2563EB">0</div><div class="scard-lbl">Đang làm</div></div>
+    <div class="scard"><div class="scard-val" id="cnt-done" style="color:var(--green-dark)">0</div><div class="scard-lbl">Đã hoàn thành</div></div>
+    <div class="scard"><div class="scard-val" id="cnt-todo" style="color:var(--orange-warm)">0</div><div class="scard-lbl">Cần làm</div></div>
+    <div class="scard"><div class="scard-val" id="cnt-inprog" style="color:var(--blue-bright)">0</div><div class="scard-lbl">Đang làm</div></div>
     <div class="scard"><div class="scard-val" id="cnt-total" style="color:#0F172A">0</div><div class="scard-lbl">Tổng mục</div></div>
   </div>
 
