@@ -758,6 +758,7 @@ let _idCardPreviews = [];
 function previewFiles(input, previewId) {
   const container = document.getElementById(previewId);
   Array.from(input.files).forEach(file => {
+    if (file.size > 5 * 1024 * 1024) { toast(t('reg.err.id_too_large'), 'err'); return; }
     const reader = new FileReader();
     reader.onload = e => {
       _idCardPreviews.push(e.target.result);
@@ -824,13 +825,21 @@ async function submitRegistration() {
   let avatarUrl = (isEditing && existingProfile?.avatar && !hasNewAvatar)
     ? existingProfile.avatar
     : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(hdvName) + '&size=200&background=0284C7&color=fff';
-  if (hasNewAvatar && typeof sb !== 'undefined' && session?.id) {
-    const file = avatarFile.files[0];
-    const ext = file.name.split('.').pop() || 'jpg';
-    const { error: upErr } = await sb.storage.from('avatars').upload(session.id + '.' + ext, file, { upsert: true, contentType: file.type });
-    if (!upErr) {
-      const { data: urlData } = sb.storage.from('avatars').getPublicUrl(session.id + '.' + ext);
-      avatarUrl = urlData.publicUrl + '?t=' + Date.now();
+  if (hasNewAvatar) {
+    const avatarFileObj = avatarFile.files[0];
+    if (avatarFileObj.size > 2 * 1024 * 1024) {
+      toast(t('tdash.avatar.too_large'), 'err');
+      return;
+    }
+    if (typeof sb !== 'undefined' && session?.id) {
+      const ext = avatarFileObj.name.split('.').pop() || 'jpg';
+      const { error: upErr } = await sb.storage.from('avatars').upload(session.id + '.' + ext, avatarFileObj, { upsert: true, contentType: avatarFileObj.type });
+      if (!upErr) {
+        const { data: urlData } = sb.storage.from('avatars').getPublicUrl(session.id + '.' + ext);
+        avatarUrl = urlData.publicUrl + '?t=' + Date.now();
+      } else {
+        toast(t('reg.err.avatar_upload_fail'), 'err');
+      }
     }
   }
 
