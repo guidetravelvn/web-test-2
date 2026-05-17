@@ -814,6 +814,21 @@ function submitReview() {
   reviews.unshift(review);
   localStorage.setItem('gt_my_reviews', JSON.stringify(reviews));
   SB.saveReview(review);
+  // Cập nhật rating + số đánh giá trong hdv_profiles sau khi có review mới
+  (async () => {
+    if (typeof sb === 'undefined') return;
+    const allRevs = await SB.getReviewsByGuide(review.guideName);
+    if (!allRevs || !allRevs.length) return;
+    const newCount = allRevs.length;
+    const newRating = Math.round(allRevs.reduce((s, r) => s + (r.stars || 0), 0) / newCount * 10) / 10;
+    const { data: rows } = await sb.from('hdv_profiles').select('id, data').eq('id', req.guideId);
+    if (!rows || !rows.length) return;
+    const updatedData = { ...rows[0].data, rating: newRating, reviews: newCount };
+    await sb.from('hdv_profiles').update({ data: updatedData }).eq('id', rows[0].id);
+    const profiles = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+    const idx = profiles.findIndex(p => p.id === rows[0].id);
+    if (idx > -1) { profiles[idx].rating = newRating; profiles[idx].reviews = newCount; localStorage.setItem('gt_hdv_profiles', JSON.stringify(profiles)); }
+  })();
   // Mark request as done
   const reqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
   const idx = reqs.findIndex(r => r.id === reviewingId);
