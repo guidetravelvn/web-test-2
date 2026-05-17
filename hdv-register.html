@@ -869,6 +869,26 @@ async function submitRegistration() {
     });
   }
 
+  // Upload CCCD lên Supabase Storage, chỉ lưu URL (không lưu base64 vào localStorage)
+  let idCardUrls = isEditing ? (existingProfile.idCardImages || []) : [];
+  const newBase64Items = _idCardPreviews.filter(s => s.startsWith('data:'));
+  const existingUrlItems = _idCardPreviews.filter(s => s.startsWith('http'));
+  idCardUrls = [...existingUrlItems];
+  if (newBase64Items.length && typeof sb !== 'undefined' && session?.id) {
+    for (let i = 0; i < newBase64Items.length; i++) {
+      try {
+        const blob = await (await fetch(newBase64Items[i])).blob();
+        const ext = blob.type.includes('png') ? 'png' : 'jpg';
+        const path = `cccd/${session.id}_${i}.${ext}`;
+        const { error: upErr } = await sb.storage.from('avatars').upload(path, blob, { upsert: true, contentType: blob.type });
+        if (!upErr) {
+          const { data: urlData } = sb.storage.from('avatars').getPublicUrl(path);
+          idCardUrls.push(urlData.publicUrl);
+        }
+      } catch(e) { /* bỏ qua nếu upload lỗi */ }
+    }
+  }
+
   const itinTitle = document.getElementById('itin-title')?.value.trim();
   const newSampleItins = itinTitle ? [{
     title: itinTitle,
@@ -904,7 +924,7 @@ async function submitRegistration() {
     reviewList: isEditing ? (existingProfile.reviewList || []) : [],
     itineraries: isEditing ? (existingProfile.itineraries || []) : [],
     sampleItineraries: newSampleItins,
-    idCardImages: _idCardPreviews.length ? _idCardPreviews : (isEditing ? (existingProfile.idCardImages || []) : []),
+    idCardImages: idCardUrls,
     workDays: workDays,
     responseTime: responseTime,
     avatar: avatarUrl,
