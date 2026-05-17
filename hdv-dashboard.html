@@ -1084,35 +1084,35 @@ async function handleGalleryUpload(input) {
   if (!session?.id) return;
   const gallery = (dashGuide && dashGuide.gallery) || [];
   const toUpload = files.slice(0, 12 - gallery.length);
-  showToast('Đang tải ảnh lên...', 'info');
+  toast('Đang tải ảnh lên...');
   const newUrls = [];
   for (const file of toUpload) {
-    if (file.size > 5 * 1024 * 1024) { showToast('Ảnh quá 5MB, bỏ qua', 'warn'); continue; }
+    if (file.size > 5 * 1024 * 1024) { toast('Ảnh quá 5MB, bỏ qua', 'err'); continue; }
     try {
       const ext = file.type.includes('png') ? 'png' : 'jpg';
       const path = `gallery/${session.id}_${Date.now()}_${Math.random().toString(36).slice(2,6)}.${ext}`;
       const { error: upErr } = await sb.storage.from('avatars').upload(path, file, { upsert: false, contentType: file.type });
-      if (!upErr) {
-        const { data: urlData } = sb.storage.from('avatars').getPublicUrl(path);
-        newUrls.push(urlData.publicUrl);
-      }
-    } catch(e) {}
+      if (upErr) { console.error('Storage upload error:', upErr); continue; }
+      const { data: urlData } = sb.storage.from('avatars').getPublicUrl(path);
+      newUrls.push(urlData.publicUrl);
+    } catch(e) { console.error('Upload exception:', e); }
   }
   if (newUrls.length) {
     const updatedGallery = [...gallery, ...newUrls];
     try {
       const { data: sbRow } = await sb.from('hdv_profiles').select('data').eq('user_id', session.id).maybeSingle();
       if (sbRow) {
-        await sb.from('hdv_profiles').update({ data: { ...sbRow.data, gallery: updatedGallery } }).eq('user_id', session.id);
+        const { error: updateErr } = await sb.from('hdv_profiles').update({ data: { ...sbRow.data, gallery: updatedGallery } }).eq('user_id', session.id);
+        if (updateErr) console.error('Profile update error:', updateErr);
         dashGuide.gallery = updatedGallery;
         const lp = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
         const ei = lp.findIndex(p => p.email === dashGuide.email);
         if (ei > -1) { lp[ei].gallery = updatedGallery; localStorage.setItem('gt_hdv_profiles', JSON.stringify(lp)); }
       }
-    } catch(e) {}
-    showToast(`Đã thêm ${newUrls.length} ảnh`, 'success');
+    } catch(e) { console.error('Profile update exception:', e); }
+    toast(`Đã thêm ${newUrls.length} ảnh`);
   } else {
-    showToast('Không tải được ảnh', 'error');
+    toast('Không tải được ảnh', 'err');
   }
   input.value = '';
   renderGallerySection();
@@ -1134,7 +1134,7 @@ async function deleteGalleryPhoto(idx) {
       if (ei > -1) { lp[ei].gallery = gallery; localStorage.setItem('gt_hdv_profiles', JSON.stringify(lp)); }
     }
   } catch(e) {}
-  showToast('Đã xóa ảnh', 'success');
+  toast('Đã xóa ảnh');
   renderGallerySection();
 }
 
