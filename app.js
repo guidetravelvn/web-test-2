@@ -783,16 +783,33 @@ async function initGuidesPage() {
   // Sync approved HDV từ Supabase để hiện trên thiết bị khác
   if (typeof sb !== 'undefined') {
     try {
-      const { data: sbProfiles } = await sb.from('hdv_profiles').select('data, status').eq('status', 'approved');
+      const [profilesRes, reviewsRes] = await Promise.all([
+        sb.from('hdv_profiles').select('data, status').eq('status', 'approved'),
+        sb.from('reviews').select('guide_name, data')
+      ]);
+      const sbProfiles = profilesRes.data;
+      const sbReviews = reviewsRes.data || [];
+      // Tính rating trung bình từ reviews (tránh RLS issue khi tourist update hdv_profiles)
+      const ratingMap = {};
+      sbReviews.forEach(row => {
+        const gn = row.guide_name;
+        if (!ratingMap[gn]) ratingMap[gn] = { sum: 0, count: 0 };
+        ratingMap[gn].sum += (row.data?.stars || 0);
+        ratingMap[gn].count += 1;
+      });
       if (sbProfiles && sbProfiles.length) {
         const local = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
-        let changed = false;
         sbProfiles.forEach(row => {
           const p = { ...row.data, status: row.status };
+          if (ratingMap[p.name]) {
+            p.rating = Math.round(ratingMap[p.name].sum / ratingMap[p.name].count * 10) / 10;
+            p.reviews = ratingMap[p.name].count;
+          }
           const i = local.findIndex(x => x.email === p.email);
-          if (i > -1) { local[i] = p; changed = true; } else { local.push(p); changed = true; }
+          if (i > -1) { local[i] = p; } else { local.push(p); }
         });
-        if (changed) { localStorage.setItem('gt_hdv_profiles', JSON.stringify(local)); renderGuides(); }
+        localStorage.setItem('gt_hdv_profiles', JSON.stringify(local));
+        renderGuides();
       }
     } catch(e) {}
   }
