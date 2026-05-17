@@ -334,7 +334,10 @@
 
       <!-- GALLERY SECTION -->
       <div class="section-card" id="sec-gallery" style="display:none">
-        <h3><i class="fa-solid fa-images" style="color:var(--blue)"></i> Ảnh thực tế</h3>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <h3 style="margin:0"><i class="fa-solid fa-images" style="color:var(--blue)"></i> Ảnh thực tế</h3>
+          <button id="gallery-clear-btn" onclick="clearAllGallery()" style="display:none;font-size:.78rem;padding:4px 10px;border:1px solid #ef4444;border-radius:6px;color:#ef4444;background:none;cursor:pointer">Xóa tất cả</button>
+        </div>
         <p style="font-size:.84rem;color:var(--gray);margin-bottom:4px">Thêm ảnh các chuyến đi thực tế để tăng uy tín với khách. Tối đa 12 ảnh, mỗi ảnh dưới 5MB.</p>
         <input type="file" id="gallery-file-input" accept="image/*" multiple style="display:none" onchange="handleGalleryUpload(this)">
         <div class="gallery-grid" id="gallery-grid"></div>
@@ -1059,16 +1062,32 @@ async function initDash() {
     </div>`;
 }
 
+function _galleryImgError(img, i) {
+  img.onerror = null;
+  img.style.display = 'none';
+  const thumb = document.getElementById('gthumb-' + i);
+  if (!thumb) return;
+  thumb.style.background = '#f1f5f9';
+  if (!thumb.querySelector('.gallery-err')) {
+    const s = document.createElement('span');
+    s.className = 'gallery-err';
+    s.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:#94a3b8;pointer-events:none';
+    s.textContent = 'Lỗi ảnh';
+    thumb.insertBefore(s, thumb.querySelector('.gallery-del'));
+  }
+  const btn = thumb.querySelector('.gallery-del');
+  if (btn) btn.style.display = 'flex';
+}
+
 function renderGallerySection() {
   const grid = document.getElementById('gallery-grid');
-  if (!grid) { console.warn('[gallery] gallery-grid not found'); return; }
+  if (!grid) return;
   const gallery = (dashGuide && dashGuide.gallery) || [];
-  console.log('[gallery] render | count:', gallery.length, '| urls:', gallery);
+  const clearBtn = document.getElementById('gallery-clear-btn');
+  if (clearBtn) clearBtn.style.display = gallery.length ? 'inline-block' : 'none';
   let html = gallery.map((url, i) => `
     <div class="gallery-thumb" id="gthumb-${i}">
-      <img src="${url}" alt=""
-        onclick="window.open('${url}','_blank')"
-        onerror="this.onerror=null;this.src='';this.style.display='none';this.nextElementSibling.style.display='none';document.getElementById('gthumb-${i}').style.background='#f1f5f9';document.getElementById('gthumb-${i}').innerHTML+='<span style=\\'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:#94a3b8\\'>Lỗi ảnh</span>'">
+      <img src="${url}" alt="" onclick="window.open('${url}','_blank')" onerror="_galleryImgError(this,${i})">
       <button class="gallery-del" onclick="deleteGalleryPhoto(${i})" title="Xóa"><i class="fa-solid fa-xmark"></i></button>
     </div>`).join('');
   if (gallery.length < 12) {
@@ -1089,7 +1108,6 @@ async function handleGalleryUpload(input) {
   const toUpload = files.slice(0, 12 - gallery.length);
   toast('Đang tải ảnh lên...');
   const batchTs = Date.now();
-  console.log('[gallery] upload start | session.id:', session?.id, '| files:', files.length, '| dashGuide:', dashGuide?.email);
   const newUrls = [];
   for (let i = 0; i < toUpload.length; i++) {
     const file = toUpload[i];
@@ -1123,7 +1141,6 @@ async function handleGalleryUpload(input) {
     toast('Không tải được ảnh', 'err');
   }
   input.value = '';
-  console.log('[gallery] before render | dashGuide.gallery:', dashGuide && dashGuide.gallery);
   renderGallerySection();
 }
 
@@ -1142,6 +1159,22 @@ async function deleteGalleryPhoto(idx) {
     if (sbRow) await sb.from('hdv_profiles').update({ data: { ...sbRow.data, gallery } }).eq('user_id', session.id);
   } catch(e) {}
   toast('Đã xóa ảnh');
+  renderGallerySection();
+}
+
+async function clearAllGallery() {
+  if (!confirm('Xóa tất cả ảnh trong gallery?')) return;
+  const session = Auth.session();
+  if (!session?.id || !dashGuide) return;
+  dashGuide.gallery = [];
+  const lp = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+  const ei = lp.findIndex(p => p.email === dashGuide.email);
+  if (ei > -1) { lp[ei].gallery = []; localStorage.setItem('gt_hdv_profiles', JSON.stringify(lp)); }
+  try {
+    const { data: sbRow } = await sb.from('hdv_profiles').select('data').eq('user_id', session.id).maybeSingle();
+    if (sbRow) await sb.from('hdv_profiles').update({ data: { ...sbRow.data, gallery: [] } }).eq('user_id', session.id);
+  } catch(e) {}
+  toast('Đã xóa tất cả ảnh');
   renderGallerySection();
 }
 
