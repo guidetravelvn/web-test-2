@@ -938,14 +938,29 @@ async function initDash() {
       })
       .subscribe();
 
-    // Realtime: remove open request khi HDV khác đã nhận
+    // Realtime: remove open request khi HDV khác đã nhận + sync status của request thuộc HDV này
     sb.channel('open_req_claimed')
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'requests' }, payload => {
         const updated = payload.new;
-        if (!updated || !updated.id || updated.guide_id === '' || updated.guide_id === String(session.id)) return;
-        openReqs = openReqs.filter(r => r.id !== updated.id);
-        updateOpenBadge();
-        if (currentFilter === 'open') renderOpenReqs();
+        if (!updated || !updated.id) return;
+        // Request thuộc HDV này → sync localStorage + re-render
+        if (updated.guide_id === String(session.id) && updated.data) {
+          const localReqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
+          const idx = localReqs.findIndex(r => r.id === updated.id);
+          if (idx > -1) localReqs[idx] = updated.data;
+          else localReqs.push(updated.data);
+          localStorage.setItem('gt_requests', JSON.stringify(localReqs));
+          allReqs = DB.requests();
+          renderReqs();
+          updateStats();
+          return;
+        }
+        // Request bị HDV khác nhận → xóa khỏi tab yêu cầu mở
+        if (updated.guide_id !== '' && updated.guide_id !== String(session.id)) {
+          openReqs = openReqs.filter(r => r.id !== updated.id);
+          updateOpenBadge();
+          if (currentFilter === 'open') renderOpenReqs();
+        }
       })
       .subscribe();
 
