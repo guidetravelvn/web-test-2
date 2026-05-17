@@ -1101,16 +1101,18 @@ async function handleGalleryUpload(input) {
   }
   if (newUrls.length) {
     const updatedGallery = [...gallery, ...newUrls];
+    // Update UI/localStorage ngay lập tức, không chờ Supabase
+    dashGuide.gallery = updatedGallery;
+    const lp = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+    const ei = lp.findIndex(p => p.email === dashGuide.email);
+    if (ei > -1) { lp[ei].gallery = updatedGallery; localStorage.setItem('gt_hdv_profiles', JSON.stringify(lp)); }
+    // Persist lên Supabase
     try {
       const { data: sbRow } = await sb.from('hdv_profiles').select('data').eq('user_id', session.id).maybeSingle();
       if (sbRow) {
         const { error: updateErr } = await sb.from('hdv_profiles').update({ data: { ...sbRow.data, gallery: updatedGallery } }).eq('user_id', session.id);
         if (updateErr) console.error('Profile update error:', updateErr);
-        dashGuide.gallery = updatedGallery;
-        const lp = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
-        const ei = lp.findIndex(p => p.email === dashGuide.email);
-        if (ei > -1) { lp[ei].gallery = updatedGallery; localStorage.setItem('gt_hdv_profiles', JSON.stringify(lp)); }
-      }
+      } else { console.warn('hdv_profiles row not found for user_id:', session.id); }
     } catch(e) { console.error('Profile update exception:', e); }
     toast(`Đã thêm ${newUrls.length} ảnh`);
   } else {
@@ -1126,15 +1128,13 @@ async function deleteGalleryPhoto(idx) {
   if (!session?.id || !dashGuide) return;
   const gallery = [...(dashGuide.gallery || [])];
   gallery.splice(idx, 1);
+  dashGuide.gallery = gallery;
+  const lp2 = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+  const ei2 = lp2.findIndex(p => p.email === dashGuide.email);
+  if (ei2 > -1) { lp2[ei2].gallery = gallery; localStorage.setItem('gt_hdv_profiles', JSON.stringify(lp2)); }
   try {
     const { data: sbRow } = await sb.from('hdv_profiles').select('data').eq('user_id', session.id).maybeSingle();
-    if (sbRow) {
-      await sb.from('hdv_profiles').update({ data: { ...sbRow.data, gallery } }).eq('user_id', session.id);
-      dashGuide.gallery = gallery;
-      const lp = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
-      const ei = lp.findIndex(p => p.email === dashGuide.email);
-      if (ei > -1) { lp[ei].gallery = gallery; localStorage.setItem('gt_hdv_profiles', JSON.stringify(lp)); }
-    }
+    if (sbRow) await sb.from('hdv_profiles').update({ data: { ...sbRow.data, gallery } }).eq('user_id', session.id);
   } catch(e) {}
   toast('Đã xóa ảnh');
   renderGallerySection();
