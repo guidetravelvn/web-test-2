@@ -255,6 +255,7 @@
           <div class="req-tab" onclick="filterReqs('pending',this)">Chờ xử lý <span id="badge-pending" style="background:#FFF7ED;color:#F97316;border-radius:99px;padding:1px 7px;font-size:.72rem;margin-left:4px"></span></div>
           <div class="req-tab" onclick="filterReqs('accepted',this)">Đã chấp nhận</div>
           <div class="req-tab" onclick="filterReqs('declined',this)">Đã từ chối</div>
+          <div class="req-tab" onclick="filterReqs('done',this)">Đã hoàn thành <span id="badge-done" style="background:#F0FDF4;color:#16A34A;border-radius:99px;padding:1px 7px;font-size:.72rem;margin-left:4px"></span></div>
         </div>
         <div id="req-list"></div>
       </div>
@@ -704,6 +705,9 @@ function updateStats() {
   document.getElementById('st-accepted').textContent = accepted;
   const badge = document.getElementById('badge-pending');
   if (badge) badge.textContent = pending || '';
+  const done = allReqs.filter(r => r.status === 'done').length;
+  const badgeDone = document.getElementById('badge-done');
+  if (badgeDone) badgeDone.textContent = done || '';
 }
 
 async function initDash() {
