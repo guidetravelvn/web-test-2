@@ -77,7 +77,7 @@
 
 <script>
 const DATA = {
-  lastUpdate: '2026-05-15 (fix admin renderNewHDV: fetch Supabase hdv_profiles pending_review trước khi render, không còn bỏ sót HDV đăng ký từ thiết bị khác)',
+  lastUpdate: '2026-05-17 (fix 6 bug: CCCD/lịch trình/lịch làm việc không lưu trong hdv-register; avatar onerror fallback; realtime badge tin nhắn; calendar scrollIntoView)',
   sections: [
     {
       title: '📄 Trang HTML',
@@ -87,7 +87,7 @@ const DATA = {
         { name: 'Tìm HDV', file: 'guides.html', status: 'done', priority: 'high', note: 'Filter khu vực, giá, đánh giá, sắp xếp theo hoa hồng' },
         { name: 'Hồ sơ HDV', file: 'guide-profile.html', status: 'done', priority: 'high', note: 'Ảnh bìa, bio, lịch trình mẫu, đánh giá, form đặt tour' },
         { name: 'Đăng yêu cầu', file: 'request.html', status: 'done', priority: 'high', note: 'Form đầy đủ, chọn sở thích, mã yêu cầu sau submit' },
-        { name: 'Đăng ký HDV', file: 'hdv-register.html', status: 'done', priority: 'high', note: '4 bước, chọn hoa hồng 15-30%, preview thu nhập' },
+        { name: 'Đăng ký HDV', file: 'hdv-register.html', status: 'done', priority: 'high', note: '4 bước, chọn hoa hồng 15-30%, preview thu nhập. Fix: CCCD/sampleItineraries/workDays/responseTime lưu + restore khi edit' },
         { name: 'Chính sách hoàn tiền', file: 'chinh-sach.html', status: 'done', priority: 'med', note: '7 mục, bảng hoàn tiền, xử lý tranh chấp, bất khả kháng' },
         { name: 'Đăng nhập / Đăng ký', file: 'login.html', status: 'done', priority: 'high', note: 'Supabase Auth, OTP email thật qua Resend, bỏ fallback localStorage' },
         { name: 'Dashboard HDV', file: 'hdv-dashboard.html', status: 'done', priority: 'high', note: 'Xem yêu cầu, chấp nhận/từ chối, thu nhập, hồ sơ' },
@@ -148,7 +148,7 @@ const DATA = {
         { name: 'OTP đăng ký tài khoản', file: 'login.html', status: 'done', priority: 'high', note: 'Supabase Auth gửi OTP email thật qua Resend SMTP. Giới hạn 100 email/ngày free tier.' },
         { name: 'Quên mật khẩu + OTP reset', file: 'login.html', status: 'done', priority: 'high', note: 'Supabase resetPasswordForEmail thật: nhập email → link gửi email thật → click link → đặt mật khẩu mới (updateUser)' },
         { name: 'Guard đăng nhập sai loại tài khoản', file: 'login.html', status: 'done', priority: 'high', note: 'Báo lỗi rõ nếu khách đăng nhập tab HDV hoặc ngược lại' },
-        { name: 'Tin nhắn khách ↔ HDV', file: 'tourist-dashboard.html, hdv-dashboard.html', status: 'done', priority: 'high', note: 'Chat 2 chiều, polling 3s, DB.requests() fresh, filter booking theo email, prefill form từ session. Filter số điện thoại + số tài khoản ngân hàng (VI+EN warning, có nút Gửi dù vậy).' },
+        { name: 'Tin nhắn khách ↔ HDV', file: 'tourist-dashboard.html, hdv-dashboard.html', status: 'done', priority: 'high', note: 'Chat 2 chiều, polling 3s, DB.requests() fresh, filter booking theo email, prefill form từ session. Filter số điện thoại + số tài khoản ngân hàng (VI+EN warning, có nút Gửi dù vậy). Fix: Supabase Realtime subscription for messages INSERT → badge đỏ instant cross-device.' },
         { name: 'Thông báo real-time', file: 'app.js, tourist-dashboard.html, hdv-dashboard.html', status: 'done', priority: 'low', note: 'Supabase Realtime cho requests+notifications, sync messages+reviews khi load. EmailJS gửi email khi có yêu cầu tour mới.' },
         { name: 'Lịch hẹn / Calendar HDV', file: 'hdv-dashboard.html', status: 'done', priority: 'med', note: 'Calendar tháng trong HDV dashboard, highlight ngày có tour, click xem chi tiết' },
         { name: 'Xác nhận hoàn thành tour + ảnh bằng chứng', file: 'tourist-dashboard.html, hdv-dashboard.html', status: 'done', priority: 'med', note: 'Nút Hoàn thành trên accepted bookings, upload ảnh selfie, lưu base64, chống chargeback' },
