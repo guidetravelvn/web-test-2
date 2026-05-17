@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell($git = \"C:\\\\Users\\\\Tran Van Thang\\\\AppData\\\\Local\\\\GitHubDesktop\\\\app-3.5.8\\\\resources\\\\app\\\\git\\\\cmd\\\\git.exe\"; cd \"e:\\\\web test 2\"; & $git add lang.js hdv-register.html; & $git commit -m \"fix\\(upload\\): validate file size and notify on avatar upload failure in hdv-register\")",
+      "PowerShell($git = \"C:\\\\Users\\\\Tran Van Thang\\\\AppData\\\\Local\\\\GitHubDesktop\\\\app-3.5.8\\\\resources\\\\app\\\\git\\\\cmd\\\\git.exe\"; cd \"e:\\\\web test 2\"; & $git push origin main)"
+    ]
+  }
+}

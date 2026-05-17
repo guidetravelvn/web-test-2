@@ -212,6 +212,7 @@
         <a href="javascript:;" class="active" onclick="return showSection('requests',this)"><i class="fa-solid fa-inbox"></i> Yêu cầu từ khách</a>
         <a href="javascript:;" onclick="return showSection('earnings',this)"><i class="fa-solid fa-chart-line"></i> Thu nhập</a>
         <a href="javascript:;" onclick="return showSection('profile',this)"><i class="fa-solid fa-user"></i> Hồ sơ của tôi</a>
+        <a href="javascript:;" onclick="return showSection('gallery',this)"><i class="fa-solid fa-images"></i> Ảnh thực tế</a>
         <a href="guide-profile.html" id="d-profile-link"><i class="fa-solid fa-eye"></i> Xem hồ sơ công khai</a>
         <a href="javascript:;" onclick="return showSection('calendar',this)"><i class="fa-solid fa-calendar-days"></i> Lịch hẹn tour</a>
         <a href="javascript:;" onclick="return showSection('messages',this)" id="nav-messages"><i class="fa-solid fa-comment-dots"></i> Tin nhắn <span id="msg-badge-nav" style="background:#EF4444;color:white;font-size:.65rem;font-weight:800;min-width:16px;height:16px;border-radius:99px;display:none;align-items:center;justify-content:center;padding:0 4px;margin-left:auto"></span></a>
@@ -330,6 +331,14 @@
           <a id="pub-profile-link" href="guides.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-eye"></i> Xem hồ sơ công khai</a>
         </div>
       </div>
+
+      <!-- GALLERY SECTION -->
+      <div class="section-card" id="sec-gallery" style="display:none">
+        <h3><i class="fa-solid fa-images" style="color:var(--blue)"></i> Ảnh thực tế</h3>
+        <p style="font-size:.84rem;color:var(--gray);margin-bottom:4px">Thêm ảnh các chuyến đi thực tế để tăng uy tín với khách. Tối đa 12 ảnh, mỗi ảnh dưới 5MB.</p>
+        <input type="file" id="gallery-file-input" accept="image/*" multiple style="display:none" onchange="handleGalleryUpload(this)">
+        <div class="gallery-grid" id="gallery-grid"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -441,12 +450,13 @@ function logout() {
 
 function showSection(name, el, mobKey) {
   try {
-    ['requests','earnings','profile','messages','calendar','notifications'].forEach(s => {
+    ['requests','earnings','profile','gallery','messages','calendar','notifications'].forEach(s => {
       const sec = document.getElementById('sec-' + s);
       if (sec) sec.style.display = s === name ? 'block' : 'none';
     });
     if (name === 'calendar') { renderCalendar(); loadWorkDays(); }
     if (name === 'notifications') renderNotifs();
+    if (name === 'gallery') renderGallerySection();
     ['requests','notifications','messages','calendar','profile'].forEach(s => {
       const btn = document.getElementById('mobnav-' + s);
       if (btn) btn.classList.toggle('active', s === (mobKey || name));
@@ -1047,6 +1057,85 @@ async function initDash() {
       <div><span style="color:var(--gray-2)">Giá/ngày</span><div style="font-weight:600">${fmt2(price)}</div></div>
       <div><span style="color:var(--gray-2)">Ngôn ngữ</span><div style="font-weight:600">${(guide.languages || []).join(', ') || '—'}</div></div>
     </div>`;
+}
+
+function renderGallerySection() {
+  const grid = document.getElementById('gallery-grid');
+  if (!grid) return;
+  const gallery = (dashGuide && dashGuide.gallery) || [];
+  let html = gallery.map((url, i) => `
+    <div class="gallery-thumb">
+      <img src="${url}" alt="" onclick="window.open('${url}','_blank')" onerror="this.onerror=null;this.parentElement.style.display='none'">
+      <button class="gallery-del" onclick="deleteGalleryPhoto(${i})" title="Xóa"><i class="fa-solid fa-xmark"></i></button>
+    </div>`).join('');
+  if (gallery.length < 12) {
+    html += `<div class="gallery-add" onclick="document.getElementById('gallery-file-input').click()">
+      <i class="fa-solid fa-plus" style="font-size:1.4rem"></i>
+      <span style="font-size:.78rem;font-weight:600">Thêm ảnh</span>
+    </div>`;
+  }
+  grid.innerHTML = html || `<div class="empty-state"><i class="fa-solid fa-images"></i><p>Chưa có ảnh nào. Thêm ảnh để tăng uy tín với khách!</p></div>`;
+}
+
+async function handleGalleryUpload(input) {
+  const files = Array.from(input.files);
+  if (!files.length) return;
+  const session = Auth.session();
+  if (!session?.id) return;
+  const gallery = (dashGuide && dashGuide.gallery) || [];
+  const toUpload = files.slice(0, 12 - gallery.length);
+  showToast('Đang tải ảnh lên...', 'info');
+  const newUrls = [];
+  for (const file of toUpload) {
+    if (file.size > 5 * 1024 * 1024) { showToast('Ảnh quá 5MB, bỏ qua', 'warn'); continue; }
+    try {
+      const ext = file.type.includes('png') ? 'png' : 'jpg';
+      const path = `gallery/${session.id}_${Date.now()}_${Math.random().toString(36).slice(2,6)}.${ext}`;
+      const { error: upErr } = await sb.storage.from('avatars').upload(path, file, { upsert: false, contentType: file.type });
+      if (!upErr) {
+        const { data: urlData } = sb.storage.from('avatars').getPublicUrl(path);
+        newUrls.push(urlData.publicUrl);
+      }
+    } catch(e) {}
+  }
+  if (newUrls.length) {
+    const updatedGallery = [...gallery, ...newUrls];
+    try {
+      const { data: sbRow } = await sb.from('hdv_profiles').select('data').eq('user_id', session.id).maybeSingle();
+      if (sbRow) {
+        await sb.from('hdv_profiles').update({ data: { ...sbRow.data, gallery: updatedGallery } }).eq('user_id', session.id);
+        dashGuide.gallery = updatedGallery;
+        const lp = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+        const ei = lp.findIndex(p => p.email === dashGuide.email);
+        if (ei > -1) { lp[ei].gallery = updatedGallery; localStorage.setItem('gt_hdv_profiles', JSON.stringify(lp)); }
+      }
+    } catch(e) {}
+    showToast(`Đã thêm ${newUrls.length} ảnh`, 'success');
+  } else {
+    showToast('Không tải được ảnh', 'error');
+  }
+  input.value = '';
+  renderGallerySection();
+}
+
+async function deleteGalleryPhoto(idx) {
+  if (!confirm('Xóa ảnh này?')) return;
+  const session = Auth.session();
+  if (!session?.id || !dashGuide) return;
+  const gallery = [...(dashGuide.gallery || [])];
+  gallery.splice(idx, 1);
+  try {
+    const { data: sbRow } = await sb.from('hdv_profiles').select('data').eq('user_id', session.id).maybeSingle();
+    if (sbRow) {
+      await sb.from('hdv_profiles').update({ data: { ...sbRow.data, gallery } }).eq('user_id', session.id);
+      dashGuide.gallery = gallery;
+      const lp = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+      const ei = lp.findIndex(p => p.email === dashGuide.email);
+      if (ei > -1) { lp[ei].gallery = gallery; localStorage.setItem('gt_hdv_profiles', JSON.stringify(lp)); }
+    }
+  } catch(e) {}
+  showToast('Đã xóa ảnh', 'success');
+  renderGallerySection();
 }
 
 document.addEventListener('DOMContentLoaded', () => initDash().catch(e => console.error('initDash error:', e)));

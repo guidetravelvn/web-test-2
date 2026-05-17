@@ -1003,6 +1003,20 @@ function renderProfile(g) {
     </div>`;
   }).join(''));
 
+  // Gallery
+  const galleryPhotos = g.gallery || [];
+  const galleryCard = document.getElementById('p-gallery-card');
+  if (galleryCard) {
+    if (galleryPhotos.length) {
+      galleryCard.style.display = '';
+      setHTML('p-gallery', galleryPhotos.map(url =>
+        `<div class="gallery-thumb"><img src="${url}" alt="" onclick="window.open('${url}','_blank')" onerror="this.onerror=null;this.parentElement.style.display='none'"></div>`
+      ).join(''));
+    } else {
+      galleryCard.style.display = 'none';
+    }
+  }
+
   // Reviews — merge hardcoded + user-submitted
   function buildReviewHTML(localRevs) {
     const uRevs = localRevs.filter(rv => rv.guideName === g.name).map(rv => ({
