@@ -1096,7 +1096,7 @@ async function handleGalleryUpload(input) {
     if (file.size > 5 * 1024 * 1024) { toast('Ảnh quá 5MB, bỏ qua', 'err'); continue; }
     try {
       const ext = file.type.includes('png') ? 'png' : 'jpg';
-      const path = `gallery/${session.id}_${batchTs}_${i}.${ext}`;
+      const path = `${session.id}_g${batchTs}_${i}.${ext}`;
       const { error: upErr } = await sb.storage.from('avatars').upload(path, file, { upsert: true, contentType: file.type });
       if (upErr) { console.error('Storage upload error:', upErr); continue; }
       const { data: urlData } = sb.storage.from('avatars').getPublicUrl(path);
