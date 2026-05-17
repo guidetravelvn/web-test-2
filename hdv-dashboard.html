@@ -1085,13 +1085,15 @@ async function handleGalleryUpload(input) {
   const gallery = (dashGuide && dashGuide.gallery) || [];
   const toUpload = files.slice(0, 12 - gallery.length);
   toast('Đang tải ảnh lên...');
+  const batchTs = Date.now();
   const newUrls = [];
-  for (const file of toUpload) {
+  for (let i = 0; i < toUpload.length; i++) {
+    const file = toUpload[i];
     if (file.size > 5 * 1024 * 1024) { toast('Ảnh quá 5MB, bỏ qua', 'err'); continue; }
     try {
       const ext = file.type.includes('png') ? 'png' : 'jpg';
-      const path = `gallery/${session.id}_${Date.now()}_${Math.random().toString(36).slice(2,6)}.${ext}`;
-      const { error: upErr } = await sb.storage.from('avatars').upload(path, file, { upsert: false, contentType: file.type });
+      const path = `gallery/${session.id}_${batchTs}_${i}.${ext}`;
+      const { error: upErr } = await sb.storage.from('avatars').upload(path, file, { upsert: true, contentType: file.type });
       if (upErr) { console.error('Storage upload error:', upErr); continue; }
       const { data: urlData } = sb.storage.from('avatars').getPublicUrl(path);
       newUrls.push(urlData.publicUrl);
