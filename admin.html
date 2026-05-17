@@ -437,7 +437,7 @@ function renderDashboard() {
   const accepted  = reqs.filter(r => r.status === 'accepted').length;
   const done      = reqs.filter(r => r.status === 'done').length;
   const upcoming  = reqs.filter(r => r.status === 'accepted' && r.date >= today && r.date <= in7.toISOString().slice(0,10));
-  const unassigned = reqs.filter(r => r.status === 'pending' && (!r.guideName || r.guideName === 'Tất cả HDV phù hợp'));
+  const unassigned = reqs.filter(r => r.status === 'pending' && (!r.guideName || r.guideName === 'Tất cả HDV phù hợp' || r.guideName === 'Tất cả người đồng hành phù hợp' || r.guideName === 'All matching local buddies'));
 
   const revToday = reqs.filter(r => (r.status === 'accepted' || r.status === 'done') && (r.createdAt||'').slice(0,10) === today)
     .reduce((s,r) => s + (r.totalAmount || 0), 0);

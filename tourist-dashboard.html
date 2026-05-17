@@ -542,6 +542,13 @@ function getGuide(id) {
   return profiles.find(p => p.id == id && p.status === 'approved') || null;
 }
 
+function normalizeGuide(name) {
+  if (!name) return '';
+  if (name === 'Tất cả HDV phù hợp' || name === 'All Matching Guides' || name === 'All matching guides')
+    return t('req.all_guides');
+  return name;
+}
+
 function renderBookings() {
   const el = document.getElementById('booking-list');
   let list = allBookings;
@@ -590,9 +597,9 @@ function renderBookings() {
     <div class="booking-card">
       <div class="bc-head">
         <div class="bc-guide">
-          <img src="${guide?.avatar || ''}" alt="${r.guideName}" onerror="this.style.display='none'">
+          <img src="${guide?.avatar || ''}" alt="${normalizeGuide(r.guideName)}" onerror="this.style.display='none'">
           <div>
-            <div class="bc-guide-name">${r.guideName || t('tdash.card.unknown_guide')}</div>
+            <div class="bc-guide-name">${normalizeGuide(r.guideName) || t('tdash.card.unknown_guide')}</div>
             <div class="bc-guide-loc"><i class="fa-solid fa-location-dot"></i> ${r.destination || '—'}</div>
           </div>
         </div>
@@ -668,7 +675,7 @@ function renderHistory() {
     <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border)">
       <img src="${guide?.avatar || ''}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--border)" onerror="this.style.display='none'">
       <div style="flex:1">
-        <div style="font-weight:600;font-size:.9rem">${r.guideName} — ${r.destination}</div>
+        <div style="font-weight:600;font-size:.9rem">${normalizeGuide(r.guideName)} — ${r.destination}</div>
         <div style="font-size:.78rem;color:var(--gray-2)">${r.date} · ${r.days} ${t('unit.days')} · ${r.people} ${t('unit.people')}</div>
       </div>
       <div style="text-align:right">
@@ -689,7 +696,7 @@ function renderMyReviews() {
   el.innerHTML = reviews.map(rv => `
     <div style="border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-        <div style="font-weight:600;font-size:.88rem">${rv.guideName} — ${rv.destination}</div>
+        <div style="font-weight:600;font-size:.88rem">${normalizeGuide(rv.guideName)} — ${rv.destination}</div>
         <div style="color:#F59E0B;font-size:.9rem">${'★'.repeat(rv.stars)}${'☆'.repeat(5-rv.stars)}</div>
       </div>
       <div style="font-size:.82rem;color:var(--gray)">${rv.text || t('tdash.rev.no_comment')}</div>
@@ -720,7 +727,7 @@ function openProposalView(reqId) {
   if (!req || !req.proposal) { toast('Không tìm thấy lịch trình', 'err'); return; }
   const p = req.proposal;
   document.getElementById('pv-req-id').value = reqId;
-  document.getElementById('pv-trip-sub').textContent = (req.guideName||'Người đồng hành') + ' — ' + (req.destination||'') + ' · ' + (req.days||1) + ' ngày';
+  document.getElementById('pv-trip-sub').textContent = (normalizeGuide(req.guideName)||'Người đồng hành') + ' — ' + (req.destination||'') + ' · ' + (req.days||1) + ' ngày';
   document.getElementById('pv-itinerary').textContent = p.itinerary || '—';
   const priceWrap = document.getElementById('pv-price-wrap');
   if (p.totalPrice) {
@@ -1090,7 +1097,7 @@ function renderChatList() {
     const lastMsg = rMsgs[rMsgs.length - 1];
     return `<div class="chat-item${currentChatReqId === r.id ? ' active' : ''}" onclick="openChat('${r.id}')">
       <div class="chat-item-name">
-        <span>${r.guideName || 'Người đồng hành'}</span>
+        <span>${normalizeGuide(r.guideName) || 'Người đồng hành'}</span>
         ${unread > 0 ? `<span class="chat-unread">${unread}</span>` : ''}
       </div>
       <div class="chat-item-sub"><i class="fa-solid fa-location-dot" style="font-size:.68rem"></i> ${r.destination}</div>
@@ -1122,7 +1129,7 @@ function openChat(requestId) {
     <div class="chat-panel-header" style="display:flex;align-items:center;gap:10px">
       <button onclick="closeChatMobile()" style="display:none;background:none;border:none;color:var(--gray);cursor:pointer;font-size:1rem;flex-shrink:0" id="chat-back-btn"><i class="fa-solid fa-arrow-left"></i></button>
       <div style="flex:1;min-width:0">
-        <div class="chat-panel-name"><i class="fa-solid fa-user-tie"></i> ${r.guideName || '—'}</div>
+        <div class="chat-panel-name"><i class="fa-solid fa-user-tie"></i> ${normalizeGuide(r.guideName) || '—'}</div>
         <div class="chat-panel-sub"><i class="fa-solid fa-location-dot"></i> ${r.destination || '—'} · ${r.date || '—'}</div>
       </div>
     </div>
