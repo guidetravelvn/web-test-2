@@ -907,6 +907,20 @@ function initProfile() {
   if (!g.pricePerDay) g.pricePerDay = 0;
   renderProfile(g);
   initBookingForm(g);
+  // Trips chính xác từ Supabase (localStorage chỉ có data của thiết bị hiện tại)
+  if (typeof sb !== 'undefined') {
+    sb.from('requests').select('status').eq('guide_id', String(g.id))
+      .in('status', ['done', 'awaiting_payment', 'paid'])
+      .then(({ data }) => {
+        if (!data) return;
+        const cur = parseInt(document.getElementById('p-trips')?.textContent) || 0;
+        if (data.length > cur) {
+          const el = document.getElementById('p-trips');
+          if (el) el.textContent = data.length + '+';
+        }
+      });
+  }
+  subscribeProfileRealtime(g);
 }
 
 function renderProfile(g) {
@@ -1018,6 +1032,59 @@ function renderProfile(g) {
 
   // Page title
   const pt = $('page-title'); if (pt) pt.textContent = g.name;
+}
+
+function subscribeProfileRealtime(g) {
+  if (typeof sb === 'undefined') return;
+
+  // Channel 1: HDV cập nhật thông tin profile
+  sb.channel(`profile_${g.id}`)
+    .on('postgres_changes',
+      { event: 'UPDATE', schema: 'public', table: 'hdv_profiles', filter: `id=eq.${g.id}` },
+      payload => {
+        const updated = payload.new?.data;
+        if (!updated) return;
+        Object.assign(g, updated);
+        const profiles = JSON.parse(localStorage.getItem('gt_hdv_profiles') || '[]');
+        const idx = profiles.findIndex(p => p.id == g.id);
+        if (idx > -1) profiles[idx] = g; else profiles.push(g);
+        localStorage.setItem('gt_hdv_profiles', JSON.stringify(profiles));
+        renderProfile(g);
+      })
+    .subscribe();
+
+  // Channel 2: Khách gửi đánh giá mới
+  sb.channel(`reviews_${g.id}`)
+    .on('postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'reviews', filter: `guide_name=eq.${g.name}` },
+      payload => {
+        const newRev = payload.new?.data;
+        if (!newRev) return;
+        const local = JSON.parse(localStorage.getItem('gt_my_reviews') || '[]');
+        if (local.some(r => r.id === newRev.id)) return;
+        local.unshift(newRev);
+        localStorage.setItem('gt_my_reviews', JSON.stringify(local));
+        renderProfile(g);
+      })
+    .subscribe();
+
+  // Channel 3: Chuyến đi chuyển sang trạng thái hoàn thành
+  sb.channel(`trips_${g.id}`)
+    .on('postgres_changes',
+      { event: 'UPDATE', schema: 'public', table: 'requests', filter: `guide_id=eq.${String(g.id)}` },
+      payload => {
+        const done = new Set(['done', 'awaiting_payment', 'paid']);
+        if (!done.has(payload.new?.status)) return;
+        sb.from('requests').select('status').eq('guide_id', String(g.id))
+          .in('status', ['done', 'awaiting_payment', 'paid'])
+          .then(({ data }) => {
+            if (data) {
+              const el = document.getElementById('p-trips');
+              if (el) el.textContent = data.length + '+';
+            }
+          });
+      })
+    .subscribe();
 }
 
 function initBookingForm(g) {
