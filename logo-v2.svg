@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 550" width="500" height="550">
+  <defs>
+    <linearGradient id="cone" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%"   stop-color="#eedfa8"/>
+      <stop offset="30%"  stop-color="#d4b870"/>
+      <stop offset="65%"  stop-color="#b89048"/>
+      <stop offset="100%" stop-color="#7a5525"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#c8a458"/>
+      <stop offset="100%" stop-color="#5a3510"/>
+    </linearGradient>
+    <radialGradient id="knot" cx="40%" cy="35%" r="65%">
+      <stop offset="0%"   stop-color="#e02020"/>
+      <stop offset="100%" stop-color="#8a0808"/>
+    </radialGradient>
+    <filter id="hatShadow" x="-5%" y="-5%" width="110%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+    <clipPath id="coneClip">
+      <path d="M250,42 L72,212 Q250,200 428,212 Z"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="500" height="550" fill="#0d0d0d"/>
+
+  <!-- ── Nón lá ── -->
+  <!-- Cone body -->
+  <path d="M250,42 L72,212 Q250,200 428,212 Z"
+        fill="url(#cone)" filter="url(#hatShadow)"/>
+
+  <!-- Radiating lines (bamboo ribs) -->
+  <g clip-path="url(#coneClip)" stroke="#8a6528" stroke-width="0.7" opacity="0.45">
+    <line x1="250" y1="42" x2="95"  y2="213"/>
+    <line x1="250" y1="42" x2="125" y2="215"/>
+    <line x1="250" y1="42" x2="158" y2="216"/>
+    <line x1="250" y1="42" x2="192" y2="217"/>
+    <line x1="250" y1="42" x2="221" y2="217"/>
+    <line x1="250" y1="42" x2="279" y2="217"/>
+    <line x1="250" y1="42" x2="308" y2="217"/>
+    <line x1="250" y1="42" x2="342" y2="216"/>
+    <line x1="250" y1="42" x2="375" y2="215"/>
+    <line x1="250" y1="42" x2="405" y2="213"/>
+  </g>
+
+  <!-- Concentric rings (horizontal layers of bamboo) -->
+  <g clip-path="url(#coneClip)" fill="none" stroke="#8a6528" stroke-width="0.9" opacity="0.38">
+    <ellipse cx="250" cy="110" rx="28"  ry="4"/>
+    <ellipse cx="250" cy="138" rx="60"  ry="8"/>
+    <ellipse cx="250" cy="162" rx="93"  ry="11"/>
+    <ellipse cx="250" cy="183" rx="126" ry="14"/>
+    <ellipse cx="250" cy="200" rx="155" ry="17"/>
+  </g>
+
+  <!-- Highlight sheen (left face of cone) -->
+  <path d="M250,42 L72,212 Q155,195 250,42Z"
+        fill="#fff" opacity="0.04"/>
+
+  <!-- Rim -->
+  <ellipse cx="250" cy="213" rx="178" ry="25"
+           fill="url(#rim)" filter="url(#hatShadow)"/>
+  <!-- Rim top highlight -->
+  <ellipse cx="250" cy="208" rx="178" ry="10"
+           fill="#e8c870" opacity="0.12"/>
+
+  <!-- ── Ribbons ── -->
+  <path d="M178,225 C205,258 212,285 202,320"
+        stroke="#c41515" stroke-width="2.5" fill="none"
+        stroke-linecap="round" opacity="0.92"/>
+  <path d="M322,225 C295,258 288,285 298,320"
+        stroke="#c41515" stroke-width="2.5" fill="none"
+        stroke-linecap="round" opacity="0.92"/>
+
+  <!-- ── Knot + Vietnamese star ── -->
+  <circle cx="250" cy="322" r="14" fill="url(#knot)"/>
+  <!-- 5-pointed star -->
+  <polygon
+    points="250,309 253.4,319.5 264.5,319.5 255.8,325.8 259.2,336.3 250,330 240.8,336.3 244.2,325.8 235.5,319.5 246.6,319.5"
+    fill="#FFD700"/>
+
+  <!-- ── Typography ── -->
+  <!-- GUIDE -->
+  <text x="250" y="374"
+        font-family="'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif"
+        font-size="44" font-weight="bold"
+        fill="#D4A843" text-anchor="middle" letter-spacing="7">GUIDE</text>
+
+  <!-- Thin gold rule -->
+  <line x1="148" y1="385" x2="352" y2="385"
+        stroke="#D4A843" stroke-width="0.8" opacity="0.35"/>
+
+  <!-- TRAVEL -->
+  <text x="254" y="415"
+        font-family="'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif"
+        font-size="25" fill="#D4A843" text-anchor="middle" letter-spacing="16"
+        opacity="0.88">TRAVEL</text>
+
+  <!-- Tagline -->
+  <text x="250" y="450"
+        font-family="Georgia, serif" font-size="10.5"
+        fill="#D4A843" text-anchor="middle" letter-spacing="3.5"
+        opacity="0.40">VIETNAM LOCAL BUDDIES</text>
+</svg>
