@@ -350,12 +350,12 @@
 <div class="complete-modal" id="complete-modal" style="display:none" onclick="if(event.target===this)closeCompleteModal()">
   <div class="complete-box" onclick="event.stopPropagation()">
     <h3 style="margin-bottom:6px"><i class="fa-solid fa-flag-checkered" style="color:var(--green)"></i> Xác nhận đã đi tour</h3>
-    <p style="font-size:.85rem;color:var(--gray);margin-bottom:20px">Chụp ảnh kỷ niệm cùng HDV để xác nhận tour đã diễn ra. Ảnh giúp bảo vệ quyền lợi của bạn.</p>
+    <p style="font-size:.85rem;color:var(--gray);margin-bottom:20px">Chụp ảnh kỷ niệm cùng người đồng hành để xác nhận trải nghiệm đã diễn ra. Ảnh giúp bảo vệ quyền lợi của bạn.</p>
     <div class="photo-upload-area" onclick="document.getElementById('complete-photo-input').click()">
       <img id="complete-photo-preview" class="photo-preview" src="" alt="">
       <div id="complete-upload-hint">
         <i class="fa-solid fa-camera" style="font-size:1.6rem;color:var(--gray-2);margin-bottom:8px;display:block"></i>
-        <div style="font-size:.85rem;color:var(--gray);font-weight:600">Chụp/chọn ảnh cùng HDV (tuỳ chọn)</div>
+        <div style="font-size:.85rem;color:var(--gray);font-weight:600">Chụp/chọn ảnh cùng người đồng hành (tuỳ chọn)</div>
         <div style="font-size:.75rem;color:var(--gray-2);margin-top:4px">Nhấn để chọn ảnh từ thiết bị</div>
       </div>
     </div>
@@ -720,7 +720,7 @@ function openProposalView(reqId) {
   if (!req || !req.proposal) { toast('Không tìm thấy lịch trình', 'err'); return; }
   const p = req.proposal;
   document.getElementById('pv-req-id').value = reqId;
-  document.getElementById('pv-trip-sub').textContent = (req.guideName||'HDV') + ' — ' + (req.destination||'') + ' · ' + (req.days||1) + ' ngày';
+  document.getElementById('pv-trip-sub').textContent = (req.guideName||'Người đồng hành') + ' — ' + (req.destination||'') + ' · ' + (req.days||1) + ' ngày';
   document.getElementById('pv-itinerary').textContent = p.itinerary || '—';
   const priceWrap = document.getElementById('pv-price-wrap');
   if (p.totalPrice) {
@@ -1090,7 +1090,7 @@ function renderChatList() {
     const lastMsg = rMsgs[rMsgs.length - 1];
     return `<div class="chat-item${currentChatReqId === r.id ? ' active' : ''}" onclick="openChat('${r.id}')">
       <div class="chat-item-name">
-        <span>${r.guideName || 'HDV'}</span>
+        <span>${r.guideName || 'Người đồng hành'}</span>
         ${unread > 0 ? `<span class="chat-unread">${unread}</span>` : ''}
       </div>
       <div class="chat-item-sub"><i class="fa-solid fa-location-dot" style="font-size:.68rem"></i> ${r.destination}</div>
