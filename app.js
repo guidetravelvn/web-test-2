@@ -790,8 +790,7 @@ async function initGuidesPage() {
         sbProfiles.forEach(row => {
           const p = { ...row.data, status: row.status };
           const i = local.findIndex(x => x.email === p.email);
-          if (i > -1) { local[i] = p; } else { local.push(p); changed = true; }
-          if (i === -1) changed = true;
+          if (i > -1) { local[i] = p; changed = true; } else { local.push(p); changed = true; }
         });
         if (changed) { localStorage.setItem('gt_hdv_profiles', JSON.stringify(local)); renderGuides(); }
       }
