@@ -813,9 +813,9 @@ function submitReview() {
   const reviews = JSON.parse(localStorage.getItem('gt_my_reviews') || '[]');
   reviews.unshift(review);
   localStorage.setItem('gt_my_reviews', JSON.stringify(reviews));
-  SB.saveReview(review);
-  // Cập nhật rating + số đánh giá trong hdv_profiles sau khi có review mới
+  // Lưu review rồi cập nhật rating (await saveReview trước để tránh race condition)
   (async () => {
+    await SB.saveReview(review);
     if (typeof sb === 'undefined') return;
     const allRevs = await SB.getReviewsByGuide(review.guideName);
     if (!allRevs || !allRevs.length) return;
