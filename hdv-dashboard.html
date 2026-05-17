@@ -1061,6 +1061,7 @@ async function initDash() {
 
 function renderGallerySection() {
   const grid = document.getElementById('gallery-grid');
+  console.log('[gallery] grid element:', grid, '| dashGuide:', dashGuide, '| gallery:', dashGuide && dashGuide.gallery);
   if (!grid) return;
   const gallery = (dashGuide && dashGuide.gallery) || [];
   let html = gallery.map((url, i) => `
@@ -1086,6 +1087,7 @@ async function handleGalleryUpload(input) {
   const toUpload = files.slice(0, 12 - gallery.length);
   toast('Đang tải ảnh lên...');
   const batchTs = Date.now();
+  console.log('[gallery] upload start | session.id:', session?.id, '| files:', files.length, '| dashGuide:', dashGuide?.email);
   const newUrls = [];
   for (let i = 0; i < toUpload.length; i++) {
     const file = toUpload[i];
