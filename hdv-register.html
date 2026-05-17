@@ -869,6 +869,18 @@ async function submitRegistration() {
     });
   }
 
+  const itinTitle = document.getElementById('itin-title')?.value.trim();
+  const newSampleItins = itinTitle ? [{
+    title: itinTitle,
+    days: parseInt(document.getElementById('itin-days')?.value) || 2,
+    price: parseInt(document.getElementById('itin-price')?.value) || 0,
+    description: document.getElementById('itin-desc')?.value.trim() || ''
+  }] : (isEditing ? (existingProfile.sampleItineraries || []) : []);
+  const workDays = Array.from(document.querySelectorAll('input[type="checkbox"]'))
+    .filter(cb => cb.checked && ['T2','T3','T4','T5','T6','T7','CN'].includes(cb.value))
+    .map(cb => cb.value);
+  const responseTime = document.getElementById('hdv-response')?.value || '2h';
+
   const profile = {
     id: isEditing ? existingProfile.id : ('HDV' + Date.now()),
     userId: session ? session.id : (isEditing ? existingProfile.userId : null),
@@ -891,7 +903,10 @@ async function submitRegistration() {
     trips: isEditing ? (existingProfile.trips || 0) : 0,
     reviewList: isEditing ? (existingProfile.reviewList || []) : [],
     itineraries: isEditing ? (existingProfile.itineraries || []) : [],
-    sampleItineraries: isEditing ? (existingProfile.sampleItineraries || []) : [],
+    sampleItineraries: newSampleItins,
+    idCardImages: _idCardPreviews.length ? _idCardPreviews : (isEditing ? (existingProfile.idCardImages || []) : []),
+    workDays: workDays,
+    responseTime: responseTime,
     avatar: avatarUrl,
     coverImg: coverUrl,
     verified: true,
@@ -1017,6 +1032,29 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Tự tick điều khoản
   const terms = document.getElementById('agree-terms');
   if (terms) terms.checked = true;
+
+  // Restore CCCD previews khi editing
+  if (p.idCardImages && p.idCardImages.length) {
+    _idCardPreviews = [...p.idCardImages];
+    _renderIdPreviews(document.getElementById('preview-id'));
+  }
+
+  // Restore lịch trình mẫu khi editing
+  if (p.sampleItineraries && p.sampleItineraries.length) {
+    const s0 = p.sampleItineraries[0];
+    setVal('itin-title', s0.title || '');
+    setVal('itin-days', s0.days || 2);
+    setVal('itin-price', s0.price || '');
+    setVal('itin-desc', s0.description || '');
+  }
+
+  // Restore lịch làm việc khi editing
+  if (p.workDays && p.workDays.length) {
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      if (p.workDays.includes(cb.value)) cb.checked = true;
+    });
+  }
+  setVal('hdv-response', p.responseTime || '2h');
 });
 </script>
 </body>

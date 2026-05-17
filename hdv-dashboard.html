@@ -819,7 +819,12 @@ async function initDash() {
   // Update greeting
   document.getElementById('dash-greeting').textContent = 'Xin chào, ' + guide.name + '!';
   document.getElementById('d-name').textContent = guide.name;
-  document.getElementById('d-avatar').src = guide.avatar;
+  const avatarEl = document.getElementById('d-avatar');
+  avatarEl.src = guide.avatar;
+  avatarEl.onerror = () => {
+    avatarEl.onerror = null;
+    avatarEl.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(guide.name || 'HDV') + '&background=0284C7&color=fff&size=200';
+  };
   document.getElementById('d-trips').textContent = (guide.trips || 0) + (guide.trips ? '+' : '');
   document.getElementById('d-rating').textContent = guide.rating || '—';
   document.getElementById('d-comm').textContent = (guide.commission || 15) + '%';
@@ -908,6 +913,29 @@ async function initDash() {
         updateNotifBadge();
         const iconMap = { booking:'📋', message:'💬', system:'🔔' };
         toast((iconMap[notif.type]||'🔔') + ' ' + notif.title, 'ok');
+      })
+      .subscribe();
+
+    // Realtime: nhận tin nhắn mới từ khách cross-device
+    sb.channel('hdv_new_messages')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+        if (!payload.new || payload.new.from_type !== 'tourist') return;
+        const newMsg = {
+          id: payload.new.id,
+          requestId: payload.new.request_id,
+          fromEmail: payload.new.from_email,
+          fromType: payload.new.from_type,
+          fromName: payload.new.from_name,
+          text: payload.new.text,
+          time: payload.new.time,
+          read: false
+        };
+        const local = JSON.parse(localStorage.getItem('gt_messages') || '[]');
+        if (local.find(m => m.id === newMsg.id)) return;
+        local.push(newMsg);
+        localStorage.setItem('gt_messages', JSON.stringify(local));
+        updateMsgBadge();
+        if (currentChatReqId !== newMsg.requestId) renderChatList();
       })
       .subscribe();
 
@@ -1411,6 +1439,7 @@ function renderCalDayDetail(bookings) {
       ${r.status==='accepted'?`<div style="margin-top:10px"><button class="btn btn-sm" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="openCompleteModal('${r.id}')"><i class="fa-solid fa-flag-checkered"></i> ${t('hdash.req.complete')}</button></div>`:''}
     </div>`).join('')}
   </div>`;
+  setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
 }
 
 // ===== TOUR COMPLETION =====
