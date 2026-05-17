@@ -894,7 +894,7 @@ async function submitRegistration() {
     title: itinTitle,
     days: parseInt(document.getElementById('itin-days')?.value) || 2,
     price: parseInt(document.getElementById('itin-price')?.value) || 0,
-    description: document.getElementById('itin-desc')?.value.trim() || ''
+    desc: document.getElementById('itin-desc')?.value.trim() || ''
   }] : (isEditing ? (existingProfile.sampleItineraries || []) : []);
   const workDays = Array.from(document.querySelectorAll('input[type="checkbox"]'))
     .filter(cb => cb.checked && ['T2','T3','T4','T5','T6','T7','CN'].includes(cb.value))
@@ -1065,7 +1065,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setVal('itin-title', s0.title || '');
     setVal('itin-days', s0.days || 2);
     setVal('itin-price', s0.price || '');
-    setVal('itin-desc', s0.description || '');
+    setVal('itin-desc', s0.desc || '');
   }
 
   // Restore lịch làm việc khi editing
