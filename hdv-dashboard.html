@@ -944,7 +944,8 @@ async function initDash() {
         const updated = payload.new;
         if (!updated || !updated.id) return;
         // Request thuộc HDV này → sync localStorage + re-render
-        if (updated.guide_id === String(session.id) && updated.data) {
+        const myGuideId = String(dashGuide?.id || session.id);
+        if (updated.guide_id === myGuideId && updated.data) {
           const localReqs = JSON.parse(localStorage.getItem('gt_requests') || '[]');
           const idx = localReqs.findIndex(r => r.id === updated.id);
           if (idx > -1) localReqs[idx] = updated.data;
@@ -956,7 +957,7 @@ async function initDash() {
           return;
         }
         // Request bị HDV khác nhận → xóa khỏi tab yêu cầu mở
-        if (updated.guide_id !== '' && updated.guide_id !== String(session.id)) {
+        if (updated.guide_id !== '' && updated.guide_id !== myGuideId) {
           openReqs = openReqs.filter(r => r.id !== updated.id);
           updateOpenBadge();
           if (currentFilter === 'open') renderOpenReqs();
